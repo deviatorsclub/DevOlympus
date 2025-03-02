@@ -79,14 +79,25 @@ export default function SimplifiedContactSection() {
                       </a>
                     </div>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium">Location</p>
-                      <address className="not-italic">
-                        Dronacharya College of Engineering, Khentawas, Gurugram
-                      </address>
+                  <li className="flex flex-col">
+                    <div className="flex items-start gap-3">
+                      <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Location</p>
+                        <address className="not-italic">
+                          Dronacharya College of Engineering, Khentawas,
+                          Gurugram
+                        </address>
+                      </div>
                     </div>
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.691016339565!2d76.8666671762441!3d28.428578793312038!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d6ad5abdad98b%3A0xeb13a7d0eb14cc49!2sDronacharya%20College%20of%20Engineering!5e0!3m2!1sen!2sin!4v1740929599201!5m2!1sen!2sin"
+                      className="w-full h-64 mt-4 rounded-md"
+                      style={{ border: "0" }}
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
                   </li>
                 </ul>
 
