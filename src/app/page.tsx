@@ -5,6 +5,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/FooterSection";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import ScheduleSection from "@/components/Schedule";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
         <HeroSection />
         <RulesSection />
         <FAQSection />
+        <ScheduleSection />
         <RegistrationSection />
         <ContactSection />
       </main>
