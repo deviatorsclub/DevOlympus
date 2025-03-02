@@ -41,9 +41,10 @@ export default function Navbar() {
     >
       <div className="container mx-auto flex items-center justify-between p-4 md:p-6">
         <div className="flex items-center gap-3">
-          <motion.div
+          <motion.a
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            href="https://www.deviatorsdce.tech"
           >
             <Image
               src={DeviatorsLogo}
@@ -52,7 +53,7 @@ export default function Navbar() {
               height={50}
               className="h-8 w-auto md:h-10"
             />
-          </motion.div>
+          </motion.a>
         </div>
 
         {/* Desktop Navigation */}

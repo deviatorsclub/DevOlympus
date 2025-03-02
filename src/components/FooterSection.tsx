@@ -42,7 +42,7 @@ export default function EnhancedFooter() {
             transition={{ duration: 0.5 }}
             className="md:col-span-4"
           >
-            <Link href="/" className="inline-block mb-4">
+            <Link href="https://www.deviatorsdce.tech" className="inline-block mb-4">
               <Image
                 src={DeviatorsLogo}
                 alt="Deviators Club"

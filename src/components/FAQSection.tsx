@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { PlusCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import {
@@ -10,22 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
-export default function FAQSection() {
-  const [askDialogOpen, setAskDialogOpen] = useState(false);
+export default function SimplifiedFAQSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -117,57 +101,6 @@ export default function FAQSection() {
               </AccordionItem>
             ))}
           </Accordion>
-
-          <div className="mt-10 text-center">
-            <Dialog open={askDialogOpen} onOpenChange={setAskDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="border-slate-700 hover:bg-slate-800 gap-2"
-                >
-                  <PlusCircle className="h-4 w-4" />
-                  <span>Ask a Question</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-slate-900 border-slate-700 text-white">
-                <DialogHeader>
-                  <DialogTitle>Ask Your Question</DialogTitle>
-                  <DialogDescription className="text-slate-400">
-                    Submit your question about DevOlympus and we&apos;ll get back to
-                    you.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      className="bg-slate-800 border-slate-700"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="question">Your Question</Label>
-                    <Textarea
-                      id="question"
-                      placeholder="Type your question here..."
-                      className="bg-slate-800 border-slate-700 min-h-32"
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white"
-                    onClick={() => setAskDialogOpen(false)}
-                  >
-                    Submit Question
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
         </motion.div>
       </div>
     </section>

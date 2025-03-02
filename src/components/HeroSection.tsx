@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useInView } from "react-intersection-observer";
+import Link from "next/link";
 
 export default function HeroSection() {
   const [aboutRef, aboutInView] = useInView({
@@ -123,23 +124,14 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="flex gap-4 mt-4"
-        >
-          <Button className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-medium hover:opacity-90">
-            Register Now
-          </Button>
+        <Link href="#about">
           <Button
             variant="outline"
-            className="border-slate-700 text-white hover:bg-slate-800"
+            className="border-slate-700 text-white hover:bg-slate-800 cursor-pointer"
           >
             Learn More
           </Button>
-        </motion.div>
-
+        </Link>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
