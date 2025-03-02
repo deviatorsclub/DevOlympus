@@ -6,7 +6,7 @@ import DeviatorsLogo from "@/assets/sm.png";
 
 export default function ComingSoonPage() {
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="flex h-full w-full flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <header className="container mx-auto flex items-center justify-between p-4 md:p-6">
         <div className="flex items-center gap-3">
           <Image
