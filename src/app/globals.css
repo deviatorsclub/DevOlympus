@@ -3,11 +3,24 @@
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --primary: #00ffaa;
+  --primary-foreground: #000000;
+
+  --radius: 0.5rem;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Additional colors for our components */
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+  --purple-500: #a855f7;
 }
 
 @media (prefers-color-scheme: dark) {
