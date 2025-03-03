@@ -8,50 +8,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { FAQS } from "@/data";
 
 export default function SimplifiedFAQSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  const faqs = [
-    {
-      question: "What should I bring to the hackathon?",
-      answer:
-        "You should bring your laptop, charger, any necessary adapters, a water bottle, and personal items for an overnight stay. Food and drinks will be provided throughout the event. Consider bringing a change of clothes and toiletries for a more comfortable experience.",
-    },
-    {
-      question: "Do I need to have a team before registering?",
-      answer:
-        "While it's recommended to form a team before registering, you can also register individually and we'll help you find team members during the team formation phase. Teams must have 3-4 members to participate in the hackathon.",
-    },
-    {
-      question: "What technical resources will be provided?",
-      answer:
-        "We'll provide high-speed Wi-Fi, power outlets, workspace, and mentor support. You'll need to bring your own devices (laptops, etc.). Some cloud resources and APIs may be available through our sponsors.",
-    },
-    {
-      question: "Can I participate remotely?",
-      answer:
-        "DevOlympus is an in-person hackathon held at Dronacharya College of Engineering. All team members must be physically present for the entire duration of the event to qualify for prizes and certificates.",
-    },
-    {
-      question: "What happens after my team is selected?",
-      answer:
-        "Selected teams will receive official confirmation via email with detailed instructions, venue information, and any pre-hackathon requirements. Make sure to arrive on time for the check-in on the day of the event.",
-    },
-    {
-      question: "Are there any prerequisites for participating?",
-      answer:
-        "No specific technical prerequisites are required, but basic programming knowledge is recommended. Teams with diverse skill sets (coding, design, business) often perform better. Come with enthusiasm and a willingness to learn!",
-    },
-    {
-      question: "What kind of projects can we build?",
-      answer:
-        "You can build any type of software project that aligns with the event themes, which will be announced closer to the hackathon date. Projects can range from web and mobile applications to hardware integrations, AI solutions, and more.",
-    },
-  ];
 
   return (
     <section id="faqs" ref={ref} className="relative py-20 overflow-hidden">
@@ -86,7 +49,7 @@ export default function SimplifiedFAQSection() {
           className="max-w-3xl mx-auto"
         >
           <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
+            {FAQS.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}

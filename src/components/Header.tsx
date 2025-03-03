@@ -29,8 +29,8 @@ export default function Navbar(): JSX.Element {
 
   const navItems: NavItem[] = [
     { name: "About", href: "#about" },
-    { name: "Schedule", href: "#schedule" },
     { name: "Rules", href: "#rules" },
+    { name: "Schedule", href: "#schedule" },
     { name: "FAQs", href: "#faqs" },
     { name: "Register", href: "#register" },
   ];

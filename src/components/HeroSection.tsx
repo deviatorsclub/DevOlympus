@@ -626,8 +626,6 @@ export default function HeroSection(): JSX.Element {
       <Particles count={50} />
       <CircuitLines />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-purple-500/5 dark:from-transparent dark:via-blue-500/10 dark:to-purple-500/10" />
-
       <CursorGlow x={cursorPosition.x} y={cursorPosition.y} />
 
       <div className="container mx-auto px-4 z-10 text-center">
@@ -645,17 +643,6 @@ export default function HeroSection(): JSX.Element {
         </motion.div>
       </div>
 
-      <div className="absolute left-0 right-0 bottom-0 h-32 bg-gradient-to-t from-gray-50/80 to-transparent dark:from-gray-900/80 dark:to-transparent pointer-events-none" />
-
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
-
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none bg-repeat"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
-        }}
-      />
     </motion.section>
   );
 }
