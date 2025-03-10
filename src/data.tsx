@@ -1,7 +1,7 @@
 import { JSX } from "react";
 import { CategoryData } from "./types";
 
-export const HACKATHON_DATE = new Date("April 1, 2025 09:00:00");
+export const HACKATHON_DATE = new Date("April 4, 2025 09:00:00");
 
 export const FAQS = [
   {
