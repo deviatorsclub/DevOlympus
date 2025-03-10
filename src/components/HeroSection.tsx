@@ -1,23 +1,11 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  memo,
-  JSX,
-} from "react";
+import { useEffect, useState, useRef, useMemo, memo, JSX } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { HACKATHON_DATE } from "@/data";
-
-type ParticleProps = {
-  count: number;
-};
 
 type TimeLeft = {
   days: number;
@@ -29,10 +17,6 @@ type TimeLeft = {
 type CountdownDigitProps = {
   value: number;
   label: string;
-};
-
-type AnimatedTitleProps = {
-  isLoaded: boolean;
 };
 
 const titleCharVariants: Variants = {
@@ -163,58 +147,6 @@ const chevronVariants: Variants = {
   },
 };
 
-const Particles = memo(({ count }: ParticleProps): JSX.Element => {
-  const particles = useMemo(() => {
-    return Array.from({ length: count }).map((_, i) => {
-      const size = Math.random() * 4 + 1;
-      const initialX = Math.random() * 100;
-      const initialY = Math.random() * 100;
-      const duration = Math.random() * 20 + 10;
-      const delay = Math.random() * 2;
-      const xOffset = (Math.random() - 0.5) * 200;
-
-      return {
-        size,
-        initialX,
-        initialY,
-        duration,
-        delay,
-        xOffset,
-        key: `particle-${i}`,
-      };
-    });
-  }, [count]);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.key}
-          className="absolute rounded-full bg-white dark:bg-blue-400"
-          style={{
-            width: particle.size,
-            height: particle.size,
-            left: `${particle.initialX}%`,
-            top: `${particle.initialY}%`,
-            opacity: Math.random() * 0.5 + 0.3,
-          }}
-          animate={{
-            y: [0, -1000],
-            x: [0, particle.xOffset],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            delay: particle.delay,
-            ease: "linear",
-          }}
-        />
-      ))}
-    </div>
-  );
-});
-Particles.displayName = "Particles";
-
 const CircuitLines = memo((): JSX.Element => {
   const lines = useMemo(
     () => [
@@ -244,7 +176,7 @@ const CircuitLines = memo((): JSX.Element => {
             y1={line.y1}
             x2={line.x1}
             y2={line.y1}
-            stroke="rgba(138, 58, 185, 0.2)"
+            stroke="#d1d5dc35"
             strokeWidth="1"
             initial={{ x1: line.x1, y1: line.y1, x2: line.x1, y2: line.y1 }}
             animate={{ x2: line.x2, y2: line.y2 }}
@@ -277,32 +209,8 @@ const CircuitLines = memo((): JSX.Element => {
 });
 CircuitLines.displayName = "CircuitLines";
 
-const CursorGlow = memo(({ x, y }: { x: number; y: number }): JSX.Element => {
-  return (
-    <motion.div
-      className="absolute top-0 left-0 w-full h-full pointer-events-none"
-      style={{
-        background: `radial-gradient(circle at ${x * 100}% ${
-          y * 100
-        }%, rgba(59, 130, 246, 0.15), transparent 40%)`,
-        willChange: "background",
-      }}
-      transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
-    />
-  );
-});
-CursorGlow.displayName = "CursorGlow";
-
 const TitleCharacter = memo(
-  ({
-    char,
-    index,
-    isLoaded,
-  }: {
-    char: string;
-    index: number;
-    isLoaded: boolean;
-  }): JSX.Element => {
+  ({ char, index }: { char: string; index: number }): JSX.Element => {
     return (
       <motion.div
         className="relative inline-block"
@@ -325,15 +233,13 @@ const TitleCharacter = memo(
         </motion.span>
 
         <AnimatePresence>
-          {isLoaded && (
-            <motion.div
-              className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
-              initial={{ width: 0 }}
-              variants={titleCharVariants}
-              animate="line"
-              custom={index}
-            />
-          )}
+          <motion.div
+            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+            initial={{ width: 0 }}
+            variants={titleCharVariants}
+            animate="line"
+            custom={index}
+          />
         </AnimatePresence>
       </motion.div>
     );
@@ -341,7 +247,7 @@ const TitleCharacter = memo(
 );
 TitleCharacter.displayName = "TitleCharacter";
 
-const AnimatedTitle = memo(({ isLoaded }: AnimatedTitleProps): JSX.Element => {
+const AnimatedTitle = memo((): JSX.Element => {
   const titleCharacters = useMemo(() => "DEVOLYMPUS".split(""), []);
 
   return (
@@ -353,7 +259,6 @@ const AnimatedTitle = memo(({ isLoaded }: AnimatedTitleProps): JSX.Element => {
               key={`title-char-${index}`}
               char={char}
               index={index}
-              isLoaded={isLoaded}
             />
           ))}
         </div>
@@ -524,7 +429,7 @@ const ActionButtons = memo((): JSX.Element => {
           whileHover="hover"
           whileTap="tap"
         >
-          <Button className="relative overflow-hidden group bg-gradient-to-r from-blue-600 to-purple-600 border-0 text-white hover:from-blue-700 hover:to-purple-700">
+          <Button className="relative overflow-hidden group bg-gradient-to-r from-blue-600 to-purple-600 border-0 text-white hover:from-blue-700 hover:to-purple-700 cursor-pointer">
             <span className="relative z-10">Register Now</span>
             <motion.span
               className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700"
@@ -550,7 +455,7 @@ const ActionButtons = memo((): JSX.Element => {
         >
           <Button
             variant="outline"
-            className="relative overflow-hidden group border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-white/20 dark:hover:bg-white/10"
+            className="relative overflow-hidden group border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-white/20 dark:hover:bg-white/10 cursor-pointer"
           >
             <span className="relative z-10">Learn More</span>
             <motion.span
@@ -584,49 +489,18 @@ const ScrollIndicator = memo((): JSX.Element => {
 ScrollIndicator.displayName = "ScrollIndicator";
 
 export default function HeroSection(): JSX.Element {
-  const [cursorPosition, setCursorPosition] = useState<{
-    x: number;
-    y: number;
-  }>({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
-
-  const handleMouseMove = useCallback((e: MouseEvent): void => {
-    if (heroRef.current) {
-      const { left, top, width, height } =
-        heroRef.current.getBoundingClientRect();
-      const x = (e.clientX - left) / width;
-      const y = (e.clientY - top) / height;
-      setCursorPosition({ x, y });
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("mousemove", handleMouseMove);
-
-    const timeout = setTimeout(() => {
-      setIsLoaded(true);
-    }, 500);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearTimeout(timeout);
-    };
-  }, [handleMouseMove]);
 
   return (
     <motion.section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900 pt-20 sm:pt-24 md:pt-28"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black pt-20 sm:pt-24 md:pt-28"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
       style={{ willChange: "transform" }}
     >
-      <Particles count={50} />
       <CircuitLines />
-
-      <CursorGlow x={cursorPosition.x} y={cursorPosition.y} />
 
       <div className="container mx-auto px-4 z-10 text-center">
         <motion.div
@@ -635,14 +509,13 @@ export default function HeroSection(): JSX.Element {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.5 }}
         >
-          <AnimatedTitle isLoaded={isLoaded} />
+          <AnimatedTitle />
           <AnimatedDescription />
           <CountdownTimer />
           <ActionButtons />
           <ScrollIndicator />
         </motion.div>
       </div>
-
     </motion.section>
   );
 }
