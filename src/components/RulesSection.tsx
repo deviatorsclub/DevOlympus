@@ -1,121 +1,171 @@
-import { ArrowRight } from "lucide-react";
+"use client";
 
-export default function RulesSection() {
+import { useState, useRef, useEffect, useCallback, JSX } from "react";
+import { Check, ChevronDown } from "lucide-react";
+import { categories } from "@/data";
+import { CategoryData } from "@/types";
+
+export default function RulesSection(): JSX.Element {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const toggleCategory = useCallback((categoryId: string): void => {
+    setActiveCategory((prev) => (prev === categoryId ? null : categoryId));
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="rules" className="py-16 bg-slate-900/50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+    <section
+      id="rules"
+      ref={sectionRef}
+      className="py-16 md:py-24 relative overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-[url('/stars.svg')] bg-repeat opacity-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/0 via-purple-900/5 to-slate-900/0"></div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div
+          className={`text-center mb-12 transition-all duration-700 
+            ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+        >
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
             Rules &{" "}
-            <span className="text-[#762faf]">
+            <span className="text-purple-500 relative">
               Guidelines
+              <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></span>
             </span>
           </h2>
-          <p className="max-w-2xl mx-auto text-slate-300">
-            What you need to know before participating
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <div className="bg-slate-800/30 p-6 rounded-lg border border-slate-700">
-            <h3 className="text-xl font-medium mb-4 text-primary">
-              Team Requirements
-            </h3>
-            <ul className="space-y-2 text-slate-300">
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Teams must consist of 3-4 members</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Diversity in team composition is encouraged</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>All team members must be enrolled in college</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Each team must designate one team leader</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-slate-800/30 p-6 rounded-lg border border-slate-700">
-            <h3 className="text-xl font-medium mb-4 text-primary">
-              Project Guidelines
-            </h3>
-            <ul className="space-y-2 text-slate-300">
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>All code must be written during the hackathon</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Open-source libraries and APIs are permitted</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Projects must address real-world problems</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>
-                  Final submissions must include source code and presentation
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-slate-800/30 p-6 rounded-lg border border-slate-700">
-            <h3 className="text-xl font-medium mb-4 text-primary">
-              Event Conduct
-            </h3>
-            <ul className="space-y-2 text-slate-300">
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Respect all participants, mentors, and organizers</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Maintain a clean and organized workspace</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Report any issues to the organizing committee</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Follow all college rules and regulations</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-slate-800/30 p-6 rounded-lg border border-slate-700">
-            <h3 className="text-xl font-medium mb-4 text-primary">
-              Judging Criteria
-            </h3>
-            <ul className="space-y-2 text-slate-300">
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Innovation and creativity (25%)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Technical implementation (25%)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Impact and practicality (25%)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                <span>Presentation and demonstration (25%)</span>
-              </li>
-            </ul>
+        <div className="max-w-3xl mx-auto">
+          <div
+            className={`space-y-4 transition-all duration-700
+              ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            style={{ transitionDelay: "200ms" }}
+          >
+            {categories.map((category, idx) => (
+              <CategoryAccordion
+                key={category.id}
+                category={category}
+                isActive={activeCategory === category.id}
+                onToggle={toggleCategory}
+                index={idx}
+                isVisible={isVisible}
+              />
+            ))}
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+type CategoryAccordionProps = {
+  category: CategoryData;
+  isActive: boolean;
+  onToggle: (id: string) => void;
+  index: number;
+  isVisible: boolean;
+};
+
+function CategoryAccordion({
+  category,
+  isActive,
+  onToggle,
+  index,
+  isVisible,
+}: CategoryAccordionProps): JSX.Element {
+  return (
+    <div
+      className={`border border-slate-700 rounded-lg overflow-hidden transition-all duration-500
+        ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+      style={{
+        transitionDelay: `${200 + index * 100}ms`,
+        backgroundColor: isActive
+          ? "rgba(30, 41, 59, 0.5)"
+          : "rgba(15, 23, 42, 0.3)",
+      }}
+    >
+      <button
+        onClick={() => onToggle(category.id)}
+        className="w-full px-5 py-4 flex items-center justify-between text-left"
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center
+            ${
+              isActive
+                ? "bg-purple-500/20 text-purple-400"
+                : "bg-slate-800 text-slate-400"
+            }`}
+          >
+            {category.icon}
+          </div>
+          <span
+            className={`font-medium transition-colors 
+            ${isActive ? "text-white" : "text-slate-300"}`}
+          >
+            {category.title}
+          </span>
+        </div>
+        <ChevronDown
+          className={`h-5 w-5 text-slate-400 transition-transform duration-300
+          ${isActive ? "transform rotate-180" : ""}`}
+        />
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out
+          ${isActive ? "max-h-80" : "max-h-0"}`}
+      >
+        <ul className="px-5 pb-5 space-y-3">
+          {category.rules.map((rule, idx) => (
+            <li
+              key={rule.id}
+              className={`flex items-start gap-3 transition-all duration-300
+                ${
+                  isActive
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 -translate-x-4"
+                }`}
+              style={{ transitionDelay: `${idx * 75}ms` }}
+            >
+              <div className="mt-1 flex-shrink-0">
+                <Check className="h-4 w-4 text-purple-500" />
+              </div>
+              <span className="text-slate-300 text-sm md:text-base">
+                {rule.text}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }

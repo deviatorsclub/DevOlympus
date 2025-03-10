@@ -1,108 +1,144 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { ChevronDown } from "lucide-react";
+import { FAQS } from "@/data";
 
 export default function SimplifiedFAQSection() {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
 
-  const faqs = [
-    {
-      question: "What should I bring to the hackathon?",
-      answer:
-        "You should bring your laptop, charger, any necessary adapters, a water bottle, and personal items for an overnight stay. Food and drinks will be provided throughout the event. Consider bringing a change of clothes and toiletries for a more comfortable experience.",
-    },
-    {
-      question: "Do I need to have a team before registering?",
-      answer:
-        "While it's recommended to form a team before registering, you can also register individually and we'll help you find team members during the team formation phase. Teams must have 3-4 members to participate in the hackathon.",
-    },
-    {
-      question: "What technical resources will be provided?",
-      answer:
-        "We'll provide high-speed Wi-Fi, power outlets, workspace, and mentor support. You'll need to bring your own devices (laptops, etc.). Some cloud resources and APIs may be available through our sponsors.",
-    },
-    {
-      question: "Can I participate remotely?",
-      answer:
-        "DevOlympus is an in-person hackathon held at Dronacharya College of Engineering. All team members must be physically present for the entire duration of the event to qualify for prizes and certificates.",
-    },
-    {
-      question: "What happens after my team is selected?",
-      answer:
-        "Selected teams will receive official confirmation via email with detailed instructions, venue information, and any pre-hackathon requirements. Make sure to arrive on time for the check-in on the day of the event.",
-    },
-    {
-      question: "Are there any prerequisites for participating?",
-      answer:
-        "No specific technical prerequisites are required, but basic programming knowledge is recommended. Teams with diverse skill sets (coding, design, business) often perform better. Come with enthusiasm and a willingness to learn!",
-    },
-    {
-      question: "What kind of projects can we build?",
-      answer:
-        "You can build any type of software project that aligns with the event themes, which will be announced closer to the hackathon date. Projects can range from web and mobile applications to hardware integrations, AI solutions, and more.",
-    },
-  ];
+  const toggleFaq = useCallback((faqIndex: number) => {
+    setActiveFaq((prev) => (prev === faqIndex ? null : faqIndex));
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section id="faqs" ref={ref} className="relative py-20 overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/3 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl"></div>
-      </div>
+    <section
+      id="faqs"
+      ref={sectionRef}
+      className="py-16 md:py-24 relative overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-[url('/stars.svg')] bg-repeat opacity-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/0 via-purple-900/5 to-slate-900/0"></div>
 
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+      <div className="container mx-auto px-4 relative z-10">
+        <div
+          className={`text-center mb-12 transition-all duration-700 
+            ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
             Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text font-bold text-transparent">
+            <span className="text-purple-500 relative">
               Questions
+              <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></span>
             </span>
           </h2>
-          <p className="max-w-2xl mx-auto text-slate-300">
-            Get answers to common questions about DevOlympus
-          </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-3xl mx-auto"
-        >
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="bg-slate-800/30 rounded-lg border border-slate-700 px-4 overflow-hidden backdrop-blur-sm"
-              >
-                <AccordionTrigger className="py-4 hover:no-underline">
-                  <div className="font-medium text-left">{faq.question}</div>
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-300 pb-4">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
+        <div className="max-w-3xl mx-auto">
+          <div
+            className={`space-y-4 transition-all duration-700
+              ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            style={{ transitionDelay: "200ms" }}
+          >
+            {FAQS.map((faq, idx) => (
+              <FAQAccordion
+                key={idx}
+                faq={faq}
+                index={idx}
+                isActive={activeFaq === idx}
+                onToggle={toggleFaq}
+                isVisible={isVisible}
+              />
             ))}
-          </Accordion>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
+  );
+}
+
+function FAQAccordion({
+  faq,
+  isActive,
+  onToggle,
+  index,
+  isVisible,
+}: {
+  faq: { question: string; answer: string };
+  isActive: boolean;
+  onToggle: (index: number) => void;
+  index: number;
+  isVisible: boolean;
+}) {
+  return (
+    <div
+      className={`border border-slate-700 rounded-lg overflow-hidden transition-all duration-500
+        ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+      style={{
+        transitionDelay: `${200 + index * 100}ms`,
+        backgroundColor: isActive
+          ? "rgba(30, 41, 59, 0.5)"
+          : "rgba(15, 23, 42, 0.3)",
+      }}
+    >
+      <button
+        onClick={() => onToggle(index)}
+        className="w-full px-5 py-4 flex items-center justify-between text-left"
+      >
+        <span
+          className={`font-medium transition-colors 
+          ${isActive ? "text-white" : "text-slate-300"}`}
+        >
+          {faq.question}
+        </span>
+        <ChevronDown
+          className={`h-5 w-5 text-slate-400 transition-transform duration-300
+          ${isActive ? "transform rotate-180" : ""}`}
+        />
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out
+          ${isActive ? "max-h-80" : "max-h-0"}`}
+      >
+        <div
+          className={`px-5 pb-5 text-slate-300 text-sm md:text-base transition-all duration-300
+            ${
+              isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+          style={{ transitionDelay: isActive ? "75ms" : "0ms" }}
+        >
+          {faq.answer}
+        </div>
+      </div>
+    </div>
   );
 }
