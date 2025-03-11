@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import DeviatorsLogo from "@/assets/sm.png";
+import DeviatorsLogo from "@/assets/sm.svg";
 
 type NavItem = {
   name: string;
@@ -87,7 +87,7 @@ export default function Navbar(): JSX.Element {
     >
       <div className="container mx-auto flex items-center justify-between p-4 md:p-6">
         <div className="flex items-center gap-3">
-          <a href="https://www.deviatorsdce.tech">
+          <Link href="/">
             <Image
               src={DeviatorsLogo}
               alt="Deviators Club"
@@ -95,7 +95,7 @@ export default function Navbar(): JSX.Element {
               height={50}
               className="h-8 w-auto md:h-10"
             />
-          </a>
+          </Link>
         </div>
 
         <nav className="hidden md:block">

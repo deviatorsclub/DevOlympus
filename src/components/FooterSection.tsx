@@ -5,7 +5,7 @@ import Image from "next/image";
 import { FaGithub, FaLinkedin, FaInstagram, FaEnvelope } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import DeviatorsLogo from "@/assets/sm.png";
+import DeviatorsLogo from "@/assets/sm.svg";
 
 export default function EnhancedFooter() {
   const [ref, inView] = useInView({
@@ -42,7 +42,7 @@ export default function EnhancedFooter() {
             transition={{ duration: 0.5 }}
             className="md:col-span-4"
           >
-            <Link href="https://www.deviatorsdce.tech" className="inline-block mb-4">
+            <Link href="/" className="inline-block mb-4">
               <Image
                 src={DeviatorsLogo}
                 alt="Deviators Club"
