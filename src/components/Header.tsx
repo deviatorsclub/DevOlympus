@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeviatorsLogo from "@/assets/sm.svg";
+import { REGISTRATION_FORM_URL } from "@/data";
 
 type NavItem = {
   name: string;
@@ -28,12 +29,12 @@ export default function Navbar(): JSX.Element {
   }, [handleScroll]);
 
   const navItems: NavItem[] = [
-    { name: "About", href: "#about" },
-    { name: "Rules", href: "#rules" },
-    { name: "Schedule", href: "#schedule" },
-    { name: "FAQs", href: "#faqs" },
+    { name: "About", href: "/#about" },
+    { name: "Rules", href: "/#rules" },
+    { name: "Schedule", href: "/#schedule" },
+    { name: "FAQs", href: "/#faqs" },
     { name: "Code of Conduct", href: "/code-of-conduct" },
-    { name: "Register", href: "#register" },
+    { name: "Register", href: REGISTRATION_FORM_URL },
   ];
 
   const MobileNavItem = memo(

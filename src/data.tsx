@@ -1,6 +1,7 @@
 import { JSX } from "react";
 import { CategoryData } from "./types";
 
+export const REGISTRATION_FORM_URL = "https://forms.gle/Mc9Yvd7yyQgrQizK8";
 export const HACKATHON_DATE = new Date("April 4, 2025 09:00:00");
 
 export const FAQS = [
