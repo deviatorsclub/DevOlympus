@@ -447,7 +447,7 @@ const ActionButtons = memo((): JSX.Element => {
         </motion.div>
       </Link>
 
-      <Link href="#about">
+      <Link href="/code-of-conduct">
         <motion.div
           variants={learnMoreButtonVariants}
           whileHover="hover"
@@ -457,7 +457,7 @@ const ActionButtons = memo((): JSX.Element => {
             variant="outline"
             className="relative overflow-hidden group border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-white/20 dark:hover:bg-white/10 cursor-pointer"
           >
-            <span className="relative z-10">Learn More</span>
+            <span className="relative z-10">Code of Conduct</span>
             <motion.span
               className="absolute inset-0 bg-white/20 dark:bg-white/10"
               initial={{ y: "-100%" }}

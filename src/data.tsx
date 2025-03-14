@@ -11,11 +11,6 @@ export const FAQS = [
       "You should bring your laptop, charger, any necessary adapters, a water bottle, and personal items for an overnight stay. Food and drinks will be provided throughout the event. Consider bringing a change of clothes and toiletries for a more comfortable experience.",
   },
   {
-    question: "Do I need to have a team before registering?",
-    answer:
-      "While it's recommended to form a team before registering, you can also register individually and we'll help you find team members during the team formation phase. Teams must have 3-4 members to participate in the hackathon.",
-  },
-  {
     question: "What technical resources will be provided?",
     answer:
       "We'll provide high-speed Wi-Fi, power outlets, workspace, and mentor support. You'll need to bring your own devices (laptops, etc.). Some cloud resources and APIs may be available through our sponsors.",
@@ -39,6 +34,11 @@ export const FAQS = [
     question: "What kind of projects can we build?",
     answer:
       "You can build any type of software project that aligns with the event themes, which will be announced closer to the hackathon date. Projects can range from web and mobile applications to hardware integrations, AI solutions, and more.",
+  },
+  {
+    question: "Should I bring an extension cord?",
+    answer:
+      "Yes, we recommend bringing a power strip or extension cord as power outlets may be limited. This will ensure that everyone in your team has access to power for their devices throughout the hackathon.",
   },
 ];
 

@@ -28,6 +28,7 @@ const CodeOfConduct = () => {
             <li>Workshops and learning sessions</li>
             <li>Social events and gatherings</li>
             <li>Social media channels and online forums</li>
+            <li></li>
           </ul>
           <p>
             This Code of Conduct equally applies to all sponsors, partners, and
@@ -140,33 +141,6 @@ const CodeOfConduct = () => {
       ),
     },
     {
-      title: "Consent for Photography & Recording",
-      icon: "📸",
-      content: (
-        <>
-          <p className="mb-4">
-            While we encourage documenting the event, always:
-          </p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>
-              Give participants a reasonable chance to opt out of being
-              photographed
-            </li>
-            <li>
-              Delete content immediately if someone objects after it&apos;s taken
-            </li>
-            <li>Take reasonable steps to remove shared content if requested</li>
-            <li>
-              Respect privacy in sensitive areas (bathrooms, resting areas)
-            </li>
-          </ul>
-          <p className="mt-4 text-purple-300">
-            Always prioritize people&apos;s comfort and privacy over documentation.
-          </p>
-        </>
-      ),
-    },
-    {
       title: "Creating a Safe Space",
       icon: "🛡️",
       content: (
@@ -206,6 +180,26 @@ const CodeOfConduct = () => {
       ),
     },
     {
+      title: "Damage to Physical Property",
+      icon: "🏢",
+      content: (
+        <>
+          <p className="mb-4">
+            Participants are expected to treat physical spaces and equipment with respect:
+          </p>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Handle all venue equipment and facilities with care</li>
+            <li>Report any damage immediately to event organizers</li>
+            <li>Do not alter or modify venue infrastructure without permission</li>
+            <li>Clean up your workspace before leaving</li>
+          </ul>
+          <p className="mt-4 text-purple-300 font-semibold">
+            Intentional damage to property may result in removal from the event and financial responsibility.
+          </p>
+        </>
+      ),
+    },
+    {
       title: "Reporting Violations",
       icon: "🚨",
       content: (
@@ -225,27 +219,6 @@ const CodeOfConduct = () => {
       ),
     },
     {
-      title: "Consequences of Violations",
-      icon: "⚠️",
-      content: (
-        <>
-          <p className="mb-4">
-            If a participant violates this Code of Conduct, organizers may, at
-            their discretion:
-          </p>
-          <ul className="list-disc pl-6 space-y-1">
-            <li>Expel them from the hackathon with no refund</li>
-            <li>Block their access to platform resources</li>
-            <li>Report their behavior to local law enforcement</li>
-          </ul>
-          <p className="mt-4 italic">
-            We are committed to ensuring a positive experience for all
-            participants.
-          </p>
-        </>
-      ),
-    },
-    {
       title: "Contact Information",
       icon: "📞",
       content: (
@@ -256,8 +229,7 @@ const CodeOfConduct = () => {
           </p>
           <div className="bg-purple-900/30 p-4 rounded-lg">
             <p className="font-semibold">DEVOLYMPUS Organizing Team</p>
-            <p className="text-purple-300">conduct@devolympus.dev</p>
-            <p>Bengaluru - 560075</p>
+            <p className="text-purple-300">saurabhfeb2004@gmail.com</p>
           </div>
         </>
       ),
