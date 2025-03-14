@@ -32,6 +32,7 @@ export default function Navbar(): JSX.Element {
     { name: "Rules", href: "#rules" },
     { name: "Schedule", href: "#schedule" },
     { name: "FAQs", href: "#faqs" },
+    { name: "Code of Conduct", href: "/code-of-conduct" },
     { name: "Register", href: "#register" },
   ];
 
@@ -93,7 +94,7 @@ export default function Navbar(): JSX.Element {
               alt="Deviators Club"
               width={200}
               height={50}
-              className="h-8 w-auto md:h-10"
+              className="h-6 w-auto md:h-8"
             />
           </Link>
         </div>

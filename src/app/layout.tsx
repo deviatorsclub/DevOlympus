@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/FooterSection";
+import Header from "@/components/Header";
 
 import { Analytics } from "@vercel/analytics/react";
 
@@ -78,7 +80,11 @@ export default function RootLayout({
       <body
         className={`dark ${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white`}
       >
-        {children}
+        <div className="flex flex-col bg-gradient-to-br bg-black text-white">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </body>
       <Analytics />
     </html>
