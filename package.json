@@ -13,9 +13,11 @@
     "start": "next start",
     "serve": "pnpm build && pnpm start",
     "serve:clean": "pnpm build:clean && pnpm start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "6.5.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
@@ -29,6 +31,8 @@
     "intersection-observer": "^0.12.2",
     "lucide-react": "^0.477.0",
     "next": "15.2.0",
+    "next-auth": "5.0.0-beta.25",
+    "prisma": "^6.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
@@ -46,5 +50,8 @@
     "eslint-config-next": "15.2.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   }
 }
