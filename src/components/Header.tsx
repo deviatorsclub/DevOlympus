@@ -1,25 +1,122 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo, JSX } from "react";
+import {
+  useState,
+  useCallback,
+  memo,
+  FC,
+  useRef,
+  useMemo,
+  useEffect,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, User, X, LogOut, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeviatorsLogo from "@/assets/sm.svg";
-import { REGISTRATION_FORM_URL } from "@/data";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 type NavItem = {
   name: string;
   href: string;
 };
 
-export default function Navbar(): JSX.Element {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [scrolled, setScrolled] = useState<boolean>(false);
+type UserIconProps =
+  | { imgUrl?: string; name: string; isLoggedIn: true }
+  | { isLoggedIn: false };
 
-  const handleScroll = useCallback((): void => {
-    setScrolled(window.scrollY > 20);
-  }, []);
+type MenuItemProps = {
+  icon: FC<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+  variant?: "default" | "danger" | "accent";
+};
+
+const navItems: NavItem[] = [
+  { name: "About", href: "/#about" },
+  { name: "Rules", href: "/#rules" },
+  { name: "Schedule", href: "/#schedule" },
+  { name: "FAQs", href: "/#faqs" },
+  { name: "Code of Conduct", href: "/code-of-conduct" },
+];
+
+const menuItemVariants = {
+  hidden: { opacity: 0, y: -5 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -5 },
+};
+
+const dropdownVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: -8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.2,
+      staggerChildren: 0.05,
+      delayChildren: 0.05,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    y: -8,
+    transition: { duration: 0.15 },
+  },
+};
+
+const MenuItem: FC<MenuItemProps> = ({
+  icon: Icon,
+  label,
+  onClick,
+  variant = "default",
+}) => {
+  const colorStyles = {
+    default:
+      "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
+    danger:
+      "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
+    accent:
+      "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20",
+  };
+
+  return (
+    <motion.button
+      variants={menuItemVariants}
+      className={`group flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium ${colorStyles[variant]}`}
+      role="menuitem"
+      onClick={onClick}
+    >
+      <Icon className="h-4 w-4" />
+      <span className="truncate">{label}</span>
+    </motion.button>
+  );
+};
+
+const useClickOutside = (
+  ref: React.RefObject<HTMLElement | null>,
+  handler: () => void
+) => {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        handler();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [ref, handler]);
+};
+
+const useScrollPosition = (threshold = 0) => {
+  const [scrolled, setScrolled] = useState(false);
+
+  const handleScroll = useCallback(() => {
+    setScrolled(window.scrollY > threshold);
+  }, [threshold]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -28,115 +125,277 @@ export default function Navbar(): JSX.Element {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  const navItems: NavItem[] = [
-    { name: "About", href: "/#about" },
-    { name: "Rules", href: "/#rules" },
-    { name: "Schedule", href: "/#schedule" },
-    { name: "FAQs", href: "/#faqs" },
-    { name: "Code of Conduct", href: "/code-of-conduct" },
-    { name: "Register", href: "/register" },
-  ];
+  return scrolled;
+};
 
-  const MobileNavItem = memo(
-    ({ item }: { item: NavItem }): JSX.Element => (
-      <motion.li
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.2 }}
+const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
+  ({ item, onClose }) => (
+    <motion.li
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Link
+        href={item.href}
+        className={`block px-4 py-2 text-gray-800 dark:text-slate-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 ${
+          item.name === "Register"
+            ? "my-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-md text-white font-medium hover:bg-gray-50/0 dark:hover:bg-gray-800/0"
+            : ""
+        }`}
+        onClick={onClose}
       >
-        <Link
-          href={item.href}
-          className={`block py-2 px-4 text-gray-800 dark:text-slate-300 transition-colors ${
-            item.name === "Register"
-              ? "px-4 py-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-md text-white font-medium"
-              : ""
-          }`}
-          onClick={() => setIsOpen(false)}
-        >
-          {item.name}
-        </Link>
-      </motion.li>
-    )
-  );
-  MobileNavItem.displayName = "MobileNavItem";
+        {item.name}
+      </Link>
+    </motion.li>
+  )
+);
+MobileNavItem.displayName = "MobileNavItem";
 
-  const DesktopNavItem = memo(
-    ({ item }: { item: NavItem }): JSX.Element => (
-      <li>
-        <Link
-          href={item.href}
-          className={`text-gray-800 dark:text-slate-300 transition-colors ${
-            item.name === "Register"
-              ? "px-4 py-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-md text-white font-medium"
-              : ""
+const DesktopNavItem = memo<{ item: NavItem }>(({ item }) => (
+  <li>
+    <Link
+      href={item.href}
+      className={`text-gray-800 dark:text-slate-300 transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
+        item.name === "Register"
+          ? "px-4 py-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-md text-white font-medium hover:opacity-90"
+          : ""
+      }`}
+    >
+      {item.name}
+    </Link>
+  </li>
+));
+DesktopNavItem.displayName = "DesktopNavItem";
+
+const UserIcon: FC<UserIconProps> = (props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  useClickOutside(menuRef, closeMenu);
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        className="flex items-center justify-center rounded-full cursor-pointer shadow-sm hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+        onClick={toggleMenu}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        <div
+          className={`relative flex items-center justify-center rounded-full overflow-hidden ${
+            isMobile ? "h-8 w-8" : "h-9 w-9"
           }`}
         >
-          {item.name}
-        </Link>
-      </li>
-    )
+          {props.isLoggedIn ? (
+            props.imgUrl && (
+              <Image
+                src={props.imgUrl}
+                alt={`${props.name}'s profile`}
+                className="h-full w-full object-cover"
+                width={isMobile ? 32 : 36}
+                height={isMobile ? 32 : 36}
+              />
+            )
+          ) : (
+            <div className="flex items-center justify-center h-full w-full bg-gray-100 dark:bg-gray-700">
+              <User className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+            </div>
+          )}
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={dropdownVariants}
+            className={`
+              absolute z-50 mt-2 rounded-lg overflow-hidden shadow-lg 
+              bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+              ${isMobile ? "right-0 w-56" : "right-0 w-64"}
+            `}
+          >
+            {props.isLoggedIn ? (
+              <>
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-900 dark:bg-gray-750">
+                  <div className="flex items-center gap-3">
+                    {props.imgUrl && (
+                      <div className="h-10 w-10 rounded-full overflow-hidden">
+                        <Image
+                          src={props.imgUrl}
+                          alt={`${props.name}'s profile`}
+                          width={40}
+                          height={40}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {props.name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                        Signed in with Google
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="py-1">
+                  <MenuItem
+                    icon={UserCircle}
+                    label="Your Team"
+                    onClick={closeMenu}
+                  />
+                  <MenuItem
+                    icon={LogOut}
+                    label="Sign out"
+                    onClick={() => signOut()}
+                    variant="danger"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="p-2">
+                <MenuItem
+                  icon={User}
+                  label="Sign in with Google"
+                  onClick={() => signIn("google")}
+                  variant="accent"
+                />
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
-  DesktopNavItem.displayName = "DesktopNavItem";
+};
+
+export default function Navbar() {
+  const { data: session, status } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+  const isDesk = useMediaQuery("(min-width: 768px)");
+  const scrolled = useScrollPosition(20);
+
+  // Pre-render user icon container regardless of auth state
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  const currentNavItems = useMemo(() => {
+    if (!session?.user)
+      return [...navItems, { name: "Register", href: "/register" }];
+    return navItems;
+  }, [session?.user]);
 
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${
         scrolled || isOpen
-          ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-lg"
+          ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-md"
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between p-4 md:p-6">
+      <div className="container mx-auto flex items-center justify-between p-4 md:px-8 md:py-5">
         <div className="flex items-center gap-3">
-          <Link href="/">
+          <Link
+            href="/"
+            className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+          >
             <Image
               src={DeviatorsLogo}
               alt="Deviators Club"
               width={200}
               height={50}
               className="h-6 w-auto md:h-8"
+              priority
             />
           </Link>
         </div>
 
-        <nav className="hidden md:block">
+        <nav className="hidden md:block transition-opacity duration-300">
           <ul className="flex items-center gap-8">
-            {navItems.map((item) => (
+            {currentNavItems.map((item) => (
               <DesktopNavItem key={item.name} item={item} />
             ))}
+            <li className="min-w-9 h-9">
+              {mounted && (
+                <>
+                  {session?.user ? (
+                    <UserIcon
+                      isLoggedIn={true}
+                      imgUrl={session.user.image ?? undefined}
+                      name={session.user.name ?? ""}
+                    />
+                  ) : (
+                    <UserIcon isLoggedIn={false} />
+                  )}
+                </>
+              )}
+            </li>
           </ul>
         </nav>
 
-        <button
-          className="md:hidden text-gray-800 dark:text-white"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            {isOpen ? (
-              <motion.div
-                key="close"
-                initial={{ opacity: 0, rotate: 45 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: -45 }}
-                transition={{ duration: 0.2 }}
-              >
-                <X className="h-6 w-6" />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="menu"
-                initial={{ opacity: 0, rotate: -45 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: 45 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Menu className="h-6 w-6" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </button>
+        {!isDesk && (
+          <div className="flex gap-3 items-center">
+            <div className="min-w-8 h-8">
+              {mounted && (
+                <>
+                  {session?.user ? (
+                    <UserIcon
+                      isLoggedIn={true}
+                      imgUrl={session.user.image ?? undefined}
+                      name={session.user.name ?? ""}
+                    />
+                  ) : (
+                    <UserIcon isLoggedIn={false} />
+                  )}
+                </>
+              )}
+            </div>
+            <button
+              className="flex items-center justify-center h-10 w-10 rounded-md text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onClick={toggleMenu}
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {isOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ opacity: 0, rotate: 45 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: -45 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X className="h-6 w-6" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ opacity: 0, rotate: -45 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: 45 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="h-6 w-6" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
+        )}
       </div>
 
       <AnimatePresence initial={false}>
@@ -159,10 +418,10 @@ export default function Navbar(): JSX.Element {
                 opacity: { duration: 0.2 },
               },
             }}
-            className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm overflow-hidden"
+            className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm overflow-hidden border-t border-gray-200 dark:border-gray-800"
           >
             <motion.ul
-              className="flex flex-col items-center gap-4 py-6"
+              className="flex flex-col py-4 px-2"
               initial="closed"
               animate="open"
               exit="closed"
@@ -181,8 +440,12 @@ export default function Navbar(): JSX.Element {
                 },
               }}
             >
-              {navItems.map((item) => (
-                <MobileNavItem key={item.name} item={item} />
+              {currentNavItems.map((item) => (
+                <MobileNavItem
+                  key={item.name}
+                  item={item}
+                  onClose={closeMenu}
+                />
               ))}
             </motion.ul>
           </motion.nav>
