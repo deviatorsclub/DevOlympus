@@ -34,7 +34,7 @@ export default function Navbar(): JSX.Element {
     { name: "Schedule", href: "/#schedule" },
     { name: "FAQs", href: "/#faqs" },
     { name: "Code of Conduct", href: "/code-of-conduct" },
-    { name: "Register", href: REGISTRATION_FORM_URL },
+    { name: "Register", href: "/register" },
   ];
 
   const MobileNavItem = memo(
