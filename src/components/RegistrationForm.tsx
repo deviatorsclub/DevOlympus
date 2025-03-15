@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/registration";
 import { FormState, TeamMember } from "@/types/registration";
 import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
-import LoginFallback from "@/components/LoginFallback";
+import LoginFallback from "./LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
 
 interface RegistrationFormProps {

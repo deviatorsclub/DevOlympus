@@ -55,7 +55,6 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
 
       await prisma.user.create({
         data: {
-          isAdmin: ADMIN_EMAILS.includes(email),
           name,
           email,
           image: typeof image === "string" ? image : undefined,
@@ -80,14 +79,13 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           select: {
             id: true,
             isBlocked: true,
-            isAdmin: true,
           },
         });
 
         if (dbUser) {
           session.user.id = dbUser.id.toString();
-          session.user.isAdmin = dbUser.isAdmin;
 
+          
           if (dbUser.isBlocked) {
             throw new Error("User is blocked");
           }
