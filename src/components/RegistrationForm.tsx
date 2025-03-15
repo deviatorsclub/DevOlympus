@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useTransition, useEffect, memo } from "react";
+import { useState, useCallback, useTransition, useEffect } from "react";
 import { CheckCircle, Plus, Link, RefreshCw, Loader2 } from "lucide-react";
 import { Session } from "next-auth";
 import {
@@ -104,7 +104,7 @@ export default function RegistrationForm({
             };
           }
         } catch (e) {
-          console.error("Failed to parse saved data");
+          console.error("Failed to parse saved data", e);
         }
       }
 
@@ -365,6 +365,7 @@ export default function RegistrationForm({
 
         setSubmitDialogOpen(false);
       } catch (error) {
+        console.log("Error submitting form:", error);
         setAlert({
           type: "error",
           message: "An unexpected error occurred. Please try again.",

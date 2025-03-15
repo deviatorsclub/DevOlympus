@@ -45,6 +45,7 @@ export const ConfirmDialog = memo(
     );
   }
 );
+ConfirmDialog.displayName = "ConfirmDialog";
 
 export const SubmitDialog = memo(
   ({ isOpen, onConfirm, onCancel, isPending = false }: SubmitDialogProps) => {
@@ -94,9 +95,9 @@ export const SubmitDialog = memo(
               Agreement & Commitment
             </h4>
             <p className="text-gray-300 italic">
-              "I understand that DevOlympus is a 30-hour hackathon, I am
+              &quot;I understand that DevOlympus is a 30-hour hackathon, I am
               expected to be present on campus for the entire duration of the
-              event. I agree to dedicate my time and efforts."
+              event. I agree to dedicate my time and efforts.&quot;
             </p>
           </div>
 
@@ -132,6 +133,7 @@ export const SubmitDialog = memo(
     );
   }
 );
+SubmitDialog.displayName = "SubmitDialog";
 
 export const Alert = memo(({ type, message, onDismiss }: AlertProps) => {
   useEffect(() => {
@@ -165,6 +167,7 @@ export const Alert = memo(({ type, message, onDismiss }: AlertProps) => {
     </div>
   );
 });
+Alert.displayName = "Alert";
 
 export const DeadlineBanner = memo(({ deadline }: DeadlineBannerProps) => {
   const [timeLeft, setTimeLeft] = useState<string>("");
@@ -213,6 +216,7 @@ export const DeadlineBanner = memo(({ deadline }: DeadlineBannerProps) => {
     </div>
   );
 });
+DeadlineBanner.displayName = "DeadlineBanner";
 
 export const TeamMemberCard = memo(
   ({
@@ -345,3 +349,4 @@ export const TeamMemberCard = memo(
     );
   }
 );
+TeamMemberCard.displayName = "TeamMemberCard";

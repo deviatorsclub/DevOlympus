@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useCallback, useTransition, useEffect, memo } from "react";
+import { useState, useCallback, useTransition, useEffect } from "react";
 import { CheckCircle, Plus, Link, RefreshCw, Loader2 } from "lucide-react";
-import { Session } from "next-auth";
 import {
   ConfirmDialog,
   SubmitDialog,
@@ -14,14 +13,20 @@ import { FormState, TeamMember } from "@/types/registration";
 import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
 import LoginFallback from "@/components/LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
+import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 
-interface RegistrationFormProps {
-  initialSession: Session | null;
+export default function RegistrationPage() {
+  const { data: session } = useSession();
+
+  return <RegistrationForm initialSession={session} />;
 }
 
-export default function RegistrationForm({
+function RegistrationForm({
   initialSession,
-}: RegistrationFormProps) {
+}: {
+  initialSession: Session | null;
+}) {
   const [isPending, startTransition] = useTransition();
   const [initialized, setInitialized] = useState(false);
   const [formState, setFormState] = useState<FormState>({
@@ -104,7 +109,7 @@ export default function RegistrationForm({
             };
           }
         } catch (e) {
-          console.error("Failed to parse saved data");
+          console.error("Failed to parse saved data", e);
         }
       }
 
@@ -365,6 +370,7 @@ export default function RegistrationForm({
 
         setSubmitDialogOpen(false);
       } catch (error) {
+        console.error("Error during registration:", error);
         setAlert({
           type: "error",
           message: "An unexpected error occurred. Please try again.",

@@ -7,7 +7,6 @@ import {
 } from "@/lib/constants";
 
 import { prisma } from "@/prisma";
-import { ADMIN_EMAILS } from "../types/gloabals";
 
 declare module "next-auth" {
   interface Session {

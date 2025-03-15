@@ -3,11 +3,7 @@ import RegistrationForm from "@/components/RegistrationForm";
 import { auth } from "@/lib/authOptions";
 import { prisma } from "@/prisma";
 
-export default async function layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function layout() {
   const session = await auth();
 
   const teams = await prisma.team.findMany({
@@ -38,7 +34,7 @@ export default async function layout({
   console.log("teams", JSON.stringify(teams));
 
   return session?.user ? (
-    <RegistrationForm initialSession={session} />
+    <RegistrationForm initialSession={session ?? undefined} />
   ) : (
     <LoginFallback />
   );

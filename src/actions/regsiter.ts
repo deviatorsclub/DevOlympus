@@ -41,8 +41,6 @@ type ActionResponse = {
 export async function registerTeam(
   data: RegistrationFormData
 ): Promise<ActionResponse> {
-  const session = await auth();
-
   try {
     if (!FLAGS.isRegistrationOpen) {
       return {
