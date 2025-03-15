@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { HACKATHON_DATE, REGISTRATION_FORM_URL } from "@/data";
+import { HACKATHON_DATE } from "@/data";
 
 type TimeLeft = {
   days: number;
@@ -423,7 +423,7 @@ const ActionButtons = memo((): JSX.Element => {
       animate="visible"
       className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
     >
-      <Link href={REGISTRATION_FORM_URL}>
+      <Link href={"/register"}>
         <motion.div
           variants={registerButtonVariants}
           whileHover="hover"
