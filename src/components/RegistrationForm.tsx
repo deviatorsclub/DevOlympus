@@ -527,7 +527,7 @@ export default function RegistrationForm({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-4 sm:py-8 md:py-16 pt-12 sm:pt-16 md:pt-24 lg:pt-32 px-3 sm:px-4 md:px-6">
+    <div className="w-full max-w-4xl mx-auto mt-4 py-4 sm:py-8 md:py-16 pt-12 sm:pt-16 md:pt-24 lg:pt-32 px-3 sm:px-4 md:px-6">
       {alert && (
         <Alert
           type={alert.type}
