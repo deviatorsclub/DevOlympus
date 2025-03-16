@@ -22,7 +22,7 @@ export default function RulesSection(): JSX.Element {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sectionRef.current) {

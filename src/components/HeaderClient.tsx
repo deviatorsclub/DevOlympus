@@ -41,7 +41,6 @@ interface HeaderClientProps {
 }
 
 const navItems: NavItem[] = [
-  { name: "About", href: "/#about" },
   { name: "Rules", href: "/#rules" },
   { name: "Schedule", href: "/#schedule" },
   { name: "FAQs", href: "/#faqs" },
@@ -108,7 +107,7 @@ const MenuItem: FC<MenuItemProps> = ({
 
 const useClickOutside = (
   ref: React.RefObject<HTMLElement | null>,
-  handler: () => void
+  handler: () => void,
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -159,7 +158,7 @@ const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
         {item.name}
       </Link>
     </motion.li>
-  )
+  ),
 );
 MobileNavItem.displayName = "MobileNavItem";
 

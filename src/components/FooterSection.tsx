@@ -120,7 +120,7 @@ export default function EnhancedFooter() {
                       {item}
                     </Link>
                   </motion.li>
-                )
+                ),
               )}
             </ul>
           </motion.div>
@@ -152,8 +152,8 @@ export default function EnhancedFooter() {
                       item === "FAQs"
                         ? "#faqs"
                         : item === "Contact"
-                        ? "#contact"
-                        : "#"
+                          ? "#contact"
+                          : "#"
                     }
                     className="text-slate-400 hover:text-primary transition-colors"
                   >

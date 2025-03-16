@@ -84,7 +84,6 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
         if (dbUser) {
           session.user.id = dbUser.id.toString();
 
-          
           if (dbUser.isBlocked) {
             throw new Error("User is blocked");
           }
@@ -102,7 +101,7 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
     },
   },
   session: {
-    maxAge: 15 * 60, // 15 minutes
+    maxAge: 60 * 60 * 24 * 7,
   },
 });
 

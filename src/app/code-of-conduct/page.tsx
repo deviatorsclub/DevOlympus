@@ -185,16 +185,20 @@ const CodeOfConduct = () => {
       content: (
         <>
           <p className="mb-4">
-            Participants are expected to treat physical spaces and equipment with respect:
+            Participants are expected to treat physical spaces and equipment
+            with respect:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Handle all venue equipment and facilities with care</li>
             <li>Report any damage immediately to event organizers</li>
-            <li>Do not alter or modify venue infrastructure without permission</li>
+            <li>
+              Do not alter or modify venue infrastructure without permission
+            </li>
             <li>Clean up your workspace before leaving</li>
           </ul>
           <p className="mt-4 text-purple-300 font-semibold">
-            Intentional damage to property may result in removal from the event and financial responsibility.
+            Intentional damage to property may result in removal from the event
+            and financial responsibility.
           </p>
         </>
       ),
@@ -209,7 +213,9 @@ const CodeOfConduct = () => {
           </p>
           <ul className="list-disc pl-6 space-y-2 mb-4">
             <li>Contact a member of the organizing committee immediately</li>
-            <li>We&apos;ll help contact security or law enforcement if needed</li>
+            <li>
+              We&apos;ll help contact security or law enforcement if needed
+            </li>
             <li>All reports will be handled with discretion</li>
           </ul>
           <p className="text-purple-300 font-semibold">
@@ -244,9 +250,9 @@ const CodeOfConduct = () => {
             CODE OF CONDUCT
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            At DEVOLYMPUS, we&apos;re committed to creating an inclusive, respectful,
-            and productive environment for all participants. This Code of
-            Conduct outlines our expectations for everyone involved.
+            At DEVOLYMPUS, we&apos;re committed to creating an inclusive,
+            respectful, and productive environment for all participants. This
+            Code of Conduct outlines our expectations for everyone involved.
           </p>
         </div>
 

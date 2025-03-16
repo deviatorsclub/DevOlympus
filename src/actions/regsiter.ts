@@ -20,7 +20,7 @@ const TeamMemberSchema = z.object({
     .min(1, "Phone number is required")
     .refine(
       (val) => /^\d{10}$/.test(val.replace(/\D/g, "")),
-      "Phone number must be 10 digits"
+      "Phone number must be 10 digits",
     ),
 });
 
@@ -30,11 +30,11 @@ const RegistrationSchema = z.object({
     .array(TeamMemberSchema)
     .min(
       FLAGS.minTeamSize,
-      `At least ${FLAGS.minTeamSize} team members required`
+      `At least ${FLAGS.minTeamSize} team members required`,
     )
     .max(
       FLAGS.maxTeamSize,
-      `Maximum ${FLAGS.maxTeamSize} team members allowed`
+      `Maximum ${FLAGS.maxTeamSize} team members allowed`,
     ),
   presentationUrl: z.string().url("Must be a valid URL"),
   theme: ThemeEnum,
@@ -49,7 +49,7 @@ type ActionResponse = {
 };
 
 export async function registerTeam(
-  data: RegistrationFormData
+  data: RegistrationFormData,
 ): Promise<ActionResponse> {
   try {
     if (!FLAGS.isRegistrationOpen) {
@@ -104,7 +104,6 @@ export async function registerTeam(
       };
     }
 
-    // Check if any team members are already registered in other teams
     const memberEmails = validatedData.members.map((member) => member.email);
     const existingMember = await prisma.teamMember.findFirst({
       where: { email: { in: memberEmails } },
@@ -118,7 +117,6 @@ export async function registerTeam(
       };
     }
 
-    // Create the team with members including phone numbers
     await prisma.team.create({
       data: {
         name: validatedData.teamName,
@@ -130,7 +128,7 @@ export async function registerTeam(
             name: member.name,
             email: member.email,
             rollNo: member.rollNo,
-            number: member.number, // Include the phone number
+            number: member.number,
             isLead: !!member.isLead,
           })),
         },
@@ -147,7 +145,6 @@ export async function registerTeam(
     console.error("Registration error:", error);
 
     if (error instanceof z.ZodError) {
-      // Create a more user-friendly error message from Zod validation errors
       const formattedErrors: Record<string, string> = {};
       const errorMessage: string[] = [];
 
@@ -155,7 +152,6 @@ export async function registerTeam(
         const path = err.path.join(".");
         formattedErrors[path] = err.message;
 
-        // Create a more readable message for user display
         if (path.includes("members")) {
           const memberIndex = parseInt(path.split(".")[1]);
           const memberNumber = memberIndex + 1;

@@ -163,7 +163,7 @@ const CircuitLines = memo((): JSX.Element => {
       { x1: "80%", y1: "50%", x2: "60%", y2: "50%" },
       { x1: "60%", y1: "50%", x2: "60%", y2: "90%" },
     ],
-    []
+    [],
   );
 
   return (
@@ -243,7 +243,7 @@ const TitleCharacter = memo(
         </AnimatePresence>
       </motion.div>
     );
-  }
+  },
 );
 TitleCharacter.displayName = "TitleCharacter";
 
@@ -358,7 +358,7 @@ const CountdownDigit = memo(
         </span>
       </div>
     );
-  }
+  },
 );
 CountdownDigit.displayName = "CountdownDigit";
 
@@ -381,7 +381,7 @@ const CountdownTimer = memo((): JSX.Element => {
         setTimeLeft({
           days: Math.floor(distance / (1000 * 60 * 60 * 24)),
           hours: Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
           ),
           minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((distance % (1000 * 60)) / 1000),
