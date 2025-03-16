@@ -1,5 +1,6 @@
 "use client";
 
+import { HACKATHON_DATE } from "@/data";
 import { TeamWithMembers } from "@/types/registration";
 import {
   CheckCircle,
@@ -160,11 +161,30 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
           <div className="flex flex-col md:flex-row md:items-center text-sm text-violet-200 space-y-2 md:space-y-0 md:space-x-6">
             <div className="flex items-center">
               <Calendar size={16} className="mr-2 text-violet-400" />
-              <span>April 15-16, 2025</span>
+              <span>
+                {HACKATHON_DATE.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                {"-"}
+                {HACKATHON_DATE.toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </span>
             </div>
             <div className="flex items-center">
               <Clock size={16} className="mr-2 text-violet-400" />
-              <span>Starts at 9:00 AM</span>
+              <span>
+                Starts at{" "}
+                {HACKATHON_DATE.toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </span>
             </div>
             <div className="flex items-center">
               <CheckCircle size={16} className="mr-2 text-violet-400" />

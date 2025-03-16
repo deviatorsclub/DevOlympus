@@ -263,7 +263,7 @@ const UserIcon: FC<UserIconProps> = (props) => {
                   <MenuItem
                     closeMenu={closeMenu}
                     icon={UserCircle}
-                    label="Register"
+                    label="Register for hackathon"
                     onClick={() => router.push("/register")}
                   />
                   <MenuItem

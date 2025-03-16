@@ -330,7 +330,7 @@ export const TeamMemberCard = memo(
               Roll Number
             </label>
             <input
-              type="text"
+              type="number"
               value={member.rollNo}
               onChange={(e) =>
                 updateMember(member.id, "rollNo", e.target.value)
