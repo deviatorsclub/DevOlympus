@@ -16,13 +16,17 @@
 
 :root {
 
-  /* Additional colors for our components */
+  /* Updated color palette with more vibrant tones */
   --slate-800: #1e293b;
   --slate-900: #0f172a;
   --slate-700: #334155;
   --slate-400: #94a3b8;
   --slate-300: #cbd5e1;
-  --purple-500: #a855f7;
+  --purple-500: #8b5cf6;
+  --teal-500: #14b8a6;
+  --emerald-500: #10b981;
+  --cyan-500: #06b6d4;
+  
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -59,7 +63,7 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.125 0 0);  /* Slightly darker for better contrast */
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -141,7 +145,48 @@
   }
 }
 
-
 html {
   scroll-behavior: smooth;
+}
+
+/* New styles for glass morphism and gradients */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #8b5cf6, #14b8a6);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
+}
+
+/* Better scroll experience */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }

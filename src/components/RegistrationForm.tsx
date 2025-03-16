@@ -4,7 +4,7 @@ import { useState, useCallback, useTransition, useEffect } from "react";
 import {
   CheckCircle,
   Plus,
-  Link,
+  Link as LinkIcon,
   RefreshCw,
   Loader2,
   AlertTriangle,
@@ -21,6 +21,7 @@ import { FormState, TeamMember } from "@/types/registration";
 import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
 import LoginFallback from "./LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
+import Link from "next/link";
 
 interface RegistrationFormProps {
   initialSession: Session | null;
@@ -712,9 +713,18 @@ export default function RegistrationForm({
             <label className="text-sm mb-1 sm:mb-2 block text-violet-300">
               Presentation URL (Max 5MB)
             </label>
+            <div className="mb-2">
+              <Link
+                href="https://docs.google.com/presentation/d/1qRArIWIZzc2lpEmC1fS_7lydpXkvPcVL/edit?usp=sharing&ouid=100076728637005351213&rtpof=true&sd=true"
+                target="_blank"
+                className="underline text-sm text-white"
+              >
+                Presentation Template
+              </Link>
+            </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Link size={16} className="text-indigo-400" />
+                <LinkIcon size={16} className="text-indigo-400" />
               </div>
               <input
                 type="url"
