@@ -40,6 +40,11 @@ export const FAQS = [
     answer:
       "Yes, we recommend bringing a power strip or extension cord as power outlets may be limited. This will ensure that everyone in your team has access to power for their devices throughout the hackathon.",
   },
+  {
+    question: "What should I not bring with myself?",
+    answer:
+      "Please avoid bringing any illegal substances, weapons, or items that could disrupt the event. We also recommend not bringing valuables that you won't need during the hackathon, as we cannot guarantee their safety.",
+  },
 ];
 
 export const categories: CategoryData[] = [

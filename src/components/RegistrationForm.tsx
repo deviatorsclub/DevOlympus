@@ -30,7 +30,7 @@ export default function RegistrationForm({
   initialSession,
 }: RegistrationFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState<boolean>(false);
   const [formState, setFormState] = useState<FormState>({
     teamName: DEFAULT_VALUES.teamNameSuggestion,
     members: Array(FLAGS.minTeamSize)
@@ -51,14 +51,14 @@ export default function RegistrationForm({
     "idle"
   );
   const [lastSaved, setLastSaved] = useState<string | null>(null);
-  const [resetDialogOpen, setResetDialogOpen] = useState(false);
-  const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState<boolean>(false);
+  const [submitDialogOpen, setSubmitDialogOpen] = useState<boolean>(false);
   const [alert, setAlert] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
 
-  const isDeadlinePassed = useCallback(() => {
+  const isDeadlinePassed = useCallback((): boolean => {
     return new Date() > FLAGS.submissionDeadline;
   }, []);
 
@@ -70,7 +70,7 @@ export default function RegistrationForm({
       name: initialSession.user.name || "",
       email: initialSession.user.email || "",
       rollNo: "",
-      number: "", // Phone number field
+      number: "",
       isLead: true,
     };
 
@@ -79,7 +79,6 @@ export default function RegistrationForm({
       if (savedData) {
         try {
           const parsedData = JSON.parse(savedData) as FormState;
-
           const existingLeadIndex = parsedData.members.findIndex(
             (m) => m.isLead
           );
@@ -92,7 +91,6 @@ export default function RegistrationForm({
                 parsedData.members[existingLeadIndex].email,
             };
 
-            // Add number field to members if it doesn't exist
             parsedData.members = parsedData.members.map((member) => ({
               ...member,
               number: member.number || "",
@@ -108,7 +106,7 @@ export default function RegistrationForm({
                 name: "",
                 email: "",
                 rollNo: "",
-                number: "", // Phone number field
+                number: "",
               }));
 
             return {
@@ -128,7 +126,7 @@ export default function RegistrationForm({
           name: "",
           email: "",
           rollNo: "",
-          number: "", // Phone number field
+          number: "",
         }));
 
       return {
@@ -251,7 +249,7 @@ export default function RegistrationForm({
     [errors, formState.members]
   );
 
-  const validateForm = useCallback(() => {
+  const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
     const incompleteMembers: string[] = [];
 
@@ -282,7 +280,7 @@ export default function RegistrationForm({
     formState.members.forEach((member, index) => {
       const { id, name, email, rollNo, number } = member;
       const memberTitle = member.isLead ? "Team Lead" : `Member ${index + 1}`;
-      const missingFields = [];
+      const missingFields: string[] = [];
 
       if (!name.trim()) {
         newErrors[`member-${id}-name`] = "Full name is required";
@@ -314,7 +312,6 @@ export default function RegistrationForm({
         missingFields.push("valid phone number");
       }
 
-      // Check if this member is complete - has no validation errors
       const isComplete = missingFields.length === 0;
 
       if (isComplete) {
@@ -325,9 +322,7 @@ export default function RegistrationForm({
       }
     });
 
-    // Make sure we have the minimum required number of valid members
     if (validMembers < FLAGS.minTeamSize) {
-      // Create a more detailed error message
       if (incompleteMembers.length > 0) {
         let errorMsg = `Please complete all fields for your team members. Issues found in: `;
 
@@ -355,22 +350,12 @@ export default function RegistrationForm({
     }
 
     setErrors(newErrors);
-
-    // Log validation errors for debugging
-    if (Object.keys(newErrors).length > 0) {
-      console.log("Form validation failed with errors:", newErrors);
-      console.log(
-        `Valid members count: ${validMembers}, Required: ${FLAGS.minTeamSize}`
-      );
-    }
-
     return Object.keys(newErrors).length === 0;
   }, [formState, isDeadlinePassed]);
 
   const handlePreSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-
       if (validateForm()) {
         setSubmitDialogOpen(true);
       }
@@ -392,7 +377,7 @@ export default function RegistrationForm({
         name: member.name,
         email: member.email,
         rollNo: member.rollNo,
-        number: member.number, // Phone number field
+        number: member.number,
         isLead: member.isLead || false,
       })),
       presentationUrl: formState.presentationUrl,
@@ -416,7 +401,7 @@ export default function RegistrationForm({
                 name: "",
                 email: "",
                 rollNo: "",
-                number: "", // Phone number field
+                number: "",
               }));
 
             setFormState({
@@ -427,7 +412,7 @@ export default function RegistrationForm({
                   name: initialSession.user.name || "",
                   email: initialSession.user.email || "",
                   rollNo: "",
-                  number: "", // Phone number field
+                  number: "",
                   isLead: true,
                 },
                 ...defaultMembers,
@@ -442,7 +427,7 @@ export default function RegistrationForm({
 
         setSubmitDialogOpen(false);
       } catch (error) {
-        console.log("Error submitting form:", error);
+        console.error("Error submitting form:", error);
         setAlert({
           type: "error",
           message: "An unexpected error occurred. Please try again.",
@@ -468,7 +453,7 @@ export default function RegistrationForm({
         name: "",
         email: "",
         rollNo: "",
-        number: "", // Phone number field
+        number: "",
       }));
 
     if (initialSession?.user) {
@@ -480,7 +465,7 @@ export default function RegistrationForm({
             name: initialSession.user.name || "",
             email: initialSession.user.email || "",
             rollNo: "",
-            number: "", // Phone number field
+            number: "",
             isLead: true,
           },
           ...defaultMembers,
@@ -498,7 +483,7 @@ export default function RegistrationForm({
             name: "",
             email: "",
             rollNo: "",
-            number: "", // Phone number field
+            number: "",
           },
         ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
@@ -533,7 +518,7 @@ export default function RegistrationForm({
     setAlert(null);
   }, []);
 
-  const isFormDisabled = useCallback(() => {
+  const isFormDisabled = useCallback((): boolean => {
     return !FLAGS.isRegistrationOpen || isDeadlinePassed() || isPending;
   }, [isPending, isDeadlinePassed]);
 
@@ -542,7 +527,7 @@ export default function RegistrationForm({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 md:py-16 pt-16 md:pt-32 px-4 md:px-6">
+    <div className="w-full max-w-4xl mx-auto py-4 sm:py-8 md:py-16 pt-12 sm:pt-16 md:pt-24 lg:pt-32 px-3 sm:px-4 md:px-6">
       {alert && (
         <Alert
           type={alert.type}
@@ -551,46 +536,46 @@ export default function RegistrationForm({
         />
       )}
 
-      <div className="bg-[#0a0918] border border-indigo-600 rounded-xl shadow-xl p-4 md:p-8 text-gray-100 relative">
-        <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-violet-400">
+      <div className="bg-[#0a0918] border border-indigo-600 rounded-xl shadow-xl p-3 sm:p-4 md:p-8 text-gray-100 relative">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 md:mb-8 text-violet-400">
           REGISTER YOUR TEAM
         </h1>
 
         <DeadlineBanner deadline={FLAGS.submissionDeadline} />
 
         {!FLAGS.isRegistrationOpen && (
-          <div className="bg-red-900/60 border border-red-500 rounded-lg p-4 mb-6">
-            <p className="text-red-200 font-medium">
+          <div className="bg-red-900/60 border border-red-500 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+            <p className="text-red-200 font-medium text-sm sm:text-base">
               Registration is currently closed.
             </p>
           </div>
         )}
 
         {isDeadlinePassed() && (
-          <div className="bg-red-900/60 border border-red-500 rounded-lg p-4 mb-6">
-            <p className="text-red-200 font-medium">
+          <div className="bg-red-900/60 border border-red-500 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+            <p className="text-red-200 font-medium text-sm sm:text-base">
               Registration deadline has passed.
             </p>
           </div>
         )}
 
-        <div className="absolute top-4 right-4 flex flex-col md:flex-row items-end md:items-center md:space-x-4">
+        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex flex-col sm:flex-row items-end sm:items-center sm:space-x-3 md:space-x-4">
           {saveStatus === "saving" && (
-            <div className="text-xs text-gray-400 flex items-center mb-2 md:mb-0">
-              <div className="animate-spin h-3 w-3 mr-2 border-t-2 border-violet-400 rounded-full"></div>
+            <div className="text-xs text-gray-400 flex items-center mb-2 sm:mb-0">
+              <div className="animate-spin h-3 w-3 mr-1 sm:mr-2 border-t-2 border-violet-400 rounded-full"></div>
               Saving...
             </div>
           )}
 
           {saveStatus === "saved" && (
-            <div className="text-xs text-green-400 flex items-center mb-2 md:mb-0">
+            <div className="text-xs text-green-400 flex items-center mb-2 sm:mb-0">
               <CheckCircle size={12} className="mr-1" />
               Saved
             </div>
           )}
 
           {lastSaved && saveStatus === "idle" && (
-            <div className="text-xs text-gray-400 mb-2 md:mb-0">
+            <div className="text-xs text-gray-400 mb-2 sm:mb-0 hidden sm:block">
               Last saved: {lastSaved}
             </div>
           )}
@@ -601,15 +586,18 @@ export default function RegistrationForm({
             className="text-xs flex items-center text-red-400 hover:text-red-300"
           >
             <RefreshCw size={12} className="mr-1" />
-            Reset Form
+            Reset
           </button>
         </div>
 
-        <form onSubmit={handlePreSubmit} className="space-y-6 md:space-y-8">
+        <form
+          onSubmit={handlePreSubmit}
+          className="space-y-4 sm:space-y-6 md:space-y-8"
+        >
           <div>
             <label
               htmlFor="teamName"
-              className="text-sm mb-2 block text-violet-300"
+              className="text-sm mb-1 sm:mb-2 block text-violet-300"
             >
               Team Name
             </label>
@@ -627,7 +615,7 @@ export default function RegistrationForm({
               }`}
             />
             {errors.teamName && (
-              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+              <div className="flex items-start mt-1 text-xs sm:text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
                 <AlertTriangle
                   size={14}
                   className="mr-1.5 flex-shrink-0 mt-0.5"
@@ -638,7 +626,7 @@ export default function RegistrationForm({
           </div>
 
           <div>
-            <label className="text-sm mb-2 block text-violet-300">
+            <label className="text-sm mb-1 sm:mb-2 block text-violet-300">
               Project Theme
             </label>
             <select
@@ -661,7 +649,7 @@ export default function RegistrationForm({
               ))}
             </select>
             {errors.theme && (
-              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+              <div className="flex items-start mt-1 text-xs sm:text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
                 <AlertTriangle
                   size={14}
                   className="mr-1.5 flex-shrink-0 mt-0.5"
@@ -671,11 +659,11 @@ export default function RegistrationForm({
             )}
           </div>
 
-          <div className="bg-[#13112a] p-4 rounded-lg border border-indigo-800">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-              <h2 className="text-xl font-medium text-violet-400 flex flex-wrap items-center mb-3 sm:mb-0">
+          <div className="bg-[#13112a] p-3 sm:p-4 rounded-lg border border-indigo-800">
+            <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-medium text-violet-400 flex flex-wrap items-center mb-2 xs:mb-0">
                 Team Members
-                <span className="ml-2 text-xs bg-indigo-900 text-violet-300 px-2 py-1 rounded-full">
+                <span className="ml-2 text-xs bg-indigo-900 text-violet-300 px-2 py-0.5 rounded-full">
                   Min {FLAGS.minTeamSize} required
                 </span>
               </h2>
@@ -684,7 +672,7 @@ export default function RegistrationForm({
                   type="button"
                   onClick={addTeamMember}
                   disabled={isFormDisabled()}
-                  className={`flex items-center px-4 py-1 rounded bg-indigo-800 hover:bg-indigo-700 text-white text-sm transition-colors ${
+                  className={`flex items-center px-3 sm:px-4 py-1 rounded bg-indigo-800 hover:bg-indigo-700 text-white text-xs sm:text-sm transition-colors ${
                     isFormDisabled() ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                 >
@@ -695,7 +683,7 @@ export default function RegistrationForm({
             </div>
 
             {errors.members && (
-              <div className="mb-4 flex items-start text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+              <div className="mb-4 flex items-start text-xs sm:text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
                 <AlertTriangle
                   size={14}
                   className="mr-1.5 flex-shrink-0 mt-0.5"
@@ -704,7 +692,7 @@ export default function RegistrationForm({
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {formState.members.map((member, index) => (
                 <TeamMemberCard
                   key={member.id}
@@ -721,7 +709,7 @@ export default function RegistrationForm({
           </div>
 
           <div>
-            <label className="text-sm mb-2 block text-violet-300">
+            <label className="text-sm mb-1 sm:mb-2 block text-violet-300">
               Presentation URL (Max 5MB)
             </label>
             <div className="relative">
@@ -746,7 +734,7 @@ export default function RegistrationForm({
               />
             </div>
             {errors.presentationUrl && (
-              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+              <div className="flex items-start mt-1 text-xs sm:text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
                 <AlertTriangle
                   size={14}
                   className="mr-1.5 flex-shrink-0 mt-0.5"
@@ -760,11 +748,11 @@ export default function RegistrationForm({
             </p>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-2 sm:pt-4">
             <button
               type="submit"
               disabled={isFormDisabled()}
-              className={`w-full px-4 py-3 bg-violet-600 text-white font-medium rounded-md transition-colors ${
+              className={`w-full px-4 py-2 sm:py-3 bg-violet-600 text-white font-medium rounded-md transition-colors ${
                 isFormDisabled()
                   ? "opacity-70 cursor-not-allowed"
                   : "hover:bg-violet-700"
@@ -772,7 +760,7 @@ export default function RegistrationForm({
             >
               {isPending ? (
                 <span className="flex items-center justify-center">
-                  <Loader2 size={20} className="animate-spin mr-2" />
+                  <Loader2 size={18} className="animate-spin mr-2" />
                   Processing...
                 </span>
               ) : (
@@ -781,7 +769,7 @@ export default function RegistrationForm({
             </button>
 
             {errors.submit && (
-              <p className="mt-2 text-sm text-red-400 text-center">
+              <p className="mt-2 text-xs sm:text-sm text-red-400 text-center">
                 {errors.submit}
               </p>
             )}

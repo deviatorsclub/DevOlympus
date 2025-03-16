@@ -158,7 +158,7 @@ export default function ResponsiveScheduleSection(): JSX.Element {
           title: "Winner Announcement & Prize distribution",
           description: "We'll annouce our winners",
           icon: <CheckSquare className="h-5 w-5" />,
-          location: "Cafeteria",
+          location: "Auditorium",
         },
         {
           time: "14:00 - 14:30",
