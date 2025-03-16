@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useCallback, useTransition, useEffect } from "react";
-import { CheckCircle, Plus, Link, RefreshCw, Loader2 } from "lucide-react";
+import {
+  CheckCircle,
+  Plus,
+  Link,
+  RefreshCw,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
 import { Session } from "next-auth";
 import {
   ConfirmDialog,
@@ -26,13 +33,14 @@ export default function RegistrationForm({
   const [initialized, setInitialized] = useState(false);
   const [formState, setFormState] = useState<FormState>({
     teamName: DEFAULT_VALUES.teamNameSuggestion,
-    members: Array(FLAGS.maxTeamSize)
+    members: Array(FLAGS.minTeamSize)
       .fill(0)
       .map(() => ({
         id: crypto.randomUUID(),
         name: "",
         email: "",
         rollNo: "",
+        number: "", // Phone number field
       })),
     presentationUrl: DEFAULT_VALUES.presentationUrl,
     theme: FLAGS.defaultTheme,
@@ -62,6 +70,7 @@ export default function RegistrationForm({
       name: initialSession.user.name || "",
       email: initialSession.user.email || "",
       rollNo: "",
+      number: "", // Phone number field
       isLead: true,
     };
 
@@ -83,24 +92,28 @@ export default function RegistrationForm({
                 parsedData.members[existingLeadIndex].email,
             };
 
+            // Add number field to members if it doesn't exist
+            parsedData.members = parsedData.members.map((member) => ({
+              ...member,
+              number: member.number || "",
+            }));
+
             setLastSaved(localStorage.getItem("hackathon-last-saved") || null);
             return parsedData;
           } else {
-            const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+            const defaultMembers = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
                 id: crypto.randomUUID(),
                 name: "",
                 email: "",
                 rollNo: "",
+                number: "", // Phone number field
               }));
 
             return {
               ...parsedData,
-              members: [userMember, ...defaultMembers].slice(
-                0,
-                FLAGS.maxTeamSize
-              ),
+              members: [userMember, ...defaultMembers],
             };
           }
         } catch (e) {
@@ -108,18 +121,19 @@ export default function RegistrationForm({
         }
       }
 
-      const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+      const defaultMembers = Array(FLAGS.minTeamSize - 1)
         .fill(0)
         .map(() => ({
           id: crypto.randomUUID(),
           name: "",
           email: "",
           rollNo: "",
+          number: "", // Phone number field
         }));
 
       return {
         ...prev,
-        members: [userMember, ...defaultMembers].slice(0, FLAGS.maxTeamSize),
+        members: [userMember, ...defaultMembers],
       };
     });
 
@@ -160,7 +174,7 @@ export default function RegistrationForm({
         formState.teamName ||
         formState.presentationUrl ||
         formState.theme ||
-        formState.members.some((m) => m.name || m.email || m.rollNo)
+        formState.members.some((m) => m.name || m.email || m.rollNo || m.number)
       ) {
         saveToLocalStorage();
       }
@@ -176,17 +190,23 @@ export default function RegistrationForm({
       ...prev,
       members: [
         ...prev.members,
-        { id: crypto.randomUUID(), name: "", email: "", rollNo: "" },
+        {
+          id: crypto.randomUUID(),
+          name: "",
+          email: "",
+          rollNo: "",
+          number: "",
+        },
       ],
     }));
   }, [formState.members.length]);
 
   const removeTeamMember = useCallback(
     (id: string) => {
-      if (formState.members.length <= 3) {
+      if (formState.members.length <= FLAGS.minTeamSize) {
         setErrors((prev) => ({
           ...prev,
-          members: "Minimum 3 team members required",
+          members: `Minimum ${FLAGS.minTeamSize} team members required`,
         }));
         return;
       }
@@ -233,6 +253,7 @@ export default function RegistrationForm({
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
+    const incompleteMembers: string[] = [];
 
     if (isDeadlinePassed()) {
       newErrors.deadline = "Registration deadline has passed";
@@ -247,49 +268,102 @@ export default function RegistrationForm({
     }
 
     if (!formState.teamName.trim()) {
-      newErrors.teamName = "Team name is required";
+      newErrors.teamName = "Team name is required for your project identity";
     }
 
     if (!formState.theme) {
-      newErrors.theme = "Please select a project theme";
+      newErrors.theme =
+        "Please select a project theme for your hackathon entry";
     }
 
     let validMembers = 0;
+    let incompleteFields: Record<string, string[]> = {};
 
-    formState.members.forEach((member) => {
-      const { id, name, email, rollNo } = member;
+    formState.members.forEach((member, index) => {
+      const { id, name, email, rollNo, number } = member;
+      const memberTitle = member.isLead ? "Team Lead" : `Member ${index + 1}`;
+      let missingFields = [];
 
       if (!name.trim()) {
-        newErrors[`member-${id}-name`] = "Name is required";
+        newErrors[`member-${id}-name`] = "Full name is required";
+        missingFields.push("name");
       }
 
       if (!email.trim()) {
-        newErrors[`member-${id}-email`] = "Email is required";
+        newErrors[`member-${id}-email`] = "Email address is required";
+        missingFields.push("email");
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        newErrors[`member-${id}-email`] = "Invalid email format";
+        newErrors[`member-${id}-email`] =
+          "Please enter a valid email format (e.g., name@example.com)";
+        missingFields.push("email format");
       }
 
       if (!rollNo.trim()) {
-        newErrors[`member-${id}-rollNo`] = "Roll number is required";
+        newErrors[`member-${id}-rollNo`] =
+          "Roll number is required for verification";
+        missingFields.push("roll number");
       }
 
-      if (name && email && rollNo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (!number.trim()) {
+        newErrors[`member-${id}-number`] =
+          "Phone number is required for contact";
+        missingFields.push("phone number");
+      } else if (!/^\d{10}$/.test(number.replace(/\D/g, ""))) {
+        newErrors[`member-${id}-number`] =
+          "Please enter a 10-digit phone number";
+        missingFields.push("valid phone number");
+      }
+
+      // Check if this member is complete - has no validation errors
+      const isComplete = missingFields.length === 0;
+
+      if (isComplete) {
         validMembers++;
+      } else {
+        incompleteMembers.push(memberTitle);
+        incompleteFields[memberTitle] = missingFields;
       }
     });
 
-    if (validMembers < 3) {
-      newErrors.members = "At least 3 complete team member profiles required";
+    // Make sure we have the minimum required number of valid members
+    if (validMembers < FLAGS.minTeamSize) {
+      // Create a more detailed error message
+      if (incompleteMembers.length > 0) {
+        let errorMsg = `Please complete all fields for your team members. Issues found in: `;
+
+        incompleteMembers.forEach((member, idx) => {
+          const fields = incompleteFields[member].join(", ");
+          errorMsg += `${member} (missing ${fields})`;
+
+          if (idx < incompleteMembers.length - 1) {
+            errorMsg += "; ";
+          }
+        });
+
+        newErrors.members = errorMsg;
+      } else {
+        newErrors.members = `Your team needs at least ${FLAGS.minTeamSize} complete member profiles to register`;
+      }
     }
 
     if (!formState.presentationUrl.trim()) {
-      newErrors.presentationUrl = "Presentation URL is required";
+      newErrors.presentationUrl =
+        "Please provide a link to your project presentation";
     } else if (!/^https?:\/\/.+/.test(formState.presentationUrl)) {
       newErrors.presentationUrl =
-        "Must be a valid URL starting with http:// or https://";
+        "Please enter a valid URL starting with http:// or https://";
     }
 
     setErrors(newErrors);
+
+    // Log validation errors for debugging
+    if (Object.keys(newErrors).length > 0) {
+      console.log("Form validation failed with errors:", newErrors);
+      console.log(
+        `Valid members count: ${validMembers}, Required: ${FLAGS.minTeamSize}`
+      );
+    }
+
     return Object.keys(newErrors).length === 0;
   }, [formState, isDeadlinePassed]);
 
@@ -318,6 +392,7 @@ export default function RegistrationForm({
         name: member.name,
         email: member.email,
         rollNo: member.rollNo,
+        number: member.number, // Phone number field
         isLead: member.isLead || false,
       })),
       presentationUrl: formState.presentationUrl,
@@ -334,13 +409,14 @@ export default function RegistrationForm({
           setAlert({ type: "success", message: result.message });
 
           if (initialSession?.user) {
-            const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+            const defaultMembers = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
                 id: crypto.randomUUID(),
                 name: "",
                 email: "",
                 rollNo: "",
+                number: "", // Phone number field
               }));
 
             setFormState({
@@ -351,10 +427,11 @@ export default function RegistrationForm({
                   name: initialSession.user.name || "",
                   email: initialSession.user.email || "",
                   rollNo: "",
+                  number: "", // Phone number field
                   isLead: true,
                 },
                 ...defaultMembers,
-              ].slice(0, FLAGS.maxTeamSize),
+              ],
               presentationUrl: DEFAULT_VALUES.presentationUrl,
               theme: FLAGS.defaultTheme,
             });
@@ -384,13 +461,14 @@ export default function RegistrationForm({
     localStorage.removeItem("hackathon-last-saved");
     setLastSaved(null);
 
-    const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+    const defaultMembers = Array(FLAGS.minTeamSize - 1)
       .fill(0)
       .map(() => ({
         id: crypto.randomUUID(),
         name: "",
         email: "",
         rollNo: "",
+        number: "", // Phone number field
       }));
 
     if (initialSession?.user) {
@@ -402,10 +480,11 @@ export default function RegistrationForm({
             name: initialSession.user.name || "",
             email: initialSession.user.email || "",
             rollNo: "",
+            number: "", // Phone number field
             isLead: true,
           },
           ...defaultMembers,
-        ].slice(0, FLAGS.maxTeamSize),
+        ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
         theme: FLAGS.defaultTheme,
       });
@@ -419,8 +498,9 @@ export default function RegistrationForm({
             name: "",
             email: "",
             rollNo: "",
+            number: "", // Phone number field
           },
-        ].slice(0, FLAGS.maxTeamSize),
+        ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
         theme: FLAGS.defaultTheme,
       });
@@ -462,7 +542,7 @@ export default function RegistrationForm({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-16 pt-32 px-6">
+    <div className="w-full max-w-4xl mx-auto py-8 md:py-16 pt-16 md:pt-32 px-4 md:px-6">
       {alert && (
         <Alert
           type={alert.type}
@@ -471,8 +551,8 @@ export default function RegistrationForm({
         />
       )}
 
-      <div className="bg-[#0a0918] border border-indigo-600 rounded-xl shadow-xl p-8 text-gray-100 relative">
-        <h1 className="text-3xl font-bold mb-8 text-violet-400">
+      <div className="bg-[#0a0918] border border-indigo-600 rounded-xl shadow-xl p-4 md:p-8 text-gray-100 relative">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-violet-400">
           REGISTER YOUR TEAM
         </h1>
 
@@ -494,23 +574,25 @@ export default function RegistrationForm({
           </div>
         )}
 
-        <div className="absolute top-4 right-4 flex items-center space-x-4">
+        <div className="absolute top-4 right-4 flex flex-col md:flex-row items-end md:items-center md:space-x-4">
           {saveStatus === "saving" && (
-            <div className="text-xs text-gray-400 flex items-center">
+            <div className="text-xs text-gray-400 flex items-center mb-2 md:mb-0">
               <div className="animate-spin h-3 w-3 mr-2 border-t-2 border-violet-400 rounded-full"></div>
               Saving...
             </div>
           )}
 
           {saveStatus === "saved" && (
-            <div className="text-xs text-green-400 flex items-center">
+            <div className="text-xs text-green-400 flex items-center mb-2 md:mb-0">
               <CheckCircle size={12} className="mr-1" />
               Saved
             </div>
           )}
 
           {lastSaved && saveStatus === "idle" && (
-            <div className="text-xs text-gray-400">Last saved: {lastSaved}</div>
+            <div className="text-xs text-gray-400 mb-2 md:mb-0">
+              Last saved: {lastSaved}
+            </div>
           )}
 
           <button
@@ -523,7 +605,7 @@ export default function RegistrationForm({
           </button>
         </div>
 
-        <form onSubmit={handlePreSubmit} className="space-y-8">
+        <form onSubmit={handlePreSubmit} className="space-y-6 md:space-y-8">
           <div>
             <label
               htmlFor="teamName"
@@ -545,7 +627,13 @@ export default function RegistrationForm({
               }`}
             />
             {errors.teamName && (
-              <p className="mt-1 text-sm text-red-400">{errors.teamName}</p>
+              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+                <AlertTriangle
+                  size={14}
+                  className="mr-1.5 flex-shrink-0 mt-0.5"
+                />
+                <span>{errors.teamName}</span>
+              </div>
             )}
           </div>
 
@@ -573,16 +661,22 @@ export default function RegistrationForm({
               ))}
             </select>
             {errors.theme && (
-              <p className="mt-1 text-sm text-red-400">{errors.theme}</p>
+              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+                <AlertTriangle
+                  size={14}
+                  className="mr-1.5 flex-shrink-0 mt-0.5"
+                />
+                <span>{errors.theme}</span>
+              </div>
             )}
           </div>
 
           <div className="bg-[#13112a] p-4 rounded-lg border border-indigo-800">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-medium text-violet-400 flex items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+              <h2 className="text-xl font-medium text-violet-400 flex flex-wrap items-center mb-3 sm:mb-0">
                 Team Members
                 <span className="ml-2 text-xs bg-indigo-900 text-violet-300 px-2 py-1 rounded-full">
-                  Min 3 required
+                  Min {FLAGS.minTeamSize} required
                 </span>
               </h2>
               {formState.members.length < FLAGS.maxTeamSize && (
@@ -601,7 +695,13 @@ export default function RegistrationForm({
             </div>
 
             {errors.members && (
-              <p className="mb-4 text-sm text-red-400">{errors.members}</p>
+              <div className="mb-4 flex items-start text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+                <AlertTriangle
+                  size={14}
+                  className="mr-1.5 flex-shrink-0 mt-0.5"
+                />
+                <span>{errors.members}</span>
+              </div>
             )}
 
             <div className="space-y-4">
@@ -610,7 +710,7 @@ export default function RegistrationForm({
                   key={member.id}
                   member={member}
                   index={index}
-                  canRemove={formState.members.length > 3}
+                  canRemove={formState.members.length > FLAGS.minTeamSize}
                   onRemove={removeTeamMember}
                   updateMember={updateMember}
                   errors={errors}
@@ -646,9 +746,13 @@ export default function RegistrationForm({
               />
             </div>
             {errors.presentationUrl && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.presentationUrl}
-              </p>
+              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+                <AlertTriangle
+                  size={14}
+                  className="mr-1.5 flex-shrink-0 mt-0.5"
+                />
+                <span>{errors.presentationUrl}</span>
+              </div>
             )}
             <p className="mt-1 text-xs text-gray-400">
               Share your presentation via Google Drive, Dropbox, or similar

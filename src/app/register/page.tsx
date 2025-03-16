@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useTransition, useEffect } from "react";
 import { CheckCircle, Plus, Link, RefreshCw, Loader2 } from "lucide-react";
+import { Session } from "next-auth";
 import {
   ConfirmDialog,
   SubmitDialog,
@@ -13,31 +14,26 @@ import { FormState, TeamMember } from "@/types/registration";
 import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
 import LoginFallback from "@/components/LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
-import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
 
-export default function RegistrationPage() {
-  const { data: session } = useSession();
-
-  return <RegistrationForm initialSession={session} />;
+interface RegistrationFormProps {
+  initialSession: Session | null;
 }
 
-function RegistrationForm({
+export default function RegistrationForm({
   initialSession,
-}: {
-  initialSession: Session | null;
-}) {
+}: RegistrationFormProps) {
   const [isPending, startTransition] = useTransition();
   const [initialized, setInitialized] = useState(false);
   const [formState, setFormState] = useState<FormState>({
     teamName: DEFAULT_VALUES.teamNameSuggestion,
-    members: Array(FLAGS.maxTeamSize)
+    members: Array(FLAGS.minTeamSize)
       .fill(0)
       .map(() => ({
         id: crypto.randomUUID(),
         name: "",
         email: "",
         rollNo: "",
+        number: "", // Phone number field
       })),
     presentationUrl: DEFAULT_VALUES.presentationUrl,
     theme: FLAGS.defaultTheme,
@@ -67,6 +63,7 @@ function RegistrationForm({
       name: initialSession.user.name || "",
       email: initialSession.user.email || "",
       rollNo: "",
+      number: "", // Phone number field
       isLead: true,
     };
 
@@ -88,24 +85,28 @@ function RegistrationForm({
                 parsedData.members[existingLeadIndex].email,
             };
 
+            // Add number field to members if it doesn't exist
+            parsedData.members = parsedData.members.map((member) => ({
+              ...member,
+              number: member.number || "",
+            }));
+
             setLastSaved(localStorage.getItem("hackathon-last-saved") || null);
             return parsedData;
           } else {
-            const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+            const defaultMembers = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
                 id: crypto.randomUUID(),
                 name: "",
                 email: "",
                 rollNo: "",
+                number: "", // Phone number field
               }));
 
             return {
               ...parsedData,
-              members: [userMember, ...defaultMembers].slice(
-                0,
-                FLAGS.maxTeamSize
-              ),
+              members: [userMember, ...defaultMembers],
             };
           }
         } catch (e) {
@@ -113,18 +114,19 @@ function RegistrationForm({
         }
       }
 
-      const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+      const defaultMembers = Array(FLAGS.minTeamSize - 1)
         .fill(0)
         .map(() => ({
           id: crypto.randomUUID(),
           name: "",
           email: "",
           rollNo: "",
+          number: "", // Phone number field
         }));
 
       return {
         ...prev,
-        members: [userMember, ...defaultMembers].slice(0, FLAGS.maxTeamSize),
+        members: [userMember, ...defaultMembers],
       };
     });
 
@@ -165,7 +167,7 @@ function RegistrationForm({
         formState.teamName ||
         formState.presentationUrl ||
         formState.theme ||
-        formState.members.some((m) => m.name || m.email || m.rollNo)
+        formState.members.some((m) => m.name || m.email || m.rollNo || m.number)
       ) {
         saveToLocalStorage();
       }
@@ -181,17 +183,23 @@ function RegistrationForm({
       ...prev,
       members: [
         ...prev.members,
-        { id: crypto.randomUUID(), name: "", email: "", rollNo: "" },
+        {
+          id: crypto.randomUUID(),
+          name: "",
+          email: "",
+          rollNo: "",
+          number: "",
+        },
       ],
     }));
   }, [formState.members.length]);
 
   const removeTeamMember = useCallback(
     (id: string) => {
-      if (formState.members.length <= 3) {
+      if (formState.members.length <= FLAGS.minTeamSize) {
         setErrors((prev) => ({
           ...prev,
-          members: "Minimum 3 team members required",
+          members: `Minimum ${FLAGS.minTeamSize} team members required`,
         }));
         return;
       }
@@ -262,7 +270,7 @@ function RegistrationForm({
     let validMembers = 0;
 
     formState.members.forEach((member) => {
-      const { id, name, email, rollNo } = member;
+      const { id, name, email, rollNo, number } = member;
 
       if (!name.trim()) {
         newErrors[`member-${id}-name`] = "Name is required";
@@ -278,13 +286,26 @@ function RegistrationForm({
         newErrors[`member-${id}-rollNo`] = "Roll number is required";
       }
 
-      if (name && email && rollNo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (!number.trim()) {
+        newErrors[`member-${id}-number`] = "Phone number is required";
+      } else if (!/^\d{10}$/.test(number.replace(/\D/g, ""))) {
+        newErrors[`member-${id}-number`] = "Invalid phone number";
+      }
+
+      if (
+        name &&
+        email &&
+        rollNo &&
+        number &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+        /^\d{10}$/.test(number.replace(/\D/g, ""))
+      ) {
         validMembers++;
       }
     });
 
-    if (validMembers < 3) {
-      newErrors.members = "At least 3 complete team member profiles required";
+    if (validMembers < FLAGS.minTeamSize) {
+      newErrors.members = `At least ${FLAGS.minTeamSize} complete team member profiles required`;
     }
 
     if (!formState.presentationUrl.trim()) {
@@ -323,6 +344,7 @@ function RegistrationForm({
         name: member.name,
         email: member.email,
         rollNo: member.rollNo,
+        number: member.number, // Phone number field
         isLead: member.isLead || false,
       })),
       presentationUrl: formState.presentationUrl,
@@ -339,13 +361,14 @@ function RegistrationForm({
           setAlert({ type: "success", message: result.message });
 
           if (initialSession?.user) {
-            const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+            const defaultMembers = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
                 id: crypto.randomUUID(),
                 name: "",
                 email: "",
                 rollNo: "",
+                number: "", // Phone number field
               }));
 
             setFormState({
@@ -356,10 +379,11 @@ function RegistrationForm({
                   name: initialSession.user.name || "",
                   email: initialSession.user.email || "",
                   rollNo: "",
+                  number: "", // Phone number field
                   isLead: true,
                 },
                 ...defaultMembers,
-              ].slice(0, FLAGS.maxTeamSize),
+              ],
               presentationUrl: DEFAULT_VALUES.presentationUrl,
               theme: FLAGS.defaultTheme,
             });
@@ -370,7 +394,7 @@ function RegistrationForm({
 
         setSubmitDialogOpen(false);
       } catch (error) {
-        console.error("Error during registration:", error);
+        console.log("Error submitting form:", error);
         setAlert({
           type: "error",
           message: "An unexpected error occurred. Please try again.",
@@ -389,13 +413,14 @@ function RegistrationForm({
     localStorage.removeItem("hackathon-last-saved");
     setLastSaved(null);
 
-    const defaultMembers = Array(FLAGS.maxTeamSize - 1)
+    const defaultMembers = Array(FLAGS.minTeamSize - 1)
       .fill(0)
       .map(() => ({
         id: crypto.randomUUID(),
         name: "",
         email: "",
         rollNo: "",
+        number: "", // Phone number field
       }));
 
     if (initialSession?.user) {
@@ -407,10 +432,11 @@ function RegistrationForm({
             name: initialSession.user.name || "",
             email: initialSession.user.email || "",
             rollNo: "",
+            number: "", // Phone number field
             isLead: true,
           },
           ...defaultMembers,
-        ].slice(0, FLAGS.maxTeamSize),
+        ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
         theme: FLAGS.defaultTheme,
       });
@@ -424,8 +450,9 @@ function RegistrationForm({
             name: "",
             email: "",
             rollNo: "",
+            number: "", // Phone number field
           },
-        ].slice(0, FLAGS.maxTeamSize),
+        ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
         theme: FLAGS.defaultTheme,
       });
@@ -467,7 +494,7 @@ function RegistrationForm({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-16 pt-32 px-6">
+    <div className="w-full max-w-4xl mx-auto py-8 md:py-16 pt-16 md:pt-32 px-4 md:px-6">
       {alert && (
         <Alert
           type={alert.type}
@@ -476,8 +503,8 @@ function RegistrationForm({
         />
       )}
 
-      <div className="bg-[#0a0918] border border-indigo-600 rounded-xl shadow-xl p-8 text-gray-100 relative">
-        <h1 className="text-3xl font-bold mb-8 text-violet-400">
+      <div className="bg-[#0a0918] border border-indigo-600 rounded-xl shadow-xl p-4 md:p-8 text-gray-100 relative">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-violet-400">
           REGISTER YOUR TEAM
         </h1>
 
@@ -499,23 +526,25 @@ function RegistrationForm({
           </div>
         )}
 
-        <div className="absolute top-4 right-4 flex items-center space-x-4">
+        <div className="absolute top-4 right-4 flex flex-col md:flex-row items-end md:items-center md:space-x-4">
           {saveStatus === "saving" && (
-            <div className="text-xs text-gray-400 flex items-center">
+            <div className="text-xs text-gray-400 flex items-center mb-2 md:mb-0">
               <div className="animate-spin h-3 w-3 mr-2 border-t-2 border-violet-400 rounded-full"></div>
               Saving...
             </div>
           )}
 
           {saveStatus === "saved" && (
-            <div className="text-xs text-green-400 flex items-center">
+            <div className="text-xs text-green-400 flex items-center mb-2 md:mb-0">
               <CheckCircle size={12} className="mr-1" />
               Saved
             </div>
           )}
 
           {lastSaved && saveStatus === "idle" && (
-            <div className="text-xs text-gray-400">Last saved: {lastSaved}</div>
+            <div className="text-xs text-gray-400 mb-2 md:mb-0">
+              Last saved: {lastSaved}
+            </div>
           )}
 
           <button
@@ -528,7 +557,7 @@ function RegistrationForm({
           </button>
         </div>
 
-        <form onSubmit={handlePreSubmit} className="space-y-8">
+        <form onSubmit={handlePreSubmit} className="space-y-6 md:space-y-8">
           <div>
             <label
               htmlFor="teamName"
@@ -583,11 +612,11 @@ function RegistrationForm({
           </div>
 
           <div className="bg-[#13112a] p-4 rounded-lg border border-indigo-800">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-medium text-violet-400 flex items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+              <h2 className="text-xl font-medium text-violet-400 flex flex-wrap items-center mb-3 sm:mb-0">
                 Team Members
                 <span className="ml-2 text-xs bg-indigo-900 text-violet-300 px-2 py-1 rounded-full">
-                  Min 3 required
+                  Min {FLAGS.minTeamSize} required
                 </span>
               </h2>
               {formState.members.length < FLAGS.maxTeamSize && (
@@ -615,7 +644,7 @@ function RegistrationForm({
                   key={member.id}
                   member={member}
                   index={index}
-                  canRemove={formState.members.length > 3}
+                  canRemove={formState.members.length > FLAGS.minTeamSize}
                   onRemove={removeTeamMember}
                   updateMember={updateMember}
                   errors={errors}
