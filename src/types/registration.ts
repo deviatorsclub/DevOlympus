@@ -1,4 +1,5 @@
 import { Theme } from "@/lib/flags";
+import { Prisma } from "@prisma/client";
 
 export interface TeamMember {
   id: string;
@@ -6,6 +7,7 @@ export interface TeamMember {
   email: string;
   rollNo: string;
   isLead?: boolean;
+  number: string;
 }
 
 export interface FormState {
@@ -52,4 +54,26 @@ export interface TeamMemberCardProps {
   ) => void;
   errors: Record<string, string>;
   disabled: boolean;
+}
+
+export type TeamWithMembers = Prisma.TeamGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    presentationUrl: true;
+    theme: true;
+    members: {
+      select: {
+        email: true;
+        name: true;
+        isLead: true;
+        rollNo: true;
+        number: true;
+      };
+    };
+  };
+}>;
+
+export interface ErrorDisplayProps {
+  error: string;
 }

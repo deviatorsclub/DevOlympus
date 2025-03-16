@@ -2,27 +2,36 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/authOptions";
 import { FLAGS, THEMES, Theme } from "@/lib/flags";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 const ThemeEnum = z.enum(THEMES as [Theme, ...Theme[]]);
 
+//
 const TeamMemberSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email format"),
   rollNo: z.string().min(1, "Roll number is required"),
   isLead: z.boolean().optional(),
+  number: z
+    .string()
+    .min(1, "Phone number is required")
+    .refine(
+      (val) => /^\d{10}$/.test(val.replace(/\D/g, "")),
+      "Phone number must be 10 digits"
+    ),
 });
 
 const RegistrationSchema = z.object({
   teamName: z.string().min(1, "Team name is required"),
   members: z
     .array(TeamMemberSchema)
-    .min(3, "At least 3 team members required")
+    .min(
+      FLAGS.minTeamSize,
+      `At least ${FLAGS.minTeamSize} team members required`
+    )
     .max(
       FLAGS.maxTeamSize,
       `Maximum ${FLAGS.maxTeamSize} team members allowed`
@@ -36,6 +45,7 @@ export type RegistrationFormData = z.infer<typeof RegistrationSchema>;
 type ActionResponse = {
   success: boolean;
   message: string;
+  errors?: Record<string, string>;
 };
 
 export async function registerTeam(
@@ -86,19 +96,29 @@ export async function registerTeam(
       };
     }
 
-    const memberEmails = validatedData.members.map((member) => member.email);
+    const uniqueEmails = new Set(validatedData.members.map((m) => m.email));
+    if (uniqueEmails.size !== validatedData.members.length) {
+      return {
+        success: false,
+        message: "Each team member must have a unique email address",
+      };
+    }
 
+    // Check if any team members are already registered in other teams
+    const memberEmails = validatedData.members.map((member) => member.email);
     const existingMember = await prisma.teamMember.findFirst({
       where: { email: { in: memberEmails } },
+      include: { team: true },
     });
 
     if (existingMember) {
       return {
         success: false,
-        message: `Member with email ${existingMember.email} is already part of another team`,
+        message: `Member with email ${existingMember.email} is already registered with team "${existingMember.team?.name}"`,
       };
     }
 
+    // Create the team with members including phone numbers
     await prisma.team.create({
       data: {
         name: validatedData.teamName,
@@ -110,6 +130,7 @@ export async function registerTeam(
             name: member.name,
             email: member.email,
             rollNo: member.rollNo,
+            number: member.number, // Include the phone number
             isLead: !!member.isLead,
           })),
         },
@@ -120,24 +141,42 @@ export async function registerTeam(
 
     return {
       success: true,
-      message: "Team registered successfully",
+      message: "Team registered successfully! Good luck with your project.",
     };
   } catch (error) {
+    console.error("Registration error:", error);
+
     if (error instanceof z.ZodError) {
-      const message = error.errors
-        .map((e) => `${e.path.join(".")}: ${e.message}`)
-        .join(", ");
+      // Create a more user-friendly error message from Zod validation errors
+      const formattedErrors: Record<string, string> = {};
+      const errorMessage: string[] = [];
+
+      error.errors.forEach((err) => {
+        const path = err.path.join(".");
+        formattedErrors[path] = err.message;
+
+        // Create a more readable message for user display
+        if (path.includes("members")) {
+          const memberIndex = parseInt(path.split(".")[1]);
+          const field = path.split(".")[2];
+          const memberNumber = memberIndex + 1;
+
+          errorMessage.push(`Team Member ${memberNumber}: ${err.message}`);
+        } else {
+          errorMessage.push(`${path}: ${err.message}`);
+        }
+      });
+
       return {
         success: false,
-        message: `Validation error: ${message}`,
+        message: `Please fix the following issues: ${errorMessage.join("; ")}`,
+        errors: formattedErrors,
       };
     }
 
-    console.error("Registration error:", error);
-
     return {
       success: false,
-      message: "Failed to register team. Please try again later.",
+      message: "An unexpected error occurred. Please try again later.",
     };
   }
 }

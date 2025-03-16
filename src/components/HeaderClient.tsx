@@ -17,6 +17,7 @@ import DeviatorsLogo from "@/assets/sm.svg";
 import { signIn, signOut } from "next-auth/react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 
 type NavItem = {
   name: string;
@@ -32,6 +33,7 @@ type MenuItemProps = {
   label: string;
   onClick: () => void;
   variant?: "default" | "danger" | "accent";
+  closeMenu: () => void;
 };
 
 interface HeaderClientProps {
@@ -77,6 +79,7 @@ const MenuItem: FC<MenuItemProps> = ({
   label,
   onClick,
   variant = "default",
+  closeMenu,
 }) => {
   const colorStyles = {
     default:
@@ -92,7 +95,10 @@ const MenuItem: FC<MenuItemProps> = ({
       variants={menuItemVariants}
       className={`group flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium ${colorStyles[variant]}`}
       role="menuitem"
-      onClick={onClick}
+      onClick={() => {
+        closeMenu();
+        onClick();
+      }}
     >
       <Icon className="h-4 w-4" />
       <span className="truncate">{label}</span>
@@ -174,6 +180,7 @@ const DesktopNavItem = memo<{ item: NavItem }>(({ item }) => (
 DesktopNavItem.displayName = "DesktopNavItem";
 
 const UserIcon: FC<UserIconProps> = (props) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -254,11 +261,13 @@ const UserIcon: FC<UserIconProps> = (props) => {
                 </div>
                 <div className="py-1">
                   <MenuItem
+                    closeMenu={closeMenu}
                     icon={UserCircle}
-                    label="Your Team"
-                    onClick={closeMenu}
+                    label="Register"
+                    onClick={() => router.push("/register")}
                   />
                   <MenuItem
+                    closeMenu={closeMenu}
                     icon={LogOut}
                     label="Sign out"
                     onClick={() => signOut()}
@@ -269,9 +278,14 @@ const UserIcon: FC<UserIconProps> = (props) => {
             ) : (
               <div className="p-2">
                 <MenuItem
+                  closeMenu={closeMenu}
                   icon={User}
                   label="Sign in with Google"
-                  onClick={() => signIn("google")}
+                  onClick={() =>
+                    signIn("google", {
+                      redirectTo: "/register",
+                    })
+                  }
                   variant="accent"
                 />
               </div>

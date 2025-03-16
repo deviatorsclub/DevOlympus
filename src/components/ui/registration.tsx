@@ -8,11 +8,14 @@ import {
   AlertCircle,
   Trash2,
   User,
+  Phone,
+  AlertTriangle,
 } from "lucide-react";
 import {
   AlertProps,
   ConfirmDialogProps,
   DeadlineBannerProps,
+  ErrorDisplayProps,
   SubmitDialogProps,
   TeamMemberCardProps,
 } from "@/types/registration";
@@ -198,19 +201,21 @@ export const DeadlineBanner = memo(({ deadline }: DeadlineBannerProps) => {
   }, [deadline]);
 
   return (
-    <div className="bg-indigo-900/60 border border-indigo-500 rounded-lg p-3 mb-6 flex items-center text-sm">
-      <Calendar className="text-violet-300 mr-2" size={18} />
-      <div className="flex-1">
-        <p className="text-violet-200">
-          Registration deadline: {deadline.toLocaleDateString()} at{" "}
-          {deadline.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
+    <div className="bg-indigo-900/60 border border-indigo-500 rounded-lg p-3 mb-6 flex flex-col sm:flex-row items-start sm:items-center text-sm">
+      <div className="flex items-center mb-2 sm:mb-0">
+        <Calendar className="text-violet-300 mr-2 flex-shrink-0" size={18} />
+        <div className="flex-1">
+          <p className="text-violet-200">
+            Registration deadline: {deadline.toLocaleDateString()} at{" "}
+            {deadline.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
       </div>
-      <div className="flex items-center bg-indigo-800 px-3 py-1 rounded-full">
-        <Clock className="text-violet-300 mr-1" size={14} />
+      <div className="flex items-center bg-indigo-800 px-3 py-1 rounded-full ml-0 sm:ml-auto mt-2 sm:mt-0">
+        <Clock className="text-violet-300 mr-1 flex-shrink-0" size={14} />
         <span className="text-violet-200 font-medium">{timeLeft}</span>
       </div>
     </div>
@@ -264,7 +269,7 @@ export const TeamMemberCard = memo(
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="text-sm mb-2 block text-violet-300">Name</label>
             <input
@@ -290,9 +295,11 @@ export const TeamMemberCard = memo(
           <div>
             <label className="text-sm mb-2 block text-violet-300">Email</label>
             {member.isLead ? (
-              <div className="w-full px-3 py-2 rounded-md bg-indigo-900/30 text-gray-400 border border-indigo-800 filter cursor-not-allowed">
-                {member.email}
-              </div>
+              <input
+                className="w-full px-3 py-2 rounded-md bg-indigo-900/30 text-gray-400 border border-indigo-800 filter cursor-not-allowed"
+                value={member.email}
+                disabled
+              />
             ) : (
               <input
                 type="email"
@@ -344,9 +351,51 @@ export const TeamMemberCard = memo(
               </p>
             )}
           </div>
+
+          <div>
+            <label className="text-sm mb-2 block text-violet-300">
+              <div className="flex items-center">
+                <Phone size={14} className="mr-1" />
+                Phone Number
+              </div>
+            </label>
+            <input
+              type="tel"
+              value={member.number || ""}
+              onChange={(e) =>
+                updateMember(member.id, "number", e.target.value)
+              }
+              placeholder="e.g., 9876543210"
+              disabled={disabled}
+              className={`w-full px-3 py-2 rounded-md bg-[#0a0918] text-white border ${
+                errors[`member-${member.id}-number`]
+                  ? "border-red-500"
+                  : "border-indigo-800"
+              } focus:border-violet-400 focus:outline-none focus:ring-1 focus:ring-violet-400 ${
+                disabled ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            />
+            {errors[`member-${member.id}-number`] && (
+              <p className="mt-1 text-sm text-red-400">
+                {errors[`member-${member.id}-number`]}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 );
 TeamMemberCard.displayName = "TeamMemberCard";
+
+export const ErrorDisplay = memo(({ error }: ErrorDisplayProps) => {
+  return (
+    <div className="flex items-start mt-2 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+      <AlertTriangle size={14} className="mr-1.5 flex-shrink-0 mt-0.5" />
+      <span>{error}</span>
+    </div>
+  );
+});
+ErrorDisplay.displayName = "ErrorDisplay";
+
+export default ErrorDisplay;

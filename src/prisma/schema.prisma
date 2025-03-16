@@ -38,6 +38,7 @@ model TeamMember {
   rollNo String
   isLead Boolean @default(false)
   team   Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  number String
   teamId Int
 
   @@unique([email, teamId])
