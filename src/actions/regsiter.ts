@@ -158,7 +158,6 @@ export async function registerTeam(
         // Create a more readable message for user display
         if (path.includes("members")) {
           const memberIndex = parseInt(path.split(".")[1]);
-          const field = path.split(".")[2];
           const memberNumber = memberIndex + 1;
 
           errorMessage.push(`Team Member ${memberNumber}: ${err.message}`);

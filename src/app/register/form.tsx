@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition, useEffect } from "react";
-import {
-  CheckCircle,
-  Plus,
-  Link,
-  RefreshCw,
-  Loader2,
-  AlertTriangle,
-} from "lucide-react";
+import { CheckCircle, Plus, Link, RefreshCw, Loader2 } from "lucide-react";
 import { Session } from "next-auth";
 import {
   ConfirmDialog,
@@ -19,7 +12,7 @@ import {
 } from "@/components/ui/registration";
 import { FormState, TeamMember } from "@/types/registration";
 import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
-import LoginFallback from "./LoginFallback";
+import LoginFallback from "@/components/LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
 
 interface RegistrationFormProps {
@@ -40,7 +33,7 @@ export default function RegistrationForm({
         name: "",
         email: "",
         rollNo: "",
-        number: "",
+        number: "", // Phone number field
       })),
     presentationUrl: DEFAULT_VALUES.presentationUrl,
     theme: FLAGS.defaultTheme,
@@ -253,7 +246,6 @@ export default function RegistrationForm({
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
-    const incompleteMembers: string[] = [];
 
     if (isDeadlinePassed()) {
       newErrors.deadline = "Registration deadline has passed";
@@ -268,102 +260,62 @@ export default function RegistrationForm({
     }
 
     if (!formState.teamName.trim()) {
-      newErrors.teamName = "Team name is required for your project identity";
+      newErrors.teamName = "Team name is required";
     }
 
     if (!formState.theme) {
-      newErrors.theme =
-        "Please select a project theme for your hackathon entry";
+      newErrors.theme = "Please select a project theme";
     }
 
     let validMembers = 0;
-    const incompleteFields: Record<string, string[]> = {};
 
-    formState.members.forEach((member, index) => {
+    formState.members.forEach((member) => {
       const { id, name, email, rollNo, number } = member;
-      const memberTitle = member.isLead ? "Team Lead" : `Member ${index + 1}`;
-      const missingFields = [];
 
       if (!name.trim()) {
-        newErrors[`member-${id}-name`] = "Full name is required";
-        missingFields.push("name");
+        newErrors[`member-${id}-name`] = "Name is required";
       }
 
       if (!email.trim()) {
-        newErrors[`member-${id}-email`] = "Email address is required";
-        missingFields.push("email");
+        newErrors[`member-${id}-email`] = "Email is required";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        newErrors[`member-${id}-email`] =
-          "Please enter a valid email format (e.g., name@example.com)";
-        missingFields.push("email format");
+        newErrors[`member-${id}-email`] = "Invalid email format";
       }
 
       if (!rollNo.trim()) {
-        newErrors[`member-${id}-rollNo`] =
-          "Roll number is required for verification";
-        missingFields.push("roll number");
+        newErrors[`member-${id}-rollNo`] = "Roll number is required";
       }
 
       if (!number.trim()) {
-        newErrors[`member-${id}-number`] =
-          "Phone number is required for contact";
-        missingFields.push("phone number");
+        newErrors[`member-${id}-number`] = "Phone number is required";
       } else if (!/^\d{10}$/.test(number.replace(/\D/g, ""))) {
-        newErrors[`member-${id}-number`] =
-          "Please enter a 10-digit phone number";
-        missingFields.push("valid phone number");
+        newErrors[`member-${id}-number`] = "Invalid phone number";
       }
 
-      // Check if this member is complete - has no validation errors
-      const isComplete = missingFields.length === 0;
-
-      if (isComplete) {
+      if (
+        name &&
+        email &&
+        rollNo &&
+        number &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+        /^\d{10}$/.test(number.replace(/\D/g, ""))
+      ) {
         validMembers++;
-      } else {
-        incompleteMembers.push(memberTitle);
-        incompleteFields[memberTitle] = missingFields;
       }
     });
 
-    // Make sure we have the minimum required number of valid members
     if (validMembers < FLAGS.minTeamSize) {
-      // Create a more detailed error message
-      if (incompleteMembers.length > 0) {
-        let errorMsg = `Please complete all fields for your team members. Issues found in: `;
-
-        incompleteMembers.forEach((member, idx) => {
-          const fields = incompleteFields[member].join(", ");
-          errorMsg += `${member} (missing ${fields})`;
-
-          if (idx < incompleteMembers.length - 1) {
-            errorMsg += "; ";
-          }
-        });
-
-        newErrors.members = errorMsg;
-      } else {
-        newErrors.members = `Your team needs at least ${FLAGS.minTeamSize} complete member profiles to register`;
-      }
+      newErrors.members = `At least ${FLAGS.minTeamSize} complete team member profiles required`;
     }
 
     if (!formState.presentationUrl.trim()) {
-      newErrors.presentationUrl =
-        "Please provide a link to your project presentation";
+      newErrors.presentationUrl = "Presentation URL is required";
     } else if (!/^https?:\/\/.+/.test(formState.presentationUrl)) {
       newErrors.presentationUrl =
-        "Please enter a valid URL starting with http:// or https://";
+        "Must be a valid URL starting with http:// or https://";
     }
 
     setErrors(newErrors);
-
-    // Log validation errors for debugging
-    if (Object.keys(newErrors).length > 0) {
-      console.log("Form validation failed with errors:", newErrors);
-      console.log(
-        `Valid members count: ${validMembers}, Required: ${FLAGS.minTeamSize}`
-      );
-    }
-
     return Object.keys(newErrors).length === 0;
   }, [formState, isDeadlinePassed]);
 
@@ -627,13 +579,7 @@ export default function RegistrationForm({
               }`}
             />
             {errors.teamName && (
-              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
-                <AlertTriangle
-                  size={14}
-                  className="mr-1.5 flex-shrink-0 mt-0.5"
-                />
-                <span>{errors.teamName}</span>
-              </div>
+              <p className="mt-1 text-sm text-red-400">{errors.teamName}</p>
             )}
           </div>
 
@@ -661,13 +607,7 @@ export default function RegistrationForm({
               ))}
             </select>
             {errors.theme && (
-              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
-                <AlertTriangle
-                  size={14}
-                  className="mr-1.5 flex-shrink-0 mt-0.5"
-                />
-                <span>{errors.theme}</span>
-              </div>
+              <p className="mt-1 text-sm text-red-400">{errors.theme}</p>
             )}
           </div>
 
@@ -695,13 +635,7 @@ export default function RegistrationForm({
             </div>
 
             {errors.members && (
-              <div className="mb-4 flex items-start text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
-                <AlertTriangle
-                  size={14}
-                  className="mr-1.5 flex-shrink-0 mt-0.5"
-                />
-                <span>{errors.members}</span>
-              </div>
+              <p className="mb-4 text-sm text-red-400">{errors.members}</p>
             )}
 
             <div className="space-y-4">
@@ -746,13 +680,9 @@ export default function RegistrationForm({
               />
             </div>
             {errors.presentationUrl && (
-              <div className="flex items-start mt-1 text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
-                <AlertTriangle
-                  size={14}
-                  className="mr-1.5 flex-shrink-0 mt-0.5"
-                />
-                <span>{errors.presentationUrl}</span>
-              </div>
+              <p className="mt-1 text-sm text-red-400">
+                {errors.presentationUrl}
+              </p>
             )}
             <p className="mt-1 text-xs text-gray-400">
               Share your presentation via Google Drive, Dropbox, or similar

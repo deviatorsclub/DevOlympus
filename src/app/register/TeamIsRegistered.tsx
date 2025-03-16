@@ -8,6 +8,7 @@ import {
   Calendar,
   Phone,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
   const teamLead = team.members.find((member) => member.isLead);
@@ -157,12 +158,12 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <a
+          <Link
             href="/"
             className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-md transition-colors"
           >
             Go to Home Page
-          </a>
+          </Link>
         </div>
       </div>
     </div>
