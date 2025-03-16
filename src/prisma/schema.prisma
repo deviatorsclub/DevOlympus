@@ -20,7 +20,7 @@ model User {
 }
 
 model Team {
-  id              Int          @id @default(autoincrement())
+  id              String       @id @default(cuid())
   name            String
   presentationUrl String
   theme           String
@@ -39,7 +39,7 @@ model TeamMember {
   isLead Boolean @default(false)
   team   Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
   number String
-  teamId Int
+  teamId String
 
   @@unique([email, teamId])
 }

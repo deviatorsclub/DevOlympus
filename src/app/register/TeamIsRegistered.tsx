@@ -1,3 +1,5 @@
+"use client";
+
 import { TeamWithMembers } from "@/types/registration";
 import {
   CheckCircle,
@@ -7,12 +9,23 @@ import {
   Clock,
   Calendar,
   Phone,
+  Copy,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
   const teamLead = team.members.find((member) => member.isLead);
   const teamMembers = team.members.filter((member) => !member.isLead);
+
+  function CopyButton() {
+    return (
+      <Copy
+        size={16}
+        className="text-violet-400 cursor-pointer"
+        onClick={() => navigator.clipboard.writeText(team.id)}
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 md:py-16 pt-16 md:pt-32 px-4 md:px-6">
@@ -25,7 +38,10 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
         <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-violet-400 text-center">
           TEAM {team.name.toUpperCase()}
         </h1>
-
+        <div className="flex gap-2 justify-center items-center text-lg md:text-xl font-bold mb-6 md:mb-8 text-violet-400 text-center">
+          <h2>TEAM ID: {team.id}</h2>
+          <CopyButton />
+        </div>
         <div className="bg-[#13112a] p-5 rounded-lg border border-indigo-600 mb-8">
           <div className="mb-4">
             <h2 className="text-lg font-medium text-violet-300 mb-2">
