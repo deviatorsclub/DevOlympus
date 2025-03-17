@@ -8,13 +8,16 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  name      String?
-  email     String  @unique
-  image     String?
-  loginJson Json
-  isBlocked Boolean @default(false)
-  team      Team?
+  id            Int      @id @default(autoincrement())
+  name          String?
+  email         String   @unique
+  image         String?
+  loginJson     Json
+  isBlocked     Boolean  @default(false)
+  team          Team?
+  createdAt     DateTime @default(now())
+  loggedInTimes Int      @default(1)
+  lastLogin     DateTime @default(now())
 
   @@unique([id])
 }

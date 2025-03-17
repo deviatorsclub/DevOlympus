@@ -48,9 +48,36 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
         where: {
           email,
         },
+        select: {
+          loggedInTimes: true,
+        },
       });
 
-      if (dbUser) return true;
+      if (dbUser) {
+        console.log(
+          `User ${email} logged in ${dbUser.loggedInTimes + 1} times`
+        );
+
+        await prisma.user.update({
+          where: { email },
+          data: {
+            name,
+            image: typeof image === "string" ? image : undefined,
+            loginJson: param as {
+              user: {
+                email?: string | null;
+                name?: string | null;
+                image?: string | null;
+              };
+              account: { provider: string } | null;
+              profile?: { email?: string; name?: string; avatar_url?: string };
+            },
+            loggedInTimes: dbUser.loggedInTimes + 1,
+            lastLogin: new Date(),
+          },
+        });
+        return true;
+      }
 
       await prisma.user.create({
         data: {
@@ -101,7 +128,7 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
     },
   },
   session: {
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60,
   },
 });
 
