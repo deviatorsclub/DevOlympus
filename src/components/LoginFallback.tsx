@@ -4,6 +4,7 @@ import { LogIn } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useCallback } from "react";
 import { FLAGS } from "@/lib/flags";
+import { CountdownTimer } from "./HeroSection";
 
 export default function LoginFallback() {
   const isDeadlinePassed = useCallback(() => {
@@ -22,6 +23,17 @@ export default function LoginFallback() {
           An intense 30-hour innovation sprint where the sharpest minds <br />
           ascend to new heights, building real-world solutions.
         </p>
+
+        <div className="mb-2 text-violet-300 font-medium">
+          Registration Deadline(
+          {FLAGS.submissionDeadline.toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })}
+          )
+        </div>
+        <CountdownTimer countTill={FLAGS.submissionDeadline} />
 
         {isDeadlinePassed() ? (
           <div className="bg-red-900/60 border border-red-500 rounded-lg p-4 mb-6 max-w-md w-full text-center">

@@ -163,7 +163,7 @@ const CircuitLines = memo((): JSX.Element => {
       { x1: "80%", y1: "50%", x2: "60%", y2: "50%" },
       { x1: "60%", y1: "50%", x2: "60%", y2: "90%" },
     ],
-    [],
+    []
   );
 
   return (
@@ -243,7 +243,7 @@ const TitleCharacter = memo(
         </AnimatePresence>
       </motion.div>
     );
-  },
+  }
 );
 TitleCharacter.displayName = "TitleCharacter";
 
@@ -358,61 +358,65 @@ const CountdownDigit = memo(
         </span>
       </div>
     );
-  },
+  }
 );
 CountdownDigit.displayName = "CountdownDigit";
 
-const CountdownTimer = memo((): JSX.Element => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+export const CountdownTimer = memo(
+  ({ countTill }: { countTill?: Date }): JSX.Element => {
+    const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
 
-  useEffect(() => {
-    const countDownDate = HACKATHON_DATE.getTime();
+    useEffect(() => {
+      const countDownDate = countTill
+        ? countTill.getTime()
+        : HACKATHON_DATE.getTime();
 
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const distance = countDownDate - now;
+      const updateCountdown = () => {
+        const now = new Date().getTime();
+        const distance = countDownDate - now;
 
-      if (distance > 0) {
-        setTimeLeft({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-          hours: Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-          ),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000),
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
+        if (distance > 0) {
+          setTimeLeft({
+            days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+            hours: Math.floor(
+              (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            ),
+            minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+            seconds: Math.floor((distance % (1000 * 60)) / 1000),
+          });
+        } else {
+          setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        }
+      };
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }, []);
 
-  return (
-    <motion.div
-      variants={countdownContainerVariants}
-      initial="hidden"
-      animate="visible"
-      className="flex justify-center mb-10"
-    >
-      <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-        <CountdownDigit value={timeLeft.days} label="DAYS" />
-        <CountdownDigit value={timeLeft.hours} label="HOURS" />
-        <CountdownDigit value={timeLeft.minutes} label="MINUTES" />
-        <CountdownDigit value={timeLeft.seconds} label="SECONDS" />
-      </div>
-    </motion.div>
-  );
-});
+    return (
+      <motion.div
+        variants={countdownContainerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex justify-center mb-10"
+      >
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+          <CountdownDigit value={timeLeft.days} label="DAYS" />
+          <CountdownDigit value={timeLeft.hours} label="HOURS" />
+          <CountdownDigit value={timeLeft.minutes} label="MINUTES" />
+          <CountdownDigit value={timeLeft.seconds} label="SECONDS" />
+        </div>
+      </motion.div>
+    );
+  }
+);
 CountdownTimer.displayName = "CountdownTimer";
 
 const ActionButtons = memo((): JSX.Element => {
