@@ -17,6 +17,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { FaChalkboardTeacher } from "react-icons/fa";
+import { HACKATHON_DATE, HACKATHON_END_DATE } from "@/data";
 interface ScheduleEvent {
   time: string;
   title: string;
@@ -36,6 +37,32 @@ interface ScheduleDay {
   textColor?: string;
 }
 
+// Format date as "4th April, 2025"
+const formatDate = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const year = date.getFullYear();
+
+  const suffix = getDaySuffix(day);
+
+  return `${day}${suffix} ${month}, ${year}`;
+};
+
+const getDaySuffix = (day: number): string => {
+  if (day >= 11 && day <= 13) return "th";
+
+  switch (day % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+};
+
 export default function ResponsiveScheduleSection(): JSX.Element {
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -49,7 +76,7 @@ export default function ResponsiveScheduleSection(): JSX.Element {
       id: "day1",
       day: "Day 1",
       title: "Kickoff",
-      date: "4th April, 2025",
+      date: formatDate(HACKATHON_DATE),
       events: [
         {
           time: "09:00 - 10:00",
@@ -122,7 +149,7 @@ export default function ResponsiveScheduleSection(): JSX.Element {
       id: "day2",
       day: "Day 2",
       title: "Finale",
-      date: "5th April, 2025",
+      date: formatDate(HACKATHON_END_DATE),
       events: [
         {
           time: "00:00 - 01:00",
