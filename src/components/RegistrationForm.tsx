@@ -32,7 +32,11 @@ export default function RegistrationForm({
 }: RegistrationFormProps) {
   const [isPending, startTransition] = useTransition();
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [formState, setFormState] = useState<FormState>({
+  const [formState, setFormState] = useState<
+    FormState & {
+      presentationPublic: boolean;
+    }
+  >({
     teamName: DEFAULT_VALUES.teamNameSuggestion,
     members: Array(FLAGS.minTeamSize)
       .fill(0)
@@ -45,11 +49,12 @@ export default function RegistrationForm({
       })),
     presentationUrl: DEFAULT_VALUES.presentationUrl,
     theme: FLAGS.defaultTheme,
+    presentationPublic: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
-    "idle",
+    "idle"
   );
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState<boolean>(false);
@@ -79,9 +84,11 @@ export default function RegistrationForm({
       const savedData = localStorage.getItem("hackathon-registration");
       if (savedData) {
         try {
-          const parsedData = JSON.parse(savedData) as FormState;
+          const parsedData = JSON.parse(savedData) as FormState & {
+            presentationPublic: boolean;
+          };
           const existingLeadIndex = parsedData.members.findIndex(
-            (m) => m.isLead,
+            (m) => m.isLead
           );
 
           if (existingLeadIndex >= 0) {
@@ -96,6 +103,10 @@ export default function RegistrationForm({
               ...member,
               number: member.number || "",
             }));
+
+            // Ensure presentationPublic field exists (migration for existing data)
+            parsedData.presentationPublic =
+              parsedData.presentationPublic || false;
 
             setLastSaved(localStorage.getItem("hackathon-last-saved") || null);
             return parsedData;
@@ -113,6 +124,7 @@ export default function RegistrationForm({
             return {
               ...parsedData,
               members: [userMember, ...defaultMembers],
+              presentationPublic: parsedData.presentationPublic || false,
             };
           }
         } catch (e) {
@@ -217,14 +229,14 @@ export default function RegistrationForm({
         members: prev.members.filter((member) => member.id !== id),
       }));
     },
-    [formState.members],
+    [formState.members]
   );
 
   const updateMember = useCallback(
     (
       id: string,
       field: keyof Omit<TeamMember, "id" | "isLead">,
-      value: string,
+      value: string
     ) => {
       if (
         field === "email" &&
@@ -235,7 +247,7 @@ export default function RegistrationForm({
       setFormState((prev) => ({
         ...prev,
         members: prev.members.map((member) =>
-          member.id === id ? { ...member, [field]: value } : member,
+          member.id === id ? { ...member, [field]: value } : member
         ),
       }));
 
@@ -247,7 +259,7 @@ export default function RegistrationForm({
         });
       }
     },
-    [errors, formState.members],
+    [errors, formState.members]
   );
 
   const validateForm = useCallback((): boolean => {
@@ -350,6 +362,11 @@ export default function RegistrationForm({
         "Please enter a valid URL starting with http:// or https://";
     }
 
+    if (!formState.presentationPublic) {
+      newErrors.presentationPublic =
+        "You must confirm that your presentation is publicly accessible";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formState, isDeadlinePassed]);
@@ -361,7 +378,7 @@ export default function RegistrationForm({
         setSubmitDialogOpen(true);
       }
     },
-    [validateForm],
+    [validateForm]
   );
 
   const handleSubmit = useCallback(() => {
@@ -420,6 +437,7 @@ export default function RegistrationForm({
               ],
               presentationUrl: DEFAULT_VALUES.presentationUrl,
               theme: FLAGS.defaultTheme,
+              presentationPublic: false,
             });
           }
         } else {
@@ -473,6 +491,7 @@ export default function RegistrationForm({
         ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
         theme: FLAGS.defaultTheme,
+        presentationPublic: false,
       });
     } else {
       setFormState({
@@ -489,6 +508,7 @@ export default function RegistrationForm({
         ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
         theme: FLAGS.defaultTheme,
+        presentationPublic: false,
       });
     }
 
@@ -498,7 +518,15 @@ export default function RegistrationForm({
   }, [initialSession]);
 
   const updateFormField = useCallback(
-    (field: keyof Omit<FormState, "members">, value: string) => {
+    (
+      field: keyof Omit<
+        FormState & {
+          presentationPublic: boolean;
+        },
+        "members"
+      >,
+      value: string | boolean
+    ) => {
       setFormState((prev) => ({
         ...prev,
         [field]: value,
@@ -512,7 +540,7 @@ export default function RegistrationForm({
         });
       }
     },
-    [errors],
+    [errors]
   );
 
   const dismissAlert = useCallback(() => {
@@ -757,6 +785,41 @@ export default function RegistrationForm({
               service
             </p>
           </div>
+
+          <div className="flex items-start">
+            <div className="flex h-5 items-center">
+              <input
+                id="presentationPublic"
+                type="checkbox"
+                checked={formState.presentationPublic}
+                onChange={(e) =>
+                  updateFormField("presentationPublic", e.target.checked)
+                }
+                disabled={isFormDisabled()}
+                className={`h-4 w-4 rounded border-indigo-600 bg-[#13112a] text-violet-600 focus:ring-violet-500 ${
+                  isFormDisabled() ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label
+                htmlFor="presentationPublic"
+                className="text-gray-200 cursor-pointer"
+              >
+                I confirm that I have made my presentation publicly accessible
+                with view permissions for anyone with the link
+              </label>
+            </div>
+          </div>
+          {errors.presentationPublic && (
+            <div className="flex items-start mt-1 text-xs sm:text-sm text-red-400 bg-red-950/30 border border-red-800/50 rounded-md p-2">
+              <AlertTriangle
+                size={14}
+                className="mr-1.5 flex-shrink-0 mt-0.5"
+              />
+              <span>{errors.presentationPublic}</span>
+            </div>
+          )}
 
           <div className="pt-2 sm:pt-4">
             <button
