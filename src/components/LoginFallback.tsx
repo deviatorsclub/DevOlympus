@@ -25,13 +25,14 @@ export default function LoginFallback() {
         </p>
 
         <div className="mb-2 text-violet-300 font-medium">
-          Registration Deadline(
+          Registration Deadline:&nbsp;
           {FLAGS.submissionDeadline.toLocaleDateString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
+            month: "long",
+            day: "numeric",
             year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
           })}
-          )
         </div>
         <CountdownTimer countTill={FLAGS.submissionDeadline} />
 
