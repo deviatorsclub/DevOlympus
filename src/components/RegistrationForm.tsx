@@ -22,6 +22,7 @@ import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
 import LoginFallback from "./LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
 import Link from "next/link";
+import VideoGuide from "./VideoGuide";
 
 interface RegistrationFormProps {
   initialSession: Session | null;
@@ -741,7 +742,7 @@ export default function RegistrationForm({
             <label className="text-sm mb-1 sm:mb-2 block text-violet-300">
               Presentation URL (Max 5MB)
             </label>
-            <div className="mb-2">
+            <div className="mb-2 flex items-center gap-2">
               <Link
                 href="https://docs.google.com/presentation/d/1qRArIWIZzc2lpEmC1fS_7lydpXkvPcVL/edit?usp=sharing&ouid=100076728637005351213&rtpof=true&sd=true"
                 target="_blank"
@@ -750,6 +751,10 @@ export default function RegistrationForm({
                 Presentation Template
               </Link>
             </div>
+
+            {/* Add the VideoGuide component here */}
+            <VideoGuide />
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <LinkIcon size={16} className="text-indigo-400" />
