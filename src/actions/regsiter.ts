@@ -8,9 +8,8 @@ import { prisma } from "@/prisma";
 
 const ThemeEnum = z.enum(THEMES as [Theme, ...Theme[]]);
 
-//
 const TeamMemberSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email format"),
   rollNo: z.string().min(1, "Roll number is required"),
@@ -20,7 +19,7 @@ const TeamMemberSchema = z.object({
     .min(1, "Phone number is required")
     .refine(
       (val) => /^\d{10}$/.test(val.replace(/\D/g, "")),
-      "Phone number must be 10 digits",
+      "Phone number must be 10 digits"
     ),
 });
 
@@ -30,11 +29,11 @@ const RegistrationSchema = z.object({
     .array(TeamMemberSchema)
     .min(
       FLAGS.minTeamSize,
-      `At least ${FLAGS.minTeamSize} team members required`,
+      `At least ${FLAGS.minTeamSize} team members required`
     )
     .max(
       FLAGS.maxTeamSize,
-      `Maximum ${FLAGS.maxTeamSize} team members allowed`,
+      `Maximum ${FLAGS.maxTeamSize} team members allowed`
     ),
   presentationUrl: z.string().url("Must be a valid URL"),
   theme: ThemeEnum,
@@ -49,7 +48,7 @@ type ActionResponse = {
 };
 
 export async function registerTeam(
-  data: RegistrationFormData,
+  data: RegistrationFormData
 ): Promise<ActionResponse> {
   try {
     if (!FLAGS.isRegistrationOpen) {
@@ -119,6 +118,7 @@ export async function registerTeam(
 
     await prisma.team.create({
       data: {
+        displayId: "DEV_" + session?.user?.email.split("@")[0],
         name: validatedData.teamName,
         presentationUrl: validatedData.presentationUrl,
         theme: validatedData.theme,

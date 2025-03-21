@@ -17,7 +17,7 @@ import {
   DeadlineBanner,
   TeamMemberCard,
 } from "@/components/ui/registration";
-import { FormState, TeamMember } from "@/types/registration";
+import { TeamMember, ExtendedFormState } from "@/types/registration";
 import { FLAGS, THEMES, DEFAULT_VALUES } from "@/lib/flags";
 import LoginFallback from "./LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
@@ -33,20 +33,17 @@ export default function RegistrationForm({
 }: RegistrationFormProps) {
   const [isPending, startTransition] = useTransition();
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [formState, setFormState] = useState<
-    FormState & {
-      presentationPublic: boolean;
-    }
-  >({
+  const [formState, setFormState] = useState<ExtendedFormState>({
     teamName: DEFAULT_VALUES.teamNameSuggestion,
     members: Array(FLAGS.minTeamSize)
       .fill(0)
       .map(() => ({
-        id: crypto.randomUUID(),
+        id: Math.random() * 1000000,
         name: "",
         email: "",
         rollNo: "",
         number: "",
+        isLead: false,
       })),
     presentationUrl: DEFAULT_VALUES.presentationUrl,
     theme: FLAGS.defaultTheme,
@@ -73,7 +70,7 @@ export default function RegistrationForm({
     if (!initialSession?.user || initialized) return;
 
     const userMember: TeamMember = {
-      id: crypto.randomUUID(),
+      id: Math.random() * 1000000,
       name: initialSession.user.name || "",
       email: initialSession.user.email || "",
       rollNo: "",
@@ -85,9 +82,7 @@ export default function RegistrationForm({
       const savedData = localStorage.getItem("hackathon-registration");
       if (savedData) {
         try {
-          const parsedData = JSON.parse(savedData) as FormState & {
-            presentationPublic: boolean;
-          };
+          const parsedData = JSON.parse(savedData) as ExtendedFormState;
           const existingLeadIndex = parsedData.members.findIndex(
             (m) => m.isLead
           );
@@ -105,7 +100,6 @@ export default function RegistrationForm({
               number: member.number || "",
             }));
 
-            // Ensure presentationPublic field exists (migration for existing data)
             parsedData.presentationPublic =
               parsedData.presentationPublic || false;
 
@@ -115,11 +109,12 @@ export default function RegistrationForm({
             const defaultMembers = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
-                id: crypto.randomUUID(),
+                id: Math.random() * 1000000,
                 name: "",
                 email: "",
                 rollNo: "",
                 number: "",
+                isLead: false,
               }));
 
             return {
@@ -136,11 +131,12 @@ export default function RegistrationForm({
       const defaultMembers = Array(FLAGS.minTeamSize - 1)
         .fill(0)
         .map(() => ({
-          id: crypto.randomUUID(),
+          id: Math.random() * 1000000,
           name: "",
           email: "",
           rollNo: "",
           number: "",
+          isLead: false,
         }));
 
       return {
@@ -203,18 +199,19 @@ export default function RegistrationForm({
       members: [
         ...prev.members,
         {
-          id: crypto.randomUUID(),
+          id: Math.random() * 1000000,
           name: "",
           email: "",
           rollNo: "",
           number: "",
+          isLead: false,
         },
       ],
     }));
   }, [formState.members.length]);
 
   const removeTeamMember = useCallback(
-    (id: string) => {
+    (id: number) => {
       if (formState.members.length <= FLAGS.minTeamSize) {
         setErrors((prev) => ({
           ...prev,
@@ -235,7 +232,7 @@ export default function RegistrationForm({
 
   const updateMember = useCallback(
     (
-      id: string,
+      id: number,
       field: keyof Omit<TeamMember, "id" | "isLead">,
       value: string
     ) => {
@@ -413,21 +410,22 @@ export default function RegistrationForm({
           setAlert({ type: "success", message: result.message });
 
           if (initialSession?.user) {
-            const defaultMembers = Array(FLAGS.minTeamSize - 1)
+            const defaultMembers: TeamMember[] = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
-                id: crypto.randomUUID(),
+                id: Math.random() * 1000000,
                 name: "",
                 email: "",
                 rollNo: "",
                 number: "",
+                isLead: false,
               }));
 
             setFormState({
               teamName: DEFAULT_VALUES.teamNameSuggestion,
               members: [
                 {
-                  id: crypto.randomUUID(),
+                  id: Math.random() * 1000000,
                   name: initialSession.user.name || "",
                   email: initialSession.user.email || "",
                   rollNo: "",
@@ -466,14 +464,15 @@ export default function RegistrationForm({
     localStorage.removeItem("hackathon-last-saved");
     setLastSaved(null);
 
-    const defaultMembers = Array(FLAGS.minTeamSize - 1)
+    const defaultMembers: TeamMember[] = Array(FLAGS.minTeamSize - 1)
       .fill(0)
       .map(() => ({
-        id: crypto.randomUUID(),
+        id: Math.random() * 1000000,
         name: "",
         email: "",
         rollNo: "",
         number: "",
+        isLead: false,
       }));
 
     if (initialSession?.user) {
@@ -481,7 +480,7 @@ export default function RegistrationForm({
         teamName: DEFAULT_VALUES.teamNameSuggestion,
         members: [
           {
-            id: crypto.randomUUID(),
+            id: Math.random() * 1000000,
             name: initialSession.user.name || "",
             email: initialSession.user.email || "",
             rollNo: "",
@@ -500,11 +499,12 @@ export default function RegistrationForm({
         members: [
           ...defaultMembers,
           {
-            id: crypto.randomUUID(),
+            id: Math.random() * 1000000,
             name: "",
             email: "",
             rollNo: "",
             number: "",
+            isLead: false,
           },
         ],
         presentationUrl: DEFAULT_VALUES.presentationUrl,
@@ -520,12 +520,7 @@ export default function RegistrationForm({
 
   const updateFormField = useCallback(
     (
-      field: keyof Omit<
-        FormState & {
-          presentationPublic: boolean;
-        },
-        "members"
-      >,
+      field: keyof Omit<ExtendedFormState, "members">,
       value: string | boolean
     ) => {
       setFormState((prev) => ({
@@ -752,7 +747,6 @@ export default function RegistrationForm({
               </Link>
             </div>
 
-            {/* Add the VideoGuide component here */}
             <VideoGuide />
 
             <div className="relative">

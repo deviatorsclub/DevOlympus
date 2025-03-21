@@ -1,21 +1,13 @@
 import { prisma } from "@/prisma";
 import UserDashboard from "./UserDashboard";
+import { UserWithTeam } from "@/types/user-data";
 
 export default async function Page() {
-  const users = await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      lastLogin: true,
-      isAdmin: true,
-      canEditData: true,
-      loggedInTimes: true,
-      isBlocked: true,
+  const users: UserWithTeam[] = await prisma.user.findMany({
+    include: {
       team: {
-        select: {
-          id: true,
+        include: {
+          members: true,
         },
       },
     },

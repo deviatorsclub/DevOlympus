@@ -6,9 +6,5 @@ export default async function layout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
-  console.log("Session in layout:", session);
-
-  return session?.user ? children : notFound();
+  return (await auth())?.user ? children : notFound();
 }

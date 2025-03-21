@@ -23,7 +23,7 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
       <Copy
         size={16}
         className="text-violet-400 cursor-pointer"
-        onClick={() => navigator.clipboard.writeText(team.id)}
+        onClick={() => navigator.clipboard.writeText(team.displayId)}
       />
     );
   }
@@ -40,7 +40,7 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
           TEAM {team.name.toUpperCase()}
         </h1>
         <div className="flex gap-2 justify-center items-center text-lg md:text-xl font-bold mb-6 md:mb-8 text-violet-400 text-center">
-          <h2>TEAM ID: {team.id}</h2>
+          <h2>TEAM ID: {team.displayId}</h2>
           <CopyButton />
         </div>
         <div className="bg-[#13112a] p-5 rounded-lg border border-indigo-600 mb-8">
@@ -55,7 +55,7 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
               </div>
               <div>
                 <p className="text-sm text-violet-200">Registration ID</p>
-                <p className="text-white font-medium">{team.id}</p>
+                <p className="text-white font-medium">{team.displayId}</p>
               </div>
               <div className="md:col-span-2">
                 <p className="text-sm text-violet-200">Presentation</p>

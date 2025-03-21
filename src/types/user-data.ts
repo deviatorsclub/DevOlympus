@@ -1,24 +1,23 @@
-export interface UserTableType {
-  id: number;
-  name: string | null;
-  email: string;
-  image: string | null;
-  isBlocked: boolean;
-  loggedInTimes: number;
-  lastLogin: Date;
-  canEditData: boolean;
-  isAdmin: boolean;
-  team: {
-    id: string;
-  } | null;
-}
+import { Prisma } from "@prisma/client";
 
-export type SortField = keyof Omit<UserTableType, "team" | "image">;
+export type UserWithTeam = Prisma.UserGetPayload<{
+  include: {
+    team: {
+      include: {
+        members: true;
+      };
+    };
+  };
+}>;
+export type SortField = keyof Omit<
+  UserWithTeam,
+  "team" | "image" | "createdAt" | "updatedAt"
+>;
 export type SortDirection = "asc" | "desc";
-
 export interface FilterState {
   search: string;
-  role: "all" | "admin" | "editor" | "user";
+  role: "all" | "admin" | "user";
   status: "all" | "active" | "blocked";
   loginStatus: "all" | "today" | "week" | "month" | "never";
+  team: "all" | "yes" | "no";
 }

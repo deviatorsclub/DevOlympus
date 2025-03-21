@@ -22,6 +22,7 @@ export default async function page() {
       },
       select: {
         id: true,
+        displayId: true,
         name: true,
         presentationUrl: true,
         theme: true,

@@ -1,20 +1,26 @@
 import { Theme } from "@/lib/flags";
 import { Prisma } from "@prisma/client";
 
-export interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  rollNo: string;
-  isLead?: boolean;
-  number: string;
-}
+export type TeamMember = Prisma.TeamMemberGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    email: true;
+    rollNo: true;
+    number: true;
+    isLead: true;
+  };
+}>;
 
 export interface FormState {
   teamName: string;
   members: TeamMember[];
   presentationUrl: string;
-  theme?: Theme;
+  theme: Theme;
+}
+
+export interface ExtendedFormState extends FormState {
+  presentationPublic: boolean;
 }
 
 export interface ConfirmDialogProps {
@@ -46,11 +52,11 @@ export interface TeamMemberCardProps {
   member: TeamMember;
   index: number;
   canRemove: boolean;
-  onRemove: (id: string) => void;
+  onRemove: (id: number) => void;
   updateMember: (
-    id: string,
+    id: number,
     field: keyof Omit<TeamMember, "id" | "isLead">,
-    value: string,
+    value: string
   ) => void;
   errors: Record<string, string>;
   disabled: boolean;
@@ -59,6 +65,7 @@ export interface TeamMemberCardProps {
 export type TeamWithMembers = Prisma.TeamGetPayload<{
   select: {
     id: true;
+    displayId: true;
     name: true;
     presentationUrl: true;
     theme: true;

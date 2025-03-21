@@ -1,15 +1,24 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useEffect, useMemo, useCallback, useState } from "react";
+import {
+  FilterState,
+  SortDirection,
+  SortField,
+  UserWithTeam,
+} from "@/types/user-data";
 import UserTable from "./UserTable";
 import UserFilters from "./UserFilters";
-import { FilterState, SortDirection, SortField, UserTableType } from "@/types/user-data";
+import { Users } from "lucide-react";
 
-type UserDashboardProps = {
-  initialUsers: UserTableType[];
-};
+const FILTER_STORAGE_KEY = "user-dashboard-filters";
+
+interface UserDashboardProps {
+  initialUsers: UserWithTeam[];
+}
 
 export default function UserDashboard({ initialUsers }: UserDashboardProps) {
+  const [isLoading, setIsLoading] = useState(true);
   const [sortField, setSortField] = useState<SortField>("lastLogin");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
   const [filters, setFilters] = useState<FilterState>({
@@ -17,34 +26,66 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     role: "all",
     status: "all",
     loginStatus: "all",
+    team: "all",
   });
 
-  const handleSortChange = (field: SortField) => {
-    if (field === sortField) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDir("asc");
+  // Load filters from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
+      if (savedFilters) {
+        setFilters(JSON.parse(savedFilters));
+      }
+    } catch (error) {
+      console.error("Failed to load filters from localStorage:", error);
     }
-  };
 
-  const handleFilterChange = (key: keyof FilterState, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+    // Simulate loading state
+    const timer = setTimeout(() => setIsLoading(false), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const clearFilters = () => {
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
+    } catch (error) {
+      console.error("Failed to save filters to localStorage:", error);
+    }
+  }, [filters]);
+
+  const handleSortChange = useCallback(
+    (field: SortField) => {
+      if (field === sortField) {
+        setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+      } else {
+        setSortField(field);
+        setSortDir("asc");
+      }
+    },
+    [sortField]
+  );
+
+  const handleFilterChange = useCallback(
+    (key: keyof FilterState, value: string) => {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
+
+  const clearFilters = useCallback(() => {
     setFilters({
       search: "",
       role: "all",
       status: "all",
       loginStatus: "all",
+      team: "all",
     });
-  };
+  }, []);
 
   const filteredAndSortedUsers = useMemo(() => {
+    if (isLoading) return [];
+
     return initialUsers
       .filter((user) => {
         if (
@@ -56,12 +97,13 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         }
 
         if (filters.role === "admin" && !user.isAdmin) return false;
-        if (filters.role === "editor" && !user.canEditData) return false;
-        if (filters.role === "user" && (user.isAdmin || user.canEditData))
-          return false;
+        if (filters.role === "user" && user.isAdmin) return false;
 
         if (filters.status === "blocked" && !user.isBlocked) return false;
         if (filters.status === "active" && user.isBlocked) return false;
+
+        if (filters.team === "yes" && !user.team) return false;
+        if (filters.team === "no" && user.team) return false;
 
         const now = new Date();
         const lastLogin = new Date(user.lastLogin);
@@ -71,19 +113,16 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           lastLogin.toDateString() !== now.toDateString()
         )
           return false;
-
         if (filters.loginStatus === "week") {
           const weekAgo = new Date();
           weekAgo.setDate(now.getDate() - 7);
           if (lastLogin < weekAgo) return false;
         }
-
         if (filters.loginStatus === "month") {
           const monthAgo = new Date();
           monthAgo.setMonth(now.getMonth() - 1);
           if (lastLogin < monthAgo) return false;
         }
-
         if (filters.loginStatus === "never" && user.loggedInTimes > 0)
           return false;
 
@@ -112,16 +151,11 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           case "isBlocked":
             comparison = Number(a.isBlocked) - Number(b.isBlocked);
             break;
-          case "canEditData":
-            comparison = Number(a.canEditData) - Number(b.canEditData);
-            break;
-          default:
-            comparison = 0;
         }
 
         return sortDir === "asc" ? comparison : -comparison;
       });
-  }, [initialUsers, filters, sortField, sortDir]);
+  }, [initialUsers, filters, sortField, sortDir, isLoading]);
 
   const activeUsers = useMemo(
     () =>
@@ -133,21 +167,30 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
   );
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">Users</h1>
-        <div className="bg-gray-800 rounded-lg p-3 flex flex-col gap-1">
-          <span className="text-sm text-gray-400">Active Today</span>
-          <span className="text-xl font-semibold text-white">
-            {activeUsers} / {initialUsers.length}
+    <div
+      className="flex flex-col gap-4 max-w-full"
+      style={{ display: isLoading ? "none" : "flex" }}
+    >
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <h1 className="text-xl font-bold text-white flex items-center gap-2">
+          <Users className="w-5 h-5" />
+          User Management
+        </h1>
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-2 inline-flex items-center gap-2">
+          <span className="text-sm text-gray-400">Active Today:</span>
+          <span className="text-lg font-semibold text-white">
+            {activeUsers}
           </span>
+          <span className="text-sm text-gray-400">/ {initialUsers.length}</span>
         </div>
       </div>
+
       <UserFilters
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={clearFilters}
       />
+
       <UserTable
         users={filteredAndSortedUsers}
         sortField={sortField}
