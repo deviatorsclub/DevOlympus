@@ -1,5 +1,9 @@
 import { JSX } from "react";
 import { CategoryData } from "./types";
+import { StaticImageData } from "next/image";
+
+import XYZ from "@/assets/sponsors/xyz.png";
+import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.svg";
 
 export const REGISTRATION_FORM_URL = "https://forms.gle/Mc9Yvd7yyQgrQizK8";
 export const HACKATHON_DATE = new Date("April 11, 2025 09:00:00");
@@ -173,3 +177,22 @@ function JudgingIcon(): JSX.Element {
     </svg>
   );
 }
+
+export interface Sponsor {
+  name: string;
+  image: StaticImageData;
+  link: string;
+}
+
+export const sponsors: Sponsor[] = [
+  {
+    name: ".xyz",
+    link: "https://gen.xyz",
+    image: XYZ,
+  },
+  {
+    name: "Interview Buddy",
+    link: "https://interviewbuddy.net",
+    image: INTERVIEW_BUDDY,
+  },
+];
