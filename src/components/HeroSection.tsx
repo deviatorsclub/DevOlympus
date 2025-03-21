@@ -398,7 +398,7 @@ export const CountdownTimer = memo(
       const interval = setInterval(updateCountdown, 1000);
 
       return () => clearInterval(interval);
-    }, []);
+    }, [countTill]);
 
     return (
       <motion.div

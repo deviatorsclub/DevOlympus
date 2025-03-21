@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ENV_ADMIN_EMAILS } from "@/lib/constants";
+import { ENV_EDIT_ADMIN_EMAILS } from "@/lib/constants";
 
 const parseAdminEmails = z
   .string()
@@ -7,7 +7,7 @@ const parseAdminEmails = z
   .transform((val) => val.split(",").map((email) => email.trim()));
 
 let ADMIN_EMAILS: string[] = [];
-const result = parseAdminEmails.safeParse(ENV_ADMIN_EMAILS);
+const result = parseAdminEmails.safeParse(ENV_EDIT_ADMIN_EMAILS);
 if (result.success) {
   ADMIN_EMAILS = result.data;
 }

@@ -18,6 +18,8 @@ model User {
   createdAt     DateTime @default(now())
   loggedInTimes Int      @default(1)
   lastLogin     DateTime @default(now())
+  canEditData   Boolean  @default(false)
+  isAdmin       Boolean  @default(false)
 
   @@unique([id])
 }

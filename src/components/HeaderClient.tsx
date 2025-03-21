@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Menu, User, X, LogOut, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeviatorsLogo from "@/assets/sm.svg";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,8 @@ type UserIconProps =
 type MenuItemProps = {
   icon: FC<{ className?: string }>;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
+  href?: string;
   variant?: "default" | "danger" | "accent";
   closeMenu: () => void;
 };
@@ -45,6 +46,27 @@ const navItems: NavItem[] = [
   { name: "Schedule", href: "/#schedule" },
   { name: "FAQs", href: "/#faqs" },
   { name: "Code of Conduct", href: "/code-of-conduct" },
+];
+
+const actionItems: {
+  title: string;
+  url: string;
+  onlyForAdmins?: boolean;
+}[] = [
+  {
+    title: "Register for hackathon",
+    url: "/register",
+  },
+  {
+    title: "View All Users",
+    url: "/users",
+    onlyForAdmins: true,
+  },
+  // {
+  //   title: "View All Teams",
+  //   url: "/teams",
+  //   onlyForAdmins: true,
+  // },
 ];
 
 const menuItemVariants = {
@@ -79,7 +101,9 @@ const MenuItem: FC<MenuItemProps> = ({
   onClick,
   variant = "default",
   closeMenu,
+  href,
 }) => {
+  const router = useRouter();
   const colorStyles = {
     default:
       "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
@@ -96,7 +120,8 @@ const MenuItem: FC<MenuItemProps> = ({
       role="menuitem"
       onClick={() => {
         closeMenu();
-        onClick();
+        if (onClick) onClick();
+        if (href) router.push(href);
       }}
     >
       <Icon className="h-4 w-4" />
@@ -107,7 +132,7 @@ const MenuItem: FC<MenuItemProps> = ({
 
 const useClickOutside = (
   ref: React.RefObject<HTMLElement | null>,
-  handler: () => void,
+  handler: () => void
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -158,7 +183,7 @@ const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
         {item.name}
       </Link>
     </motion.li>
-  ),
+  )
 );
 MobileNavItem.displayName = "MobileNavItem";
 
@@ -179,7 +204,7 @@ const DesktopNavItem = memo<{ item: NavItem }>(({ item }) => (
 DesktopNavItem.displayName = "DesktopNavItem";
 
 const UserIcon: FC<UserIconProps> = (props) => {
-  const router = useRouter();
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -259,12 +284,20 @@ const UserIcon: FC<UserIconProps> = (props) => {
                   </div>
                 </div>
                 <div className="py-1">
-                  <MenuItem
-                    closeMenu={closeMenu}
-                    icon={UserCircle}
-                    label="Register for hackathon"
-                    onClick={() => router.push("/register")}
-                  />
+                  {(session?.user
+                    ? session.user.isAdmin
+                      ? actionItems
+                      : actionItems.filter((a) => a.onlyForAdmins !== true)
+                    : actionItems.filter((a) => a.onlyForAdmins !== true)
+                  ).map((item, index) => (
+                    <MenuItem
+                      key={index}
+                      closeMenu={closeMenu}
+                      icon={UserCircle}
+                      label={item.title}
+                      href={item.url}
+                    />
+                  ))}
                   <MenuItem
                     closeMenu={closeMenu}
                     icon={LogOut}
