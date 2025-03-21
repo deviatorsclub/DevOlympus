@@ -265,7 +265,7 @@ const UserDetailPopup = memo(
                 <div className="text-center">
                   <Info className="w-6 h-6 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-300">
-                    User is not assigned to any team
+                    User have not created a team yet.
                   </p>
                 </div>
               </div>

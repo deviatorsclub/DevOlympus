@@ -116,7 +116,7 @@ const MenuItem: FC<MenuItemProps> = ({
   return (
     <motion.button
       variants={menuItemVariants}
-      className={`group flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium ${colorStyles[variant]}`}
+      className={`cursor-pointer group flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium ${colorStyles[variant]}`}
       role="menuitem"
       onClick={() => {
         closeMenu();
@@ -132,7 +132,7 @@ const MenuItem: FC<MenuItemProps> = ({
 
 const useClickOutside = (
   ref: React.RefObject<HTMLElement | null>,
-  handler: () => void,
+  handler: () => void
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -183,7 +183,7 @@ const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
         {item.name}
       </Link>
     </motion.li>
-  ),
+  )
 );
 MobileNavItem.displayName = "MobileNavItem";
 

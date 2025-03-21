@@ -23,6 +23,7 @@ import LoginFallback from "./LoginFallback";
 import { registerTeam, RegistrationFormData } from "@/actions/regsiter";
 import Link from "next/link";
 import VideoGuide from "./VideoGuide";
+import { FaFileDownload } from "react-icons/fa";
 
 interface RegistrationFormProps {
   initialSession: Session | null;
@@ -741,9 +742,10 @@ export default function RegistrationForm({
               <Link
                 href="https://docs.google.com/presentation/d/1qRArIWIZzc2lpEmC1fS_7lydpXkvPcVL/edit?usp=sharing&ouid=100076728637005351213&rtpof=true&sd=true"
                 target="_blank"
-                className="underline text-sm text-white"
+                className="flex items-center px-4 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-md hover:from-violet-500 hover:to-indigo-500 transition-all shadow-md hover:shadow-lg text-sm font-medium"
               >
-                Presentation Template
+                <FaFileDownload size={16} className="mr-1" />
+                Download Presentation Template
               </Link>
             </div>
 
