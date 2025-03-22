@@ -105,12 +105,13 @@ const UserDetailPopup = memo(
               <div className="h-20 w-20 bg-gray-700 rounded-full overflow-hidden ring-2 ring-gray-600">
                 {user.image ? (
                   <Image
-                    src={user.image}
+                    src={user.image.replace("=s96-c", "")}
                     alt={user.name || "User"}
                     className="h-full w-full object-cover"
                     loading="lazy"
                     unoptimized
-                    fill
+                    width={200}
+                    height={200}
                   />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center text-gray-400">

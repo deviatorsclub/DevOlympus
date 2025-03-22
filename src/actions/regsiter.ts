@@ -14,13 +14,7 @@ const TeamMemberSchema = z.object({
   email: z.string().email("Invalid email format"),
   rollNo: z.string().min(1, "Roll number is required"),
   isLead: z.boolean().optional(),
-  number: z
-    .string()
-    .min(1, "Phone number is required")
-    .refine(
-      (val) => /^\d{10}$/.test(val.replace(/\D/g, "")),
-      "Phone number must be 10 digits"
-    ),
+  number: z.number().min(1, "Phone number is required"),
 });
 
 const RegistrationSchema = z.object({
@@ -128,7 +122,7 @@ export async function registerTeam(
             name: member.name,
             email: member.email,
             rollNo: member.rollNo,
-            number: member.number,
+            number: String(member.number),
             isLead: !!member.isLead,
           })),
         },

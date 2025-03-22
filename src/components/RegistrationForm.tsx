@@ -243,10 +243,24 @@ export default function RegistrationForm({
       )
         return;
 
+      // Format input based on field type
+      let formattedValue = value;
+
+      if (field === "number") {
+        // Ensure phone numbers contain only digits and limit to 10
+        formattedValue = value.replace(/\D/g, "").substring(0, 10);
+      } else if (field === "rollNo") {
+        // Trim whitespace from roll numbers
+        formattedValue = value.trim();
+      } else if (field === "email") {
+        // Trim whitespace from emails
+        formattedValue = value.trim();
+      }
+
       setFormState((prev) => ({
         ...prev,
         members: prev.members.map((member) =>
-          member.id === id ? { ...member, [field]: value } : member
+          member.id === id ? { ...member, [field]: formattedValue } : member
         ),
       }));
 
@@ -266,24 +280,27 @@ export default function RegistrationForm({
     const incompleteMembers: string[] = [];
 
     if (isDeadlinePassed()) {
-      newErrors.deadline = "Registration deadline has passed";
+      newErrors.deadline =
+        "Registration deadline has passed - The submission window is now closed";
       setErrors(newErrors);
       return false;
     }
 
     if (!FLAGS.isRegistrationOpen) {
-      newErrors.registration = "Registration is currently closed";
+      newErrors.registration =
+        "Registration is currently closed - Please check back later when registration opens";
       setErrors(newErrors);
       return false;
     }
 
     if (!formState.teamName.trim()) {
-      newErrors.teamName = "Team name is required for your project identity";
+      newErrors.teamName =
+        "Team name is required - Please choose a name that represents your project";
     }
 
     if (!formState.theme) {
       newErrors.theme =
-        "Please select a project theme for your hackathon entry";
+        "Project theme selection is required - Please choose from the available options";
     }
 
     let validMembers = 0;
@@ -295,32 +312,34 @@ export default function RegistrationForm({
       const missingFields: string[] = [];
 
       if (!name.trim()) {
-        newErrors[`member-${id}-name`] = "Full name is required";
+        newErrors[`member-${id}-name`] =
+          "Full name is required - Enter your complete name as registered with the university";
         missingFields.push("name");
       }
 
       if (!email.trim()) {
-        newErrors[`member-${id}-email`] = "Email address is required";
+        newErrors[`member-${id}-email`] =
+          "Email address is required - We'll send important updates to this address";
         missingFields.push("email");
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         newErrors[`member-${id}-email`] =
-          "Please enter a valid email format (e.g., name@example.com)";
+          "Invalid email format - Please enter a valid email address (example: name@domain.com)";
         missingFields.push("email format");
       }
 
       if (!rollNo.trim()) {
         newErrors[`member-${id}-rollNo`] =
-          "Roll number is required for verification";
+          "Roll number is required - Enter your university roll number for verification";
         missingFields.push("roll number");
       }
 
       if (!number.trim()) {
         newErrors[`member-${id}-number`] =
-          "Phone number is required for contact";
+          "Phone number is required - Enter a number where we can reach you";
         missingFields.push("phone number");
-      } else if (!/^\d{10}$/.test(number.replace(/\D/g, ""))) {
+      } else if (number.length !== 10 || !/^\d+$/.test(number)) {
         newErrors[`member-${id}-number`] =
-          "Please enter a 10-digit phone number";
+          "Invalid phone number - Please enter exactly 10 digits without spaces or special characters";
         missingFields.push("valid phone number");
       }
 
@@ -336,11 +355,11 @@ export default function RegistrationForm({
 
     if (validMembers < FLAGS.minTeamSize) {
       if (incompleteMembers.length > 0) {
-        let errorMsg = `Please complete all fields for your team members. Issues found in: `;
+        let errorMsg = `⚠️ Incomplete team information ⚠️\n\nPlease complete all required fields for: `;
 
         incompleteMembers.forEach((member, idx) => {
           const fields = incompleteFields[member].join(", ");
-          errorMsg += `${member} (missing ${fields})`;
+          errorMsg += `${member} (missing: ${fields})`;
 
           if (idx < incompleteMembers.length - 1) {
             errorMsg += "; ";
@@ -349,21 +368,21 @@ export default function RegistrationForm({
 
         newErrors.members = errorMsg;
       } else {
-        newErrors.members = `Your team needs at least ${FLAGS.minTeamSize} complete member profiles to register`;
+        newErrors.members = `Team size requirement not met - You need at least ${FLAGS.minTeamSize} complete member profiles to register`;
       }
     }
 
     if (!formState.presentationUrl.trim()) {
       newErrors.presentationUrl =
-        "Please provide a link to your project presentation";
+        "Presentation URL is required - Share a link to your project slides (Google Drive/Dropbox)";
     } else if (!/^https?:\/\/.+/.test(formState.presentationUrl)) {
       newErrors.presentationUrl =
-        "Please enter a valid URL starting with http:// or https://";
+        "Invalid URL format - Your link must start with http:// or https://";
     }
 
     if (!formState.presentationPublic) {
       newErrors.presentationPublic =
-        "You must confirm that your presentation is publicly accessible";
+        "Public access confirmation required - Check this box to confirm your presentation is accessible to evaluators";
     }
 
     setErrors(newErrors);
@@ -394,7 +413,7 @@ export default function RegistrationForm({
         name: member.name,
         email: member.email,
         rollNo: member.rollNo,
-        number: member.number,
+        number: parseInt(member.number, 10),
         isLead: member.isLead || false,
       })),
       presentationUrl: formState.presentationUrl,
