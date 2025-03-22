@@ -36,11 +36,11 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
           Successfully Registered
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-violet-400 text-center">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-violet-400 text-center break-words">
           TEAM {team.name.toUpperCase()}
         </h1>
         <div className="flex gap-2 justify-center items-center text-lg md:text-xl font-bold mb-6 md:mb-8 text-violet-400 text-center">
-          <h2>TEAM ID: {team.displayId}</h2>
+          <h2 className="break-all">TEAM ID: {team.displayId}</h2>
           <CopyButton />
         </div>
         <div className="bg-[#13112a] p-5 rounded-lg border border-indigo-600 mb-8">
@@ -51,11 +51,15 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-violet-200">Theme</p>
-                <p className="text-white font-medium">{team.theme}</p>
+                <p className="text-white font-medium break-words">
+                  {team.theme}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-violet-200">Registration ID</p>
-                <p className="text-white font-medium">{team.displayId}</p>
+                <p className="text-white font-medium break-all">
+                  {team.displayId}
+                </p>
               </div>
               <div className="md:col-span-2">
                 <p className="text-sm text-violet-200">Presentation</p>
@@ -63,10 +67,10 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
                   href={team.presentationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-400 hover:text-indigo-300 flex items-center"
+                  className="text-indigo-400 hover:text-indigo-300 flex items-center break-all"
                 >
-                  {team.presentationUrl}
-                  <ExternalLink size={14} className="ml-1 inline" />
+                  <span className="break-all">{team.presentationUrl}</span>
+                  <ExternalLink size={14} className="ml-1 flex-shrink-0" />
                 </a>
               </div>
             </div>
@@ -82,31 +86,36 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
             <div className="mb-6">
               <div className="p-4 rounded-lg border border-violet-700 bg-[#1a1838]">
                 <div className="flex items-center mb-3">
-                  <Crown size={16} className="text-violet-400 mr-2" />
+                  <Crown
+                    size={16}
+                    className="text-violet-400 mr-2 flex-shrink-0"
+                  />
                   <h3 className="text-lg font-medium text-violet-300">
                     Team Lead
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-violet-200">Name</p>
-                    <p className="text-white font-medium">{teamLead.name}</p>
+                    <p className="text-white font-medium break-words">
+                      {teamLead.name}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-violet-200">Email</p>
-                    <p className="text-white">{teamLead.email}</p>
+                    <p className="text-white break-all">{teamLead.email}</p>
                   </div>
                   <div>
                     <p className="text-sm text-violet-200">Roll Number</p>
-                    <p className="text-white">{teamLead.rollNo}</p>
+                    <p className="text-white break-all">{teamLead.rollNo}</p>
                   </div>
                   {teamLead.number && (
                     <div>
                       <p className="text-sm text-violet-200 flex items-center">
-                        <Phone size={14} className="mr-1" />
+                        <Phone size={14} className="mr-1 flex-shrink-0" />
                         Phone
                       </p>
-                      <p className="text-white">{teamLead.number}</p>
+                      <p className="text-white break-all">{teamLead.number}</p>
                     </div>
                   )}
                 </div>
@@ -121,31 +130,34 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
                 className="p-4 rounded-lg border border-indigo-800 bg-[#0e0c20]"
               >
                 <div className="flex items-center mb-3">
-                  <User size={16} className="text-indigo-400 mr-2" />
+                  <User
+                    size={16}
+                    className="text-indigo-400 mr-2 flex-shrink-0"
+                  />
                   <h3 className="text-md font-medium text-indigo-300">
                     Team Member {index + 1}
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-violet-200">Name</p>
-                    <p className="text-white">{member.name}</p>
+                    <p className="text-white break-words">{member.name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-violet-200">Email</p>
-                    <p className="text-white">{member.email}</p>
+                    <p className="text-white break-all">{member.email}</p>
                   </div>
                   <div>
                     <p className="text-sm text-violet-200">Roll Number</p>
-                    <p className="text-white">{member.rollNo}</p>
+                    <p className="text-white break-all">{member.rollNo}</p>
                   </div>
                   {member.number && (
                     <div>
                       <p className="text-sm text-violet-200 flex items-center">
-                        <Phone size={14} className="mr-1" />
+                        <Phone size={14} className="mr-1 flex-shrink-0" />
                         Phone
                       </p>
-                      <p className="text-white">{member.number}</p>
+                      <p className="text-white break-all">{member.number}</p>
                     </div>
                   )}
                 </div>
@@ -158,25 +170,22 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
           <h2 className="text-lg font-medium text-violet-300 mb-2">
             Hackathon Details
           </h2>
-          <div className="flex flex-col md:flex-row md:items-center text-sm text-violet-200 space-y-2 md:space-y-0 md:space-x-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm text-violet-200">
             <div className="flex items-center">
-              <Calendar size={16} className="mr-2 text-violet-400" />
-              <span>
+              <Calendar
+                size={16}
+                className="mr-2 text-violet-400 flex-shrink-0"
+              />
+              <span className="break-words">
                 {HACKATHON_DATE.toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
                 })}
-                {"-"}
-                {HACKATHON_DATE.toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
               </span>
             </div>
             <div className="flex items-center">
-              <Clock size={16} className="mr-2 text-violet-400" />
+              <Clock size={16} className="mr-2 text-violet-400 flex-shrink-0" />
               <span>
                 Starts at{" "}
                 {HACKATHON_DATE.toLocaleTimeString("en-US", {
@@ -187,7 +196,10 @@ export default function TeamIsRegistered({ team }: { team: TeamWithMembers }) {
               </span>
             </div>
             <div className="flex items-center">
-              <CheckCircle size={16} className="mr-2 text-violet-400" />
+              <CheckCircle
+                size={16}
+                className="mr-2 text-violet-400 flex-shrink-0"
+              />
               <span>Bring your student ID</span>
             </div>
           </div>
