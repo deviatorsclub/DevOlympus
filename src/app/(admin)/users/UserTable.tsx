@@ -110,6 +110,7 @@ const UserDetailPopup = memo(
                     className="h-full w-full object-cover"
                     loading="lazy"
                     unoptimized
+                    fill
                   />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center text-gray-400">
@@ -207,6 +208,14 @@ const UserDetailPopup = memo(
                       </h5>
                       <div className="text-xs text-gray-400 mt-1">
                         {teamMembers.length} members
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        Registered At:{" "}
+                        {user.team.createdAt.toLocaleDateString()} at{" "}
+                        {user.team.createdAt.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </div>
 
                       {teamLead && (

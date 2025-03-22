@@ -16,7 +16,6 @@ export default async function page() {
         members: {
           some: {
             email: session?.user?.email,
-            isLead: true,
           },
         },
       },

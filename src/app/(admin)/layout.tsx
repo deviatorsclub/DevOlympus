@@ -6,5 +6,5 @@ export default async function layout({
 }: {
   children: React.ReactNode;
 }) {
-  return (await auth())?.user ? children : notFound();
+  return (await auth())?.user.isAdmin ? children : notFound();
 }

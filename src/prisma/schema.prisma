@@ -30,7 +30,6 @@ model Team {
   presentationUrl String
   theme           String
   createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
   captain         User         @relation(fields: [captainId], references: [id])
   captainId       Int          @unique
   members         TeamMember[]
