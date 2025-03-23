@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(cuid())
   name          String?
   email         String   @unique
   image         String?
@@ -31,12 +31,12 @@ model Team {
   theme           String
   createdAt       DateTime     @default(now())
   captain         User         @relation(fields: [captainId], references: [id])
-  captainId       Int          @unique
+  captainId       String       @unique
   members         TeamMember[]
 }
 
 model TeamMember {
-  id     Int     @id @default(autoincrement())
+  id     String  @id @default(cuid())
   name   String
   email  String
   rollNo String

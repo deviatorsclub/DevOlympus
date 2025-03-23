@@ -39,7 +39,7 @@ export default function RegistrationForm({
     members: Array(FLAGS.minTeamSize)
       .fill(0)
       .map(() => ({
-        id: Math.random() * 1000000,
+        id: Math.random() * 1000000 + "",
         name: "",
         email: "",
         rollNo: "",
@@ -71,7 +71,7 @@ export default function RegistrationForm({
     if (!initialSession?.user || initialized) return;
 
     const userMember: TeamMember = {
-      id: Math.random() * 1000000,
+      id: Math.random() * 1000000 + "",
       name: initialSession.user.name || "",
       email: initialSession.user.email || "",
       rollNo: "",
@@ -110,7 +110,7 @@ export default function RegistrationForm({
             const defaultMembers = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
-                id: Math.random() * 1000000,
+                id: Math.random() * 1000000 + "",
                 name: "",
                 email: "",
                 rollNo: "",
@@ -132,7 +132,7 @@ export default function RegistrationForm({
       const defaultMembers = Array(FLAGS.minTeamSize - 1)
         .fill(0)
         .map(() => ({
-          id: Math.random() * 1000000,
+          id: Math.random() * 1000000 + "",
           name: "",
           email: "",
           rollNo: "",
@@ -200,7 +200,7 @@ export default function RegistrationForm({
       members: [
         ...prev.members,
         {
-          id: Math.random() * 1000000,
+          id: Math.random() * 1000000 + "",
           name: "",
           email: "",
           rollNo: "",
@@ -212,7 +212,7 @@ export default function RegistrationForm({
   }, [formState.members.length]);
 
   const removeTeamMember = useCallback(
-    (id: number) => {
+    (id: string) => {
       if (formState.members.length <= FLAGS.minTeamSize) {
         setErrors((prev) => ({
           ...prev,
@@ -233,7 +233,7 @@ export default function RegistrationForm({
 
   const updateMember = useCallback(
     (
-      id: number,
+      id: string,
       field: keyof Omit<TeamMember, "id" | "isLead">,
       value: string
     ) => {
@@ -433,7 +433,7 @@ export default function RegistrationForm({
             const defaultMembers: TeamMember[] = Array(FLAGS.minTeamSize - 1)
               .fill(0)
               .map(() => ({
-                id: Math.random() * 1000000,
+                id: Math.random() * 1000000 + "",
                 name: "",
                 email: "",
                 rollNo: "",
@@ -445,7 +445,7 @@ export default function RegistrationForm({
               teamName: DEFAULT_VALUES.teamNameSuggestion,
               members: [
                 {
-                  id: Math.random() * 1000000,
+                  id: Math.random() * 1000000 + "",
                   name: initialSession.user.name || "",
                   email: initialSession.user.email || "",
                   rollNo: "",
@@ -487,7 +487,7 @@ export default function RegistrationForm({
     const defaultMembers: TeamMember[] = Array(FLAGS.minTeamSize - 1)
       .fill(0)
       .map(() => ({
-        id: Math.random() * 1000000,
+        id: Math.random() * 1000000 + "",
         name: "",
         email: "",
         rollNo: "",
@@ -500,7 +500,7 @@ export default function RegistrationForm({
         teamName: DEFAULT_VALUES.teamNameSuggestion,
         members: [
           {
-            id: Math.random() * 1000000,
+            id: Math.random() * 1000000 + "",
             name: initialSession.user.name || "",
             email: initialSession.user.email || "",
             rollNo: "",
@@ -519,7 +519,7 @@ export default function RegistrationForm({
         members: [
           ...defaultMembers,
           {
-            id: Math.random() * 1000000,
+            id: Math.random() * 1000000 + "",
             name: "",
             email: "",
             rollNo: "",

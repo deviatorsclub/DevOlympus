@@ -52,9 +52,9 @@ export interface TeamMemberCardProps {
   member: TeamMember;
   index: number;
   canRemove: boolean;
-  onRemove: (id: number) => void;
+  onRemove: (id: string) => void;
   updateMember: (
-    id: number,
+    id: string,
     field: keyof Omit<TeamMember, "id" | "isLead">,
     value: string
   ) => void;

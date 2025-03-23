@@ -9,7 +9,7 @@ import { prisma } from "@/prisma";
 const ThemeEnum = z.enum(THEMES as [Theme, ...Theme[]]);
 
 const TeamMemberSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email format"),
   rollNo: z.string().min(1, "Roll number is required"),

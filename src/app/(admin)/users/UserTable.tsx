@@ -311,7 +311,7 @@ export default function UserTable({
   sortDir,
   onSortChange,
 }: UserTableProps) {
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) || null,
