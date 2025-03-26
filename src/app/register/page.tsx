@@ -10,12 +10,12 @@ export default async function page() {
 
   let teams: TeamWithMembers[] = [];
 
-  // if (session?.user?.email) {
+  if (session?.user?.email) {
     teams = await prisma.team.findMany({
       where: {
         members: {
           some: {
-            email: "vaibhavjj99@gmail.com"
+            email: session?.user?.email,
           },
         },
       },
@@ -36,7 +36,7 @@ export default async function page() {
         },
       },
     });
-  // }
+  }
 
   return session?.user ? (
     teams.length === 0 ? (
