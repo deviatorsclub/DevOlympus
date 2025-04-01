@@ -21,3 +21,4 @@ export interface FilterState {
   loginStatus: "all" | "today" | "week" | "month" | "never";
   team: "all" | "yes" | "no";
 }
+export type UserTeam = UserWithTeam["team"]

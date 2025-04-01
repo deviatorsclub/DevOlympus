@@ -117,6 +117,7 @@ const UserFilters = memo(
               >
                 <option value="all">Login</option>
                 <option value="today">Today</option>
+                <option value="Yesterday">Today</option>
                 <option value="week">Week</option>
                 <option value="month">Month</option>
                 <option value="never">Never</option>

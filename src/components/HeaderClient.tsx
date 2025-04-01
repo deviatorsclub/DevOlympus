@@ -203,6 +203,14 @@ const DesktopNavItem = memo<{ item: NavItem }>(({ item }) => (
 ));
 DesktopNavItem.displayName = "DesktopNavItem";
 
+function menuItemsBasedOnAccess(user?: Session["user"]) {
+  return user
+    ? user.isAdmin
+      ? actionItems
+      : actionItems.filter((a) => a.onlyForAdmins !== true)
+    : actionItems.filter((a) => a.onlyForAdmins !== true);
+}
+
 const UserIcon: FC<UserIconProps> = (props) => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -284,12 +292,7 @@ const UserIcon: FC<UserIconProps> = (props) => {
                   </div>
                 </div>
                 <div className="py-1">
-                  {(session?.user
-                    ? session.user.isAdmin
-                      ? actionItems
-                      : actionItems.filter((a) => a.onlyForAdmins !== true)
-                    : actionItems.filter((a) => a.onlyForAdmins !== true)
-                  ).map((item, index) => (
+                  {menuItemsBasedOnAccess(session?.user).map((item, index) => (
                     <MenuItem
                       key={index}
                       closeMenu={closeMenu}
