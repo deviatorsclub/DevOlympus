@@ -13,6 +13,7 @@ import UserFilters from "./UserFilters";
 import { Users } from "lucide-react";
 import { getTeam } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const FILTER_STORAGE_KEY = "user-dashboard-filters";
 interface UserDashboardProps {
@@ -31,6 +32,10 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     team: "all",
   });
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const dateCache = useRef({
     now: new Date(),
     yesterday: new Date(new Date().setDate(new Date().getDate() - 1)),
@@ -41,26 +46,106 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
   const debouncedSearch = useDebounce(filters.search, 300);
 
   useEffect(() => {
-    try {
-      const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
-      if (savedFilters) {
-        setFilters(JSON.parse(savedFilters));
+    const urlFilters: Partial<FilterState> = {};
+    let hasUrlFilters = false;
+
+    if (searchParams.has("search")) {
+      urlFilters.search = searchParams.get("search") || "";
+      hasUrlFilters = true;
+    }
+
+    if (searchParams.has("role")) {
+      const role = searchParams.get("role");
+      if (role && ["all", "admin", "user", "lead", "member"].includes(role)) {
+        urlFilters.role = role as FilterState["role"];
+        hasUrlFilters = true;
       }
-    } catch (error) {
-      console.error("Failed to load filters from localStorage:", error);
+    }
+
+    if (searchParams.has("status")) {
+      const status = searchParams.get("status");
+      if (status && ["all", "active", "blocked"].includes(status)) {
+        urlFilters.status = status as FilterState["status"];
+        hasUrlFilters = true;
+      }
+    }
+
+    if (searchParams.has("loginStatus")) {
+      const loginStatus = searchParams.get("loginStatus");
+      if (
+        loginStatus &&
+        ["all", "today", "yesterday", "week", "month", "never"].includes(
+          loginStatus
+        )
+      ) {
+        urlFilters.loginStatus = loginStatus as FilterState["loginStatus"];
+        hasUrlFilters = true;
+      }
+    }
+
+    if (searchParams.has("team")) {
+      const team = searchParams.get("team");
+      if (team && ["all", "yes", "no"].includes(team)) {
+        urlFilters.team = team as FilterState["team"];
+        hasUrlFilters = true;
+      }
+    }
+
+    if (hasUrlFilters) {
+      setFilters((prev) => ({
+        ...prev,
+        ...urlFilters,
+      }));
+    } else {
+      try {
+        const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
+        if (savedFilters) {
+          setFilters(JSON.parse(savedFilters));
+        }
+      } catch (error) {
+        console.error("Failed to load filters from localStorage:", error);
+      }
     }
 
     const timer = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(timer);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
+    if (isLoading) return;
+
+    const params = new URLSearchParams();
+
+    if (filters.search) {
+      params.set("search", filters.search);
+    }
+
+    if (filters.role !== "all") {
+      params.set("role", filters.role);
+    }
+
+    if (filters.status !== "all") {
+      params.set("status", filters.status);
+    }
+
+    if (filters.loginStatus !== "all") {
+      params.set("loginStatus", filters.loginStatus);
+    }
+
+    if (filters.team !== "all") {
+      params.set("team", filters.team);
+    }
+
+    const queryString = params.toString();
+    const url = pathname + (queryString ? `?${queryString}` : "");
+    router.replace(url, { scroll: false });
+
     try {
       localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
     } catch (error) {
       console.error("Failed to save filters to localStorage:", error);
     }
-  }, [filters]);
+  }, [filters, pathname, router, isLoading]);
 
   const handleSortChange = useCallback(
     (field: SortField) => {
@@ -181,15 +266,23 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
       if (visible && filters.team === "yes") {
         const userTeam = getTeamCached(user.email);
-        if (!userTeam || !userTeam.members || userTeam.members.length === 0 || 
-            !userTeam.members.some(member => member.email === user.email)) {
+        if (
+          !userTeam ||
+          !userTeam.members ||
+          userTeam.members.length === 0 ||
+          !userTeam.members.some((member) => member.email === user.email)
+        ) {
           visible = false;
         }
       }
-      
+
       if (visible && filters.team === "no") {
         const userTeam = getTeamCached(user.email);
-        if (userTeam && userTeam.members && userTeam.members.some(member => member.email === user.email)) {
+        if (
+          userTeam &&
+          userTeam.members &&
+          userTeam.members.some((member) => member.email === user.email)
+        ) {
           visible = false;
         }
       }
