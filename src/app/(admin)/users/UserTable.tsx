@@ -16,7 +16,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { TeamMember } from "@/types/registration";
-import { SortDirection, SortField, UserWithTeam } from "@/types/user-data";
+import {
+  SortDirection,
+  SortField,
+  UserWithTeam,
+  UserTeam,
+} from "@/types/user-data";
+import { getTeam } from "@/lib/utils";
 
 interface DetailItemProps {
   icon: React.ReactNode;
@@ -38,41 +44,54 @@ DetailItem.displayName = "DetailItem";
 interface TeamMemberCardProps {
   member: TeamMember;
   isLead: boolean;
+  isCurrentUser?: boolean;
 }
 
-const TeamMemberCard = memo(({ member, isLead }: TeamMemberCardProps) => (
-  <div className="flex items-center p-2 rounded-lg bg-gray-700 bg-opacity-30">
-    <div className="h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-300 mr-3">
-      <User className="w-4 h-4" />
-    </div>
-    <div>
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-200">{member.name}</span>
-        {isLead && (
-          <span className="bg-amber-900 bg-opacity-40 text-amber-300 text-xs px-1.5 py-0.5 rounded-full">
-            Lead
+const TeamMemberCard = memo(
+  ({ member, isLead, isCurrentUser }: TeamMemberCardProps) => (
+    <div
+      className={`flex items-center p-2 rounded-lg ${isCurrentUser ? "bg-blue-900 bg-opacity-30" : "bg-gray-700 bg-opacity-30"}`}
+    >
+      <div className="h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-300 mr-3">
+        <User className="w-4 h-4" />
+      </div>
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-200">
+            {member.name}
           </span>
-        )}
-      </div>
-      <div className="text-xs text-gray-400">{member.email}</div>
-      <div className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
-        <span>Roll: {member.rollNo}</span>
-        <span>•</span>
-        <span>Ph: {member.number}</span>
+          {isLead && (
+            <span className="bg-amber-900 bg-opacity-40 text-amber-300 text-xs px-1.5 py-0.5 rounded-full">
+              Lead
+            </span>
+          )}
+          {isCurrentUser && (
+            <span className="bg-blue-900 bg-opacity-40 text-blue-300 text-xs px-1.5 py-0.5 rounded-full">
+              You
+            </span>
+          )}
+        </div>
+        <div className="text-xs text-gray-400">{member.email}</div>
+        <div className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
+          <span>Roll: {member.rollNo}</span>
+          <span>•</span>
+          <span>Ph: {member.number}</span>
+        </div>
       </div>
     </div>
-  </div>
-));
+  )
+);
 TeamMemberCard.displayName = "TeamMemberCard";
 
 interface UserDetailPopupProps {
   user: UserWithTeam | null;
+  team: UserTeam;
   onClose: () => void;
   isVisible: boolean;
 }
 
 const UserDetailPopup = memo(
-  ({ user, onClose, isVisible }: UserDetailPopupProps) => {
+  ({ user, team, onClose, isVisible }: UserDetailPopupProps) => {
     if (!isVisible || !user) return null;
 
     const handleBackdropClick = (e: React.MouseEvent) => {
@@ -81,8 +100,19 @@ const UserDetailPopup = memo(
       }
     };
 
-    const teamMembers = user.team?.members || [];
+    const teamMembers = team?.members || [];
     const teamLead = teamMembers.find((member) => member.isLead);
+
+    // Find the current user in the team members
+    const currentMember = teamMembers.find(
+      (member) => member.email === user.email
+    );
+
+    // Check if user is a member of the team
+    const userIsMember = !!currentMember;
+
+    // Check if user is a lead of the team
+    const userIsLead = userIsMember && currentMember?.isLead === true;
 
     return (
       <div
@@ -134,9 +164,14 @@ const UserDetailPopup = memo(
                       <CheckCircle className="w-3 h-3" /> Active
                     </span>
                   )}
-                  {user.team && (
+                  {team && (
                     <span className="inline-flex items-center gap-1 text-teal-300 bg-teal-900 bg-opacity-40 px-2 py-1 rounded-full text-sm">
-                      <Users className="w-3 h-3" /> {user.team.displayId}
+                      <Users className="w-3 h-3" /> {team.displayId}
+                    </span>
+                  )}
+                  {team && userIsLead && (
+                    <span className="inline-flex items-center gap-1 text-amber-300 bg-amber-900 bg-opacity-40 px-2 py-1 rounded-full text-sm">
+                      <Shield className="w-3 h-3" /> Team Lead
                     </span>
                   )}
                 </div>
@@ -190,14 +225,14 @@ const UserDetailPopup = memo(
               />
             </div>
 
-            {user.team && "name" in user.team && (
+            {team && (
               <>
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-lg font-semibold text-white">
                     Team Information
                   </h4>
                   <span className="text-sm text-teal-300">
-                    {user.team.displayId}
+                    {team.displayId}
                   </span>
                 </div>
 
@@ -205,19 +240,21 @@ const UserDetailPopup = memo(
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <h5 className="text-md font-medium text-white">
-                        {user.team.name}
+                        {team.name}
                       </h5>
                       <div className="text-xs text-gray-400 mt-1">
                         {teamMembers.length} members
                       </div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        Registered At:{" "}
-                        {user.team.createdAt.toLocaleDateString()} at{" "}
-                        {user.team.createdAt.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </div>
+                      {team.createdAt && (
+                        <div className="text-xs text-gray-400 mt-1">
+                          Registered At:{" "}
+                          {new Date(team.createdAt).toLocaleDateString()} at{" "}
+                          {new Date(team.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      )}
 
                       {teamLead && (
                         <div className="mt-2 bg-amber-900 bg-opacity-30 text-amber-300 text-xs px-2 py-1 rounded-lg inline-flex items-center gap-1">
@@ -228,27 +265,31 @@ const UserDetailPopup = memo(
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex items-center text-sm">
-                        <Palette className="w-4 h-4 mr-2 text-gray-400" />
-                        <span className="text-gray-300">Theme: </span>
-                        <span className="ml-1 text-teal-300">
-                          {user.team.theme}
-                        </span>
-                      </div>
+                      {team.theme && (
+                        <div className="flex items-center text-sm">
+                          <Palette className="w-4 h-4 mr-2 text-gray-400" />
+                          <span className="text-gray-300">Theme: </span>
+                          <span className="ml-1 text-teal-300">
+                            {team.theme}
+                          </span>
+                        </div>
+                      )}
 
-                      <div className="flex items-center text-sm">
-                        <Link className="w-4 h-4 mr-2 text-gray-400" />
-                        <span className="text-gray-300">Presentation: </span>
-                        <a
-                          href={user.team.presentationUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="ml-1 text-blue-400 hover:underline truncate max-w-[200px]"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {user.team.presentationUrl}
-                        </a>
-                      </div>
+                      {team.presentationUrl && (
+                        <div className="flex items-center text-sm">
+                          <Link className="w-4 h-4 mr-2 text-gray-400" />
+                          <span className="text-gray-300">Presentation: </span>
+                          <a
+                            href={team.presentationUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-1 text-blue-400 hover:underline truncate max-w-[200px]"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {team.presentationUrl}
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -263,20 +304,36 @@ const UserDetailPopup = memo(
                         key={member.id}
                         member={member}
                         isLead={member.isLead}
+                        isCurrentUser={member.email === user.email}
                       />
                     ))}
                   </div>
                 </div>
+
+                {/* Show user's team role information */}
+                {team && teamMembers.length > 0 && (
+                  <div className="mt-4 p-3 rounded-lg bg-blue-900 bg-opacity-20 border border-blue-800">
+                    <div className="flex items-center gap-2 text-blue-300 mb-2">
+                      <Info className="w-4 h-4" />
+                      <span className="font-medium">Team Role</span>
+                    </div>
+                    <p className="text-sm text-blue-200">
+                      {userIsLead
+                        ? "This user is the team leader."
+                        : userIsMember
+                          ? "This user is a member of this team but not the team leader."
+                          : "This user is associated with this team but not listed as a team member."}
+                    </p>
+                  </div>
+                )}
               </>
             )}
 
-            {!user.team && (
+            {!team && (
               <div className="flex items-center justify-center p-6 bg-gray-700 bg-opacity-20 rounded-lg">
                 <div className="text-center">
                   <Info className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-300">
-                    User have not created a team yet.
-                  </p>
+                  <p className="text-gray-300">User is not part of any team.</p>
                 </div>
               </div>
             )}
@@ -299,7 +356,8 @@ const UserDetailPopup = memo(
 UserDetailPopup.displayName = "UserDetailPopup";
 
 interface UserTableProps {
-  users: UserWithTeam[];
+  users: (UserWithTeam & { visible?: boolean })[];
+  initialUsers: UserWithTeam[];
   sortField: SortField;
   sortDir: SortDirection;
   onSortChange: (field: SortField) => void;
@@ -307,6 +365,7 @@ interface UserTableProps {
 
 export default function UserTable({
   users,
+  initialUsers,
   sortField,
   sortDir,
   onSortChange,
@@ -316,6 +375,10 @@ export default function UserTable({
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) || null,
     [users, selectedUserId]
+  );
+  const selectedTeam = useMemo(
+    () => getTeam(initialUsers, selectedUser?.email || ""),
+    [selectedUser, initialUsers]
   );
 
   const handleRowClick = useCallback((user: UserWithTeam) => {
@@ -338,7 +401,11 @@ export default function UserTable({
     [sortField, sortDir]
   );
 
-  const isEmptyState = users.length === 0;
+  const visibleUsers = useMemo(
+    () => users.filter((user) => user.visible !== false),
+    [users]
+  );
+  const isEmptyState = visibleUsers.length === 0;
 
   if (isEmptyState) {
     return (
@@ -352,8 +419,8 @@ export default function UserTable({
     <>
       <div className="flex flex-col gap-2">
         <div className="px-2 py-1 text-sm text-gray-400">
-          <span className="font-medium text-white">{users.length}</span> users
-          found
+          <span className="font-medium text-white">{visibleUsers.length}</span>{" "}
+          users found
         </div>
 
         <div className="bg-gray-800 rounded-lg shadow">
@@ -418,99 +485,125 @@ export default function UserTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {users.map((user, index) => (
-                  <tr
-                    key={user.id}
-                    className="hover:bg-gray-700 transition-colors cursor-pointer"
-                    onClick={() => handleRowClick(user)}
-                  >
-                    <td className="sticky left-0 bg-gray-800 p-3 text-sm text-gray-400 text-center">
-                      {index + 1}
-                    </td>
-                    <td className="p-3 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <div className="h-9 w-9 flex-shrink-0 bg-gray-600 rounded-full overflow-hidden">
-                          {user.image ? (
-                            <Image
-                              src={user.image}
-                              alt={user.name || "User"}
-                              width={36}
-                              height={36}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center text-gray-400">
-                              <UserCircle className="w-5 h-5" />
+                {users.map((user, index) => {
+                  const team = getTeam(initialUsers, user.email);
+                  return (
+                    <tr
+                      key={user.id}
+                      className="hover:bg-gray-700 transition-colors cursor-pointer"
+                      onClick={() => handleRowClick(user)}
+                      style={{
+                        display: user.visible === false ? "none" : undefined,
+                      }}
+                    >
+                      <td className="sticky left-0 bg-gray-800 p-3 text-sm text-gray-400 text-center">
+                        {index + 1}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <div className="h-9 w-9 flex-shrink-0 bg-gray-600 rounded-full overflow-hidden">
+                            {user.image ? (
+                              <Image
+                                src={user.image}
+                                alt={user.name || "User"}
+                                width={36}
+                                height={36}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center text-gray-400">
+                                <UserCircle className="w-5 h-5" />
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-200 text-sm">
+                              {user.name || "Unnamed"}
                             </div>
+                            <div className="text-xs text-gray-400">
+                              #{user.id}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3 whitespace-nowrap text-sm text-gray-300">
+                        {user.email}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <div className="flex flex-col gap-1">
+                          {user.isAdmin && (
+                            <span className="inline-flex items-center gap-1 text-purple-300 bg-purple-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
+                              <Shield className="w-3 h-3" /> Admin
+                            </span>
+                          )}
+                          {!user.isAdmin && (
+                            <span className="inline-flex items-center gap-1 text-gray-300 bg-gray-700 px-2 py-0.5 rounded-full text-sm">
+                              <UserCircle className="w-3 h-3" /> User
+                            </span>
                           )}
                         </div>
-                        <div>
-                          <div className="font-medium text-gray-200 text-sm">
-                            {user.name || "Unnamed"}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {team ? (
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-flex items-center gap-1 text-teal-300 bg-teal-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
+                              <Users className="w-3 h-3" /> {team.displayId}
+                            </span>
+                            {team.members &&
+                              team.members.some(
+                                (member) =>
+                                  !member.isLead && member.email === user.email
+                              ) && (
+                                <span className="inline-flex items-center gap-1 text-blue-300 bg-blue-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
+                                  <Info className="w-3 h-3" /> Member
+                                </span>
+                              )}
+                            {team.members &&
+                              team.members.some(
+                                (member) =>
+                                  member.isLead && member.email === user.email
+                              ) && (
+                                <span className="inline-flex items-center gap-1 text-amber-300 bg-amber-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
+                                  <Shield className="w-3 h-3" /> Lead
+                                </span>
+                              )}
                           </div>
-                          <div className="text-xs text-gray-400">
-                            #{user.id}
-                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-500">-</span>
+                        )}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {user.isBlocked ? (
+                          <span className="inline-flex items-center gap-1 text-red-300 bg-red-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
+                            <XCircle className="w-3 h-3" /> Blocked
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-green-300 bg-green-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
+                            <CheckCircle className="w-3 h-3" /> Active
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 whitespace-nowrap text-sm text-gray-400">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          <span>
+                            {new Date(user.lastLogin).toLocaleDateString()}
+                          </span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-3 whitespace-nowrap text-sm text-gray-300">
-                      {user.email}
-                    </td>
-                    <td className="p-3 whitespace-nowrap">
-                      <div className="flex flex-col gap-1">
-                        {user.isAdmin && (
-                          <span className="inline-flex items-center gap-1 text-purple-300 bg-purple-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
-                            <Shield className="w-3 h-3" /> Admin
-                          </span>
-                        )}
-                        {!user.isAdmin && (
-                          <span className="inline-flex items-center gap-1 text-gray-300 bg-gray-700 px-2 py-0.5 rounded-full text-sm">
-                            <UserCircle className="w-3 h-3" /> User
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-3 whitespace-nowrap">
-                      {user.team ? (
-                        <span className="inline-flex items-center gap-1 text-teal-300 bg-teal-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
-                          <Users className="w-3 h-3" /> {user.team.displayId}
-                        </span>
-                      ) : (
-                        <span className="text-sm text-gray-500">-</span>
-                      )}
-                    </td>
-                    <td className="p-3 whitespace-nowrap">
-                      {user.isBlocked ? (
-                        <span className="inline-flex items-center gap-1 text-red-300 bg-red-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
-                          <XCircle className="w-3 h-3" /> Blocked
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-green-300 bg-green-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
-                          <CheckCircle className="w-3 h-3" /> Active
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3 whitespace-nowrap text-sm text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        <span>
-                          {new Date(user.lastLogin).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {new Date(user.lastLogin).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </div>
-                    </td>
-                    <td className="p-3 whitespace-nowrap text-sm text-gray-300">
-                      {user.loggedInTimes}
-                    </td>
-                  </tr>
-                ))}
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {new Date(user.lastLogin).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </td>
+                      <td className="p-3 whitespace-nowrap text-sm text-gray-300">
+                        {user.loggedInTimes}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -519,6 +612,7 @@ export default function UserTable({
 
       <UserDetailPopup
         user={selectedUser}
+        team={selectedTeam}
         onClose={closeUserDetail}
         isVisible={!!selectedUser}
       />

@@ -16,9 +16,9 @@ export type SortField = keyof Omit<
 export type SortDirection = "asc" | "desc";
 export interface FilterState {
   search: string;
-  role: "all" | "admin" | "user";
+  role: "all" | "admin" | "user" | "lead" | "member";
   status: "all" | "active" | "blocked";
-  loginStatus: "all" | "today" | "week" | "month" | "never";
+  loginStatus: "all" | "today" | "yesterday" | "week" | "month" | "never";
   team: "all" | "yes" | "no";
 }
 export type UserTeam = UserWithTeam["team"]

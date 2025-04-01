@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useCallback, useState } from "react";
+import { useEffect, useMemo, useCallback, useState, useRef } from "react";
 import {
   FilterState,
   SortDirection,
   SortField,
+  UserTeam,
   UserWithTeam,
 } from "@/types/user-data";
 import UserTable from "./UserTable";
 import UserFilters from "./UserFilters";
 import { Users } from "lucide-react";
+import { getTeam } from "@/lib/utils";
+import { useDebounce } from "@/lib/hooks";
 
 const FILTER_STORAGE_KEY = "user-dashboard-filters";
-
 interface UserDashboardProps {
   initialUsers: UserWithTeam[];
 }
@@ -29,7 +31,15 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     team: "all",
   });
 
-  // Load filters from localStorage on mount
+  const dateCache = useRef({
+    now: new Date(),
+    yesterday: new Date(new Date().setDate(new Date().getDate() - 1)),
+    weekAgo: new Date(new Date().setDate(new Date().getDate() - 7)),
+    monthAgo: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+  }).current;
+
+  const debouncedSearch = useDebounce(filters.search, 300);
+
   useEffect(() => {
     try {
       const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
@@ -40,12 +50,10 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       console.error("Failed to load filters from localStorage:", error);
     }
 
-    // Simulate loading state
     const timer = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(timer);
   }, []);
 
-  // Save filters to localStorage whenever they change
   useEffect(() => {
     try {
       localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
@@ -83,87 +91,162 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     });
   }, []);
 
-  const filteredAndSortedUsers = useMemo(() => {
+  const usersWithVisibility = useMemo(() => {
     if (isLoading) return [];
 
-    return initialUsers
-      .filter((user) => {
-        if (
-          filters.search &&
-          !user.name?.toLowerCase().includes(filters.search.toLowerCase()) &&
-          !user.email.toLowerCase().includes(filters.search.toLowerCase())
-        ) {
-          return false;
+    const hasActiveFilters =
+      debouncedSearch ||
+      filters.role !== "all" ||
+      filters.status !== "all" ||
+      filters.loginStatus !== "all" ||
+      filters.team !== "all";
+
+    const teamCache = new Map<string, UserTeam | null>();
+    const getTeamCached = (email: string) => {
+      if (!teamCache.has(email)) {
+        teamCache.set(email, getTeam(initialUsers, email));
+      }
+      return teamCache.get(email);
+    };
+
+    const sortedUsers = [...initialUsers].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case "lastLogin":
+          comparison =
+            new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime();
+          break;
+        case "loggedInTimes":
+          comparison = a.loggedInTimes - b.loggedInTimes;
+          break;
+        case "name":
+          comparison = (a.name || "").localeCompare(b.name || "");
+          break;
+        case "email":
+          comparison = a.email.localeCompare(b.email);
+          break;
+        case "isAdmin":
+          comparison = Number(a.isAdmin) - Number(b.isAdmin);
+          break;
+        case "isBlocked":
+          comparison = Number(a.isBlocked) - Number(b.isBlocked);
+          break;
+      }
+
+      return sortDir === "asc" ? comparison : -comparison;
+    });
+
+    if (!hasActiveFilters) {
+      return sortedUsers.map((user) => ({ ...user, visible: true }));
+    }
+
+    return sortedUsers.map((user) => {
+      let visible = true;
+
+      if (debouncedSearch) {
+        const searchLower = debouncedSearch.toLowerCase();
+        const nameMatch =
+          user.name?.toLowerCase().includes(searchLower) || false;
+        const emailMatch = user.email.toLowerCase().includes(searchLower);
+        if (!nameMatch && !emailMatch) visible = false;
+      }
+
+      if (visible && filters.role === "admin" && !user.isAdmin) visible = false;
+      if (visible && filters.role === "user" && user.isAdmin) visible = false;
+
+      if (visible && (filters.role === "lead" || filters.role === "member")) {
+        const userTeam = getTeamCached(user.email);
+        if (!userTeam) {
+          visible = false;
+        } else {
+          const currentMember = userTeam.members.find(
+            (member) => member.email === user.email
+          );
+
+          if (!currentMember) {
+            visible = false;
+          } else if (filters.role === "lead") {
+            visible = currentMember.isLead === true;
+          } else {
+            visible = currentMember.isLead === false;
+          }
         }
+      }
 
-        if (filters.role === "admin" && !user.isAdmin) return false;
-        if (filters.role === "user" && user.isAdmin) return false;
+      if (visible && filters.status === "blocked" && !user.isBlocked)
+        visible = false;
+      if (visible && filters.status === "active" && user.isBlocked)
+        visible = false;
 
-        if (filters.status === "blocked" && !user.isBlocked) return false;
-        if (filters.status === "active" && user.isBlocked) return false;
+      if (visible && filters.team === "yes") {
+        const userTeam = getTeamCached(user.email);
+        if (!userTeam || !userTeam.members || userTeam.members.length === 0 || 
+            !userTeam.members.some(member => member.email === user.email)) {
+          visible = false;
+        }
+      }
+      
+      if (visible && filters.team === "no") {
+        const userTeam = getTeamCached(user.email);
+        if (userTeam && userTeam.members && userTeam.members.some(member => member.email === user.email)) {
+          visible = false;
+        }
+      }
 
-        if (filters.team === "yes" && !user.team) return false;
-        if (filters.team === "no" && user.team) return false;
-
-        const now = new Date();
+      if (visible && filters.loginStatus !== "all") {
         const lastLogin = new Date(user.lastLogin);
 
         if (
           filters.loginStatus === "today" &&
-          lastLogin.toDateString() !== now.toDateString()
-        )
-          return false;
-        if (filters.loginStatus === "week") {
-          const weekAgo = new Date();
-          weekAgo.setDate(now.getDate() - 7);
-          if (lastLogin < weekAgo) return false;
-        }
-        if (filters.loginStatus === "month") {
-          const monthAgo = new Date();
-          monthAgo.setMonth(now.getMonth() - 1);
-          if (lastLogin < monthAgo) return false;
-        }
-        if (filters.loginStatus === "never" && user.loggedInTimes > 0)
-          return false;
-
-        return true;
-      })
-      .sort((a, b) => {
-        let comparison = 0;
-
-        switch (sortField) {
-          case "lastLogin":
-            comparison =
-              new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime();
-            break;
-          case "loggedInTimes":
-            comparison = a.loggedInTimes - b.loggedInTimes;
-            break;
-          case "name":
-            comparison = (a.name || "").localeCompare(b.name || "");
-            break;
-          case "email":
-            comparison = a.email.localeCompare(b.email);
-            break;
-          case "isAdmin":
-            comparison = Number(a.isAdmin) - Number(b.isAdmin);
-            break;
-          case "isBlocked":
-            comparison = Number(a.isBlocked) - Number(b.isBlocked);
-            break;
+          lastLogin.toDateString() !== dateCache.now.toDateString()
+        ) {
+          visible = false;
         }
 
-        return sortDir === "asc" ? comparison : -comparison;
-      });
-  }, [initialUsers, filters, sortField, sortDir, isLoading]);
+        if (
+          filters.loginStatus === "yesterday" &&
+          lastLogin.toDateString() !== dateCache.yesterday.toDateString()
+        ) {
+          visible = false;
+        }
+
+        if (filters.loginStatus === "week" && lastLogin < dateCache.weekAgo) {
+          visible = false;
+        }
+
+        if (filters.loginStatus === "month" && lastLogin < dateCache.monthAgo) {
+          visible = false;
+        }
+
+        if (filters.loginStatus === "never" && user.loggedInTimes > 0) {
+          visible = false;
+        }
+      }
+
+      return { ...user, visible };
+    });
+  }, [
+    initialUsers,
+    debouncedSearch,
+    filters.role,
+    filters.status,
+    filters.loginStatus,
+    filters.team,
+    isLoading,
+    dateCache,
+    sortField,
+    sortDir,
+  ]);
 
   const activeUsers = useMemo(
     () =>
       initialUsers.filter(
         (user) =>
-          new Date(user.lastLogin).toDateString() === new Date().toDateString()
+          new Date(user.lastLogin).toDateString() ===
+          dateCache.now.toDateString()
       ).length,
-    [initialUsers]
+    [initialUsers, dateCache]
   );
 
   return (
@@ -192,7 +275,8 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       />
 
       <UserTable
-        users={filteredAndSortedUsers}
+        users={usersWithVisibility}
+        initialUsers={initialUsers}
         sortField={sortField}
         sortDir={sortDir}
         onSortChange={handleSortChange}

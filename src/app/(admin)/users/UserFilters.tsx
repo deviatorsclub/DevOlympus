@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from "react";
+import { memo, useState, useCallback, useMemo } from "react";
 import { Search, Filter, X, ChevronDown, ChevronUp } from "lucide-react";
 import { FilterState } from "@/types/user-data";
 
@@ -8,13 +8,69 @@ interface UserFiltersProps {
   onClearFilters: () => void;
 }
 
+const FilterSelect = memo(
+  ({
+    value,
+    onChange,
+    options,
+    onClick,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    onClick: (e: React.MouseEvent) => void;
+  }) => (
+    <select
+      className="block w-full pl-2 pr-6 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onClick={onClick}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  )
+);
+FilterSelect.displayName = "FilterSelect";
+
+const SearchInput = memo(
+  ({
+    value,
+    onChange,
+    onClick,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    onClick: (e: React.MouseEvent) => void;
+  }) => (
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+        <Search className="h-3.5 w-3.5 text-gray-400" />
+      </div>
+      <input
+        type="text"
+        className="block w-full pl-8 pr-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+        placeholder="Search users..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onClick={onClick}
+      />
+    </div>
+  )
+);
+SearchInput.displayName = "SearchInput";
+
 const UserFilters = memo(
   ({ filters, onFilterChange, onClearFilters }: UserFiltersProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const activeFilterCount = Object.values(filters).filter(
-      (value) => value && value !== "all"
-    ).length;
+    const activeFilterCount = useMemo(() => {
+      return Object.values(filters).filter((value) => value && value !== "all")
+        .length;
+    }, [filters]);
 
     const toggleExpanded = useCallback(
       () => setIsExpanded((prev) => !prev),
@@ -26,10 +82,51 @@ const UserFilters = memo(
       []
     );
 
+    const roleOptions = useMemo(
+      () => [
+        { value: "all", label: "All Roles" },
+        { value: "admin", label: "Admin" },
+        { value: "user", label: "User" },
+        { value: "lead", label: "Lead" },
+        { value: "member", label: "Member" },
+      ],
+      []
+    );
+
+    const statusOptions = useMemo(
+      () => [
+        { value: "all", label: "Status" },
+        { value: "active", label: "Active" },
+        { value: "blocked", label: "Blocked" },
+      ],
+      []
+    );
+
+    const loginOptions = useMemo(
+      () => [
+        { value: "all", label: "Login" },
+        { value: "today", label: "Today" },
+        { value: "yesterday", label: "Yesterday" },
+        { value: "week", label: "Week" },
+        { value: "month", label: "Month" },
+        { value: "never", label: "Never" },
+      ],
+      []
+    );
+
+    const teamOptions = useMemo(
+      () => [
+        { value: "all", label: "Team" },
+        { value: "yes", label: "Has Team" },
+        { value: "no", label: "No Team" },
+      ],
+      []
+    );
+
     return (
       <div className="bg-gray-800 rounded-lg shadow">
         <div
-          className="p-3 flex items-center justify-between cursor-pointer"
+          className="p-3 flex items-center justify-between cursor-pointer select-none"
           onClick={toggleExpanded}
         >
           <div className="flex items-center gap-2">
@@ -61,78 +158,59 @@ const UserFilters = memo(
           </div>
         </div>
 
-        {/* Using CSS for conditional rendering instead of removing from DOM */}
         <div
-          className="p-3 pt-0 border-t border-gray-700 transition-all duration-200 overflow-hidden"
+          className="border-t border-gray-700 transition-all duration-200 overflow-hidden"
           style={{
             maxHeight: isExpanded ? "500px" : "0",
             opacity: isExpanded ? 1 : 0,
             borderTopWidth: isExpanded ? "1px" : "0",
-            padding: isExpanded ? "12px 12px 0 12px" : "0 12px",
+            padding: isExpanded ? "12px 12px 12px 12px" : "0 12px",
           }}
         >
-          <div className="mt-3 flex flex-col gap-2">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                <Search className="h-3.5 w-3.5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="block w-full pl-8 pr-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                placeholder="Search users..."
-                value={filters.search}
-                onChange={(e) => onFilterChange("search", e.target.value)}
-                onClick={handleClick}
-              />
-            </div>
+          <div className="flex flex-col gap-2">
+            <SearchInput
+              value={filters.search}
+              onChange={(value) => onFilterChange("search", value)}
+              onClick={handleClick}
+            />
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <select
-                className="block w-full pl-2 pr-6 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                value={filters.role}
-                onChange={(e) => onFilterChange("role", e.target.value)}
-                onClick={handleClick}
-              >
-                <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-              </select>
-
-              <select
-                className="block w-full pl-2 pr-6 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                value={filters.status}
-                onChange={(e) => onFilterChange("status", e.target.value)}
-                onClick={handleClick}
-              >
-                <option value="all">Status</option>
-                <option value="active">Active</option>
-                <option value="blocked">Blocked</option>
-              </select>
-
-              <select
-                className="block w-full pl-2 pr-6 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                value={filters.loginStatus}
-                onChange={(e) => onFilterChange("loginStatus", e.target.value)}
-                onClick={handleClick}
-              >
-                <option value="all">Login</option>
-                <option value="today">Today</option>
-                <option value="Yesterday">Today</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
-                <option value="never">Never</option>
-              </select>
-
-              <select
-                className="block w-full pl-2 pr-6 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                value={filters.team}
-                onChange={(e) => onFilterChange("team", e.target.value)}
-                onClick={handleClick}
-              >
-                <option value="all">Team</option>
-                <option value="yes">Has Team</option>
-                <option value="no">No Team</option>
-              </select>
+              {[
+                {
+                  value: filters.role,
+                  key: "role",
+                  options: roleOptions,
+                  onClick: handleClick,
+                },
+                {
+                  value: filters.status,
+                  key: "status",
+                  options: statusOptions,
+                  onClick: handleClick,
+                },
+                {
+                  value: filters.loginStatus,
+                  key: "loginStatus",
+                  options: loginOptions,
+                  onClick: handleClick,
+                },
+                {
+                  value: filters.team,
+                  key: "team",
+                  options: teamOptions,
+                  onClick: handleClick,
+                },
+              ].map((option) => (
+                <FilterSelect
+                  key={option.key}
+                  value={option.value}
+                  onChange={(value) =>
+                    onFilterChange(option.key as keyof FilterState, value)
+                  }
+                  options={option.options}
+                  onClick={option.onClick}
+                />
+              ))}
             </div>
           </div>
         </div>
