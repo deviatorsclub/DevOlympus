@@ -1,6 +1,7 @@
 import { memo, useState, useCallback, useMemo } from "react";
 import { Search, Filter, X, ChevronDown, ChevronUp } from "lucide-react";
 import { FilterState } from "@/types/user-data";
+import { Theme } from "@/lib/flags";
 
 interface UserFiltersProps {
   filters: FilterState;
@@ -123,6 +124,18 @@ const UserFilters = memo(
       []
     );
 
+    const teamThemeOptions = useMemo<{ value: Theme | "all"; label: string }[]>(
+      () => [
+        { value: "all", label: "Theme" },
+        { value: "AI & Machine Learning", label: "AI & Machine Learning" },
+        { value: "Blockchain & Web3", label: "Blockchain" },
+        { value: "Cybersecurity & Privacy", label: "Cybersecurity" },
+        { value: "Open Innovation", label: "Open Innovation" },
+        { value: "Robotics", label: "Robotics" },
+      ],
+      []
+    );
+
     return (
       <div className="bg-gray-800 rounded-lg shadow">
         <div
@@ -174,7 +187,7 @@ const UserFilters = memo(
               onClick={handleClick}
             />
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {[
                 {
                   value: filters.role,
@@ -198,6 +211,12 @@ const UserFilters = memo(
                   value: filters.team,
                   key: "team",
                   options: teamOptions,
+                  onClick: handleClick,
+                },
+                {
+                  value: filters.teamTheme,
+                  key: "teamTheme",
+                  options: teamThemeOptions,
                   onClick: handleClick,
                 },
               ].map((option) => (

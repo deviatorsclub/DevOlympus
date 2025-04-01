@@ -1,3 +1,4 @@
+import { Theme } from "@/lib/flags";
 import { Prisma } from "@prisma/client";
 
 export type UserWithTeam = Prisma.UserGetPayload<{
@@ -20,5 +21,6 @@ export interface FilterState {
   status: "all" | "active" | "blocked";
   loginStatus: "all" | "today" | "yesterday" | "week" | "month" | "never";
   team: "all" | "yes" | "no";
+  teamTheme: Theme | "all";
 }
-export type UserTeam = UserWithTeam["team"]
+export type UserTeam = UserWithTeam["team"];

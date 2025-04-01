@@ -30,6 +30,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     status: "all",
     loginStatus: "all",
     team: "all",
+    teamTheme: "all",
   });
 
   const router = useRouter();
@@ -91,6 +92,19 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       }
     }
 
+    if (searchParams.has("teamTheme")) {
+      const teamTheme = searchParams.get("teamTheme");
+      if (
+        teamTheme &&
+        ["all", "ai", "blockchain", "security", "robotics", "open"].includes(
+          teamTheme
+        )
+      ) {
+        urlFilters.teamTheme = teamTheme as FilterState["teamTheme"];
+        hasUrlFilters = true;
+      }
+    }
+
     if (hasUrlFilters) {
       setFilters((prev) => ({
         ...prev,
@@ -136,6 +150,10 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       params.set("team", filters.team);
     }
 
+    if (filters.teamTheme !== "all") {
+      params.set("teamTheme", filters.teamTheme);
+    }
+
     const queryString = params.toString();
     const url = pathname + (queryString ? `?${queryString}` : "");
     router.replace(url, { scroll: false });
@@ -173,6 +191,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       status: "all",
       loginStatus: "all",
       team: "all",
+      teamTheme: "all",
     });
   }, []);
 
@@ -184,7 +203,8 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       filters.role !== "all" ||
       filters.status !== "all" ||
       filters.loginStatus !== "all" ||
-      filters.team !== "all";
+      filters.team !== "all" ||
+      filters.teamTheme !== "all";
 
     const teamCache = new Map<string, UserTeam | null>();
     const getTeamCached = (email: string) => {
@@ -287,6 +307,17 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         }
       }
 
+      if (visible && filters.teamTheme !== "all") {
+        const userTeam = getTeamCached(user.email);
+        if (
+          !userTeam ||
+          !userTeam.theme ||
+          userTeam.theme.toLowerCase() !== filters.teamTheme.toLowerCase()
+        ) {
+          visible = false;
+        }
+      }
+
       if (visible && filters.loginStatus !== "all") {
         const lastLogin = new Date(user.lastLogin);
 
@@ -326,6 +357,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     filters.status,
     filters.loginStatus,
     filters.team,
+    filters.teamTheme,
     isLoading,
     dateCache,
     sortField,
