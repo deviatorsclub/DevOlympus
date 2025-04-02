@@ -15,7 +15,7 @@ import { getTeam } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { getData } from "./page";
+import { getData } from "./data";
 
 interface UserDashboardProps {
   initialUsers: UserWithTeam[];
@@ -381,7 +381,6 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       return { ...user, visible };
     });
   }, [
-    initialUsers,
     debouncedSearch,
     filters.role,
     filters.status,
@@ -393,6 +392,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     dateCache,
     sortField,
     sortDir,
+    users,
   ]);
 
   const activeUsers = useMemo(
