@@ -45,9 +45,33 @@ export async function PATCH(
       );
     }
 
+    const currentTeam = await prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!currentTeam) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
+
+    const newLog = {
+      timestamp: new Date(),
+      adminId: user.id,
+      adminName: user.name || user.email,
+      adminEmail: user.email,
+      previousStatus: currentTeam.selectedForRound2,
+      newStatus: selectionStatus ?? "NOT_DECIDED",
+    };
+
+    const currentLogs = Array.isArray(currentTeam.selectionStatusLogs)
+      ? currentTeam.selectionStatusLogs
+      : [];
+
     const updatedTeam = await prisma.team.update({
       where: { id: teamId },
-      data: { selectedForRound2: selectionStatus ?? "NOT_DECIDED" },
+      data: {
+        selectedForRound2: selectionStatus ?? "NOT_DECIDED",
+        selectionStatusLogs: [...currentLogs, newLog],
+      },
     });
 
     return NextResponse.json(updatedTeam);

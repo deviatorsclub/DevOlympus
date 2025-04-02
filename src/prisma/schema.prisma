@@ -39,6 +39,7 @@ model Team {
   captain           User                @relation(fields: [captainId], references: [id])
   captainId         String              @unique
   selectedForRound2 TeamSelectionStatus @default(NOT_DECIDED)
+  selectionStatusLogs Json?             // Stores history of status changes with admin info
   members           TeamMember[]
 }
 
