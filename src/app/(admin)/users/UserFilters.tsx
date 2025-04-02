@@ -135,6 +135,16 @@ const UserFilters = memo(
       ],
       []
     );
+    
+    const round2Options = useMemo(
+      () => [
+        { value: "all", label: "Round 2" },
+        { value: "SELECTED", label: "Selected" },
+        { value: "REJECTED", label: "Rejected" },
+        { value: "NOT_DECIDED", label: "Not Decided" },
+      ],
+      []
+    );
 
     return (
       <div className="bg-gray-800 rounded-lg shadow">
@@ -172,7 +182,7 @@ const UserFilters = memo(
         </div>
 
         <div
-          className="border-t border-gray-700 transition-all duration-200 overflow-hidden"
+          className="relative border-t border-gray-700 transition-all duration-200 overflow-hidden"
           style={{
             maxHeight: isExpanded ? "500px" : "0",
             opacity: isExpanded ? 1 : 0,
@@ -217,6 +227,12 @@ const UserFilters = memo(
                   value: filters.teamTheme,
                   key: "teamTheme",
                   options: teamThemeOptions,
+                  onClick: handleClick,
+                },
+                {
+                  value: filters.round2,
+                  key: "round2",
+                  options: round2Options,
                   onClick: handleClick,
                 },
               ].map((option) => (

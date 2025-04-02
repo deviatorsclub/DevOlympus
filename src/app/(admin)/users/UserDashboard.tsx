@@ -30,6 +30,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     loginStatus: "all",
     team: "all",
     teamTheme: "all",
+    round2: "all",
   });
 
   const router = useRouter();
@@ -104,6 +105,17 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       }
     }
 
+    if (searchParams.has("round2")) {
+      const round2 = searchParams.get("round2");
+      if (
+        round2 &&
+        ["all", "SELECTED", "REJECTED", "NOT_DECIDED"].includes(round2)
+      ) {
+        urlFilters.round2 = round2 as FilterState["round2"];
+        hasUrlFilters = true;
+      }
+    }
+
     if (hasUrlFilters) {
       setFilters((prev) => ({
         ...prev,
@@ -144,6 +156,10 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       params.set("teamTheme", filters.teamTheme);
     }
 
+    if (filters.round2 !== "all") {
+      params.set("round2", filters.round2);
+    }
+
     const queryString = params.toString();
     const url = pathname + (queryString ? `?${queryString}` : "");
     router.replace(url, { scroll: false });
@@ -176,6 +192,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       loginStatus: "all",
       team: "all",
       teamTheme: "all",
+      round2: "all",
     });
   }, []);
 
@@ -188,7 +205,8 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       filters.status !== "all" ||
       filters.loginStatus !== "all" ||
       filters.team !== "all" ||
-      filters.teamTheme !== "all";
+      filters.teamTheme !== "all" ||
+      filters.round2 !== "all";
 
     const teamCache = new Map<string, UserTeam | null>();
     const getTeamCached = (email: string) => {
@@ -332,6 +350,18 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         }
       }
 
+      if (visible && filters.round2 !== "all") {
+        const userTeam = getTeamCached(user.email);
+        if (!userTeam) {
+          visible = false;
+        } else {
+          // Only filter if the team's Round 2 selection status doesn't match the filter
+          if (userTeam.selectedForRound2 !== filters.round2) {
+            visible = false;
+          }
+        }
+      }
+
       return { ...user, visible };
     });
   }, [
@@ -342,6 +372,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     filters.loginStatus,
     filters.team,
     filters.teamTheme,
+    filters.round2,
     isLoading,
     dateCache,
     sortField,

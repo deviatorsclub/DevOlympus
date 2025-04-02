@@ -22,5 +22,6 @@ export interface FilterState {
   loginStatus: "all" | "today" | "yesterday" | "week" | "month" | "never";
   team: "all" | "yes" | "no";
   teamTheme: Theme | "all";
+  round2: "all" | "SELECTED" | "REJECTED" | "NOT_DECIDED";
 }
 export type UserTeam = UserWithTeam["team"];

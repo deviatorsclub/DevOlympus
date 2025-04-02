@@ -23,16 +23,23 @@ model User {
   @@unique([id])
 }
 
+enum TeamSelectionStatus {
+  SELECTED
+  REJECTED
+  NOT_DECIDED
+}
+
 model Team {
-  id              String       @id @default(cuid())
-  displayId       String       @unique
-  name            String
-  presentationUrl String
-  theme           String
-  createdAt       DateTime     @default(now())
-  captain         User         @relation(fields: [captainId], references: [id])
-  captainId       String       @unique
-  members         TeamMember[]
+  id                String              @id @default(cuid())
+  displayId         String              @unique
+  name              String
+  presentationUrl   String
+  theme             String
+  createdAt         DateTime            @default(now())
+  captain           User                @relation(fields: [captainId], references: [id])
+  captainId         String              @unique
+  selectedForRound2 TeamSelectionStatus @default(NOT_DECIDED)
+  members           TeamMember[]
 }
 
 model TeamMember {

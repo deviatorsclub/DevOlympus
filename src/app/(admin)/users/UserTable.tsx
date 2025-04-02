@@ -13,6 +13,8 @@ import {
   Palette,
   User,
   Info,
+  Award,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { TeamMember } from "@/types/registration";
@@ -88,10 +90,13 @@ interface UserDetailPopupProps {
   team: UserTeam;
   onClose: () => void;
   isVisible: boolean;
+  isAdmin: boolean;
 }
 
 const UserDetailPopup = memo(
-  ({ user, team, onClose, isVisible }: UserDetailPopupProps) => {
+  ({ user, team, onClose, isVisible, isAdmin }: UserDetailPopupProps) => {
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     if (!isVisible || !user) return null;
 
     const handleBackdropClick = (e: React.MouseEvent) => {
@@ -274,6 +279,81 @@ const UserDetailPopup = memo(
                           </span>
                         </div>
                       )}
+
+                      {/* Round 2 Selection Status */}
+                      <div className="flex items-center text-sm">
+                        <Award className="w-4 h-4 mr-2 text-gray-400" />
+                        <span className="text-gray-300">Round 2: </span>
+                        {isAdmin ? (
+                          <div className="relative inline-block">
+                            {isUpdating && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75 rounded-md z-10">
+                                <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                              </div>
+                            )}
+                            <select
+                              className="ml-1 bg-gray-700 border border-gray-600 rounded-md text-sm px-2 py-1 text-gray-200"
+                              value={selectedStatus !== null ? selectedStatus : (team.selectedForRound2 || "")}
+                              disabled={isUpdating}
+                              onChange={async (e) => {
+                                const value = e.target.value;
+                                const status = value === "" ? null : value;
+                                
+                                // Set loading state and selected status
+                                setIsUpdating(true);
+                                setSelectedStatus(value);
+                                
+                                try {
+                                  const response = await fetch(
+                                    `/api/teams/${team.id}/round2`,
+                                    {
+                                      method: "PATCH",
+                                      headers: {
+                                        "Content-Type": "application/json",
+                                      },
+                                      body: JSON.stringify({ status }),
+                                    }
+                                  );
+                                  if (!response.ok) {
+                                    throw new Error("Failed to update status");
+                                  }
+                                  
+                                  // Update was successful
+                                  setIsUpdating(false);
+                                } catch (error) {
+                                  console.error("Error updating status:", error);
+                                  alert("Failed to update Round 2 selection status");
+                                  // Reset loading state on error but keep selected status
+                                  setIsUpdating(false);
+                                }
+                              }}
+                            >
+                              <option value="">Select Status</option>
+                              <option value="SELECTED">Selected</option>
+                              <option value="REJECTED">Rejected</option>
+                              <option value="NOT_DECIDED">Not Decided</option>
+                            </select>
+                          </div>
+                        ) : (
+                          <span className={
+                            `ml-1 ${team.selectedForRound2 === "SELECTED" 
+                              ? "text-green-300" 
+                              : team.selectedForRound2 === "REJECTED" 
+                                ? "text-red-300" 
+                                : team.selectedForRound2 === "NOT_DECIDED" 
+                                  ? "text-yellow-300" 
+                                  : "text-gray-400"}`
+                          }>
+                            {team.selectedForRound2 === "SELECTED" 
+                              ? "Selected" 
+                              : team.selectedForRound2 === "REJECTED" 
+                                ? "Rejected" 
+                                : team.selectedForRound2 === "NOT_DECIDED" 
+                                  ? "Not Decided" 
+                                  : "Not Set"}
+                          </span>
+                        )}
+                      </div>
 
                       {team.presentationUrl && (
                         <div className="flex items-center text-sm">
@@ -615,6 +695,7 @@ export default function UserTable({
         team={selectedTeam}
         onClose={closeUserDetail}
         isVisible={!!selectedUser}
+        isAdmin={true}
       />
     </>
   );
