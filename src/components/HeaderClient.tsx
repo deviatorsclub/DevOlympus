@@ -132,7 +132,7 @@ const MenuItem: FC<MenuItemProps> = ({
 
 const useClickOutside = (
   ref: React.RefObject<HTMLElement | null>,
-  handler: () => void
+  handler: () => void,
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -183,7 +183,7 @@ const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
         {item.name}
       </Link>
     </motion.li>
-  )
+  ),
 );
 MobileNavItem.displayName = "MobileNavItem";
 

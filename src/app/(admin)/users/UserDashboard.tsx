@@ -75,14 +75,14 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     // Add event listener for team status updates
     window.addEventListener(
       "teamStatusUpdated",
-      handleTeamStatusUpdate as EventListener
+      handleTeamStatusUpdate as EventListener,
     );
 
     // Clean up event listener
     return () => {
       window.removeEventListener(
         "teamStatusUpdated",
-        handleTeamStatusUpdate as EventListener
+        handleTeamStatusUpdate as EventListener,
       );
     };
   }, []);
@@ -117,7 +117,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       if (
         loginStatus &&
         ["all", "today", "yesterday", "week", "month", "never"].includes(
-          loginStatus
+          loginStatus,
         )
       ) {
         urlFilters.loginStatus = loginStatus as FilterState["loginStatus"];
@@ -138,7 +138,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       if (
         teamTheme &&
         ["all", "ai", "blockchain", "security", "robotics", "open"].includes(
-          teamTheme
+          teamTheme,
         )
       ) {
         urlFilters.teamTheme = teamTheme as FilterState["teamTheme"];
@@ -177,14 +177,14 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         setSortDir("asc");
       }
     },
-    [sortField]
+    [sortField],
   );
 
   const handleFilterChange = useCallback(
     (key: keyof FilterState, value: string) => {
       setFilters((prev) => ({ ...prev, [key]: value }));
     },
-    []
+    [],
   );
 
   const clearFilters = useCallback(() => {
@@ -273,7 +273,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           visible = false;
         } else {
           const currentMember = userTeam.members.find(
-            (member) => member.email === user.email
+            (member) => member.email === user.email,
           );
 
           if (!currentMember) {
@@ -389,9 +389,9 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       users.filter(
         (user) =>
           new Date(user.lastLogin).toDateString() ===
-          dateCache.now.toDateString()
+          dateCache.now.toDateString(),
       ).length,
-    [users, dateCache]
+    [users, dateCache],
   );
 
   return (

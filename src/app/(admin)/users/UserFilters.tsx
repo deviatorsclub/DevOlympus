@@ -40,7 +40,7 @@ const FilterSelect = memo(
         </option>
       ))}
     </select>
-  )
+  ),
 );
 FilterSelect.displayName = "FilterSelect";
 
@@ -67,7 +67,7 @@ const SearchInput = memo(
         onClick={onClick}
       />
     </div>
-  )
+  ),
 );
 SearchInput.displayName = "SearchInput";
 
@@ -82,12 +82,12 @@ const UserFilters = memo(
 
     const toggleExpanded = useCallback(
       () => setIsExpanded((prev) => !prev),
-      []
+      [],
     );
 
     const handleClick = useCallback(
       (e: React.MouseEvent) => e.stopPropagation(),
-      []
+      [],
     );
 
     const roleOptions = useMemo(
@@ -98,7 +98,7 @@ const UserFilters = memo(
         { value: "lead", label: "Lead" },
         { value: "member", label: "Member" },
       ],
-      []
+      [],
     );
 
     const statusOptions = useMemo(
@@ -107,7 +107,7 @@ const UserFilters = memo(
         { value: "active", label: "Active" },
         { value: "blocked", label: "Blocked" },
       ],
-      []
+      [],
     );
 
     const loginOptions = useMemo(
@@ -119,7 +119,7 @@ const UserFilters = memo(
         { value: "month", label: "Month" },
         { value: "never", label: "Never" },
       ],
-      []
+      [],
     );
 
     const teamOptions = useMemo(
@@ -128,7 +128,7 @@ const UserFilters = memo(
         { value: "yes", label: "Has Team" },
         { value: "no", label: "No Team" },
       ],
-      []
+      [],
     );
 
     const teamThemeOptions = useMemo<{ value: Theme | "all"; label: string }[]>(
@@ -140,7 +140,7 @@ const UserFilters = memo(
         { value: "Open Innovation", label: "Open Innovation" },
         { value: "Robotics", label: "Robotics" },
       ],
-      []
+      [],
     );
 
     const round2Options = useMemo(
@@ -150,7 +150,7 @@ const UserFilters = memo(
         { value: "REJECTED", label: "Rejected" },
         { value: "NOT_DECIDED", label: "Not Decided" },
       ],
-      []
+      [],
     );
 
     return (
@@ -259,7 +259,7 @@ const UserFilters = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 UserFilters.displayName = "UserFilters";
 

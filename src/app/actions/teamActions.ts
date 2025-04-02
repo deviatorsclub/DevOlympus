@@ -5,7 +5,7 @@ import { auth } from "@/lib/authOptions";
 
 export async function updateTeamRound2Status(
   teamId: string,
-  status: string | null
+  status: string | null,
 ) {
   try {
     const session = await auth();

@@ -53,7 +53,7 @@ export default function RegistrationForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
-    "idle"
+    "idle",
   );
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState<boolean>(false);
@@ -85,7 +85,7 @@ export default function RegistrationForm({
         try {
           const parsedData = JSON.parse(savedData) as ExtendedFormState;
           const existingLeadIndex = parsedData.members.findIndex(
-            (m) => m.isLead
+            (m) => m.isLead,
           );
 
           if (existingLeadIndex >= 0) {
@@ -228,14 +228,14 @@ export default function RegistrationForm({
         members: prev.members.filter((member) => member.id !== id),
       }));
     },
-    [formState.members]
+    [formState.members],
   );
 
   const updateMember = useCallback(
     (
       id: string,
       field: keyof Omit<TeamMember, "id" | "isLead">,
-      value: string
+      value: string,
     ) => {
       if (
         field === "email" &&
@@ -260,7 +260,7 @@ export default function RegistrationForm({
       setFormState((prev) => ({
         ...prev,
         members: prev.members.map((member) =>
-          member.id === id ? { ...member, [field]: formattedValue } : member
+          member.id === id ? { ...member, [field]: formattedValue } : member,
         ),
       }));
 
@@ -272,7 +272,7 @@ export default function RegistrationForm({
         });
       }
     },
-    [errors, formState.members]
+    [errors, formState.members],
   );
 
   const validateForm = useCallback((): boolean => {
@@ -396,7 +396,7 @@ export default function RegistrationForm({
         setSubmitDialogOpen(true);
       }
     },
-    [validateForm]
+    [validateForm],
   );
 
   const handleSubmit = useCallback(() => {
@@ -541,7 +541,7 @@ export default function RegistrationForm({
   const updateFormField = useCallback(
     (
       field: keyof Omit<ExtendedFormState, "members">,
-      value: string | boolean
+      value: string | boolean,
     ) => {
       setFormState((prev) => ({
         ...prev,
@@ -556,7 +556,7 @@ export default function RegistrationForm({
         });
       }
     },
-    [errors]
+    [errors],
   );
 
   const dismissAlert = useCallback(() => {

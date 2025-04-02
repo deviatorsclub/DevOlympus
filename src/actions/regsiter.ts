@@ -23,11 +23,11 @@ const RegistrationSchema = z.object({
     .array(TeamMemberSchema)
     .min(
       FLAGS.minTeamSize,
-      `At least ${FLAGS.minTeamSize} team members required`
+      `At least ${FLAGS.minTeamSize} team members required`,
     )
     .max(
       FLAGS.maxTeamSize,
-      `Maximum ${FLAGS.maxTeamSize} team members allowed`
+      `Maximum ${FLAGS.maxTeamSize} team members allowed`,
     ),
   presentationUrl: z.string().url("Must be a valid URL"),
   theme: ThemeEnum,
@@ -42,7 +42,7 @@ type ActionResponse = {
 };
 
 export async function registerTeam(
-  data: RegistrationFormData
+  data: RegistrationFormData,
 ): Promise<ActionResponse> {
   try {
     if (!FLAGS.isRegistrationOpen) {
