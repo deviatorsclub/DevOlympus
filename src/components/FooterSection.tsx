@@ -120,7 +120,7 @@ export default function EnhancedFooter() {
                       {item}
                     </Link>
                   </motion.li>
-                ),
+                )
               )}
             </ul>
           </motion.div>
@@ -169,7 +169,7 @@ export default function EnhancedFooter() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-800 text-slate-400 gap-4"
+          className="flex flex-col md:flex-row items-center justify-between py-8 my-4 border-t border-b border-slate-800 text-slate-400 gap-4"
         >
           <p className="text-sm text-center md:text-left">
             © {new Date().getFullYear()} Deviators Club. All rights reserved.
@@ -187,6 +187,13 @@ export default function EnhancedFooter() {
           </div>
         </motion.div>
       </div>
+
+      <Link
+        href="https://pulkitxm.com"
+        className="mt-8 border-t border-gray-500 py-3 text-center opacity-70"
+      >
+        <p>Made with ❤️ by Pulkit</p>
+      </Link>
     </footer>
   );
 }
