@@ -1,4 +1,13 @@
-import { memo, useState, useCallback, useMemo } from "react";
+import {
+  memo,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
+import { updateTeamRound2Status } from "@/app/actions/teamActions";
 import {
   ArrowDown,
   ArrowUp,
@@ -25,12 +34,19 @@ import {
   UserTeam,
 } from "@/types/user-data";
 import { getTeam } from "@/lib/utils";
+import { Prisma } from "@prisma/client";
 
 interface DetailItemProps {
   icon: React.ReactNode;
   label: string;
   value: React.ReactNode;
 }
+
+type TeamSelectionStatus = Prisma.TeamGetPayload<{
+  select: {
+    selectedForRound2: true;
+  };
+}>["selectedForRound2"];
 
 const DetailItem = memo(({ icon, label, value }: DetailItemProps) => (
   <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-700 bg-opacity-50">
@@ -87,6 +103,7 @@ TeamMemberCard.displayName = "TeamMemberCard";
 
 interface UserDetailPopupProps {
   user: UserWithTeam | null;
+  setUsers: Dispatch<SetStateAction<(UserWithTeam & { visible?: boolean })[]>>;
   team: UserTeam;
   onClose: () => void;
   isVisible: boolean;
@@ -94,9 +111,26 @@ interface UserDetailPopupProps {
 }
 
 const UserDetailPopup = memo(
-  ({ user, team, onClose, isVisible, isAdmin }: UserDetailPopupProps) => {
+  ({
+    user,
+    setUsers,
+    team,
+    onClose,
+    isVisible,
+    isAdmin,
+  }: UserDetailPopupProps) => {
     const [isUpdating, setIsUpdating] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+
+    const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
+      team?.selectedForRound2 ?? "NOT_DECIDED"
+    );
+
+    useEffect(() => {
+      if (team && isVisible) {
+        setSelectedStatus(team.selectedForRound2 ?? "NOT_DECIDED");
+      }
+    }, [team, isVisible]);
+
     if (!isVisible || !user) return null;
 
     const handleBackdropClick = (e: React.MouseEvent) => {
@@ -108,15 +142,12 @@ const UserDetailPopup = memo(
     const teamMembers = team?.members || [];
     const teamLead = teamMembers.find((member) => member.isLead);
 
-    // Find the current user in the team members
     const currentMember = teamMembers.find(
       (member) => member.email === user.email
     );
 
-    // Check if user is a member of the team
     const userIsMember = !!currentMember;
 
-    // Check if user is a lead of the team
     const userIsLead = userIsMember && currentMember?.isLead === true;
 
     return (
@@ -293,37 +324,54 @@ const UserDetailPopup = memo(
                             )}
                             <select
                               className="ml-1 bg-gray-700 border border-gray-600 rounded-md text-sm px-2 py-1 text-gray-200"
-                              value={selectedStatus !== null ? selectedStatus : (team.selectedForRound2 || "")}
+                              value={selectedStatus}
                               disabled={isUpdating}
                               onChange={async (e) => {
                                 const value = e.target.value;
                                 const status = value === "" ? null : value;
-                                
-                                // Set loading state and selected status
+
                                 setIsUpdating(true);
-                                setSelectedStatus(value);
-                                
+                                setSelectedStatus(value as TeamSelectionStatus);
                                 try {
-                                  const response = await fetch(
-                                    `/api/teams/${team.id}/round2`,
-                                    {
-                                      method: "PATCH",
-                                      headers: {
-                                        "Content-Type": "application/json",
-                                      },
-                                      body: JSON.stringify({ status }),
-                                    }
+                                  const res = await updateTeamRound2Status(
+                                    team.id,
+                                    status
                                   );
-                                  if (!response.ok) {
-                                    throw new Error("Failed to update status");
-                                  }
+
+                                  console.log(res);
                                   
-                                  // Update was successful
+
+                                  if (res.error) {
+                                    alert(res.error);
+                                    return;
+                                  }
+
+                                  setUsers((prevUsers) => {
+                                    return prevUsers.map((user) => {
+                                      if (user.team?.id === team.id) {
+                                        return {
+                                          ...user,
+                                          team: {
+                                            ...user.team,
+                                            selectedForRound2:
+                                              status as TeamSelectionStatus,
+                                          },
+                                        };
+                                      }
+                                      return user;
+                                    });
+                                  });
+
                                   setIsUpdating(false);
                                 } catch (error) {
-                                  console.error("Error updating status:", error);
-                                  alert("Failed to update Round 2 selection status");
-                                  // Reset loading state on error but keep selected status
+                                  console.error(
+                                    "Error updating status:",
+                                    error
+                                  );
+                                  alert(
+                                    "Failed to update Round 2 selection status"
+                                  );
+
                                   setIsUpdating(false);
                                 }
                               }}
@@ -335,21 +383,23 @@ const UserDetailPopup = memo(
                             </select>
                           </div>
                         ) : (
-                          <span className={
-                            `ml-1 ${team.selectedForRound2 === "SELECTED" 
-                              ? "text-green-300" 
-                              : team.selectedForRound2 === "REJECTED" 
-                                ? "text-red-300" 
-                                : team.selectedForRound2 === "NOT_DECIDED" 
-                                  ? "text-yellow-300" 
-                                  : "text-gray-400"}`
-                          }>
-                            {team.selectedForRound2 === "SELECTED" 
-                              ? "Selected" 
-                              : team.selectedForRound2 === "REJECTED" 
-                                ? "Rejected" 
-                                : team.selectedForRound2 === "NOT_DECIDED" 
-                                  ? "Not Decided" 
+                          <span
+                            className={`ml-1 ${
+                              team.selectedForRound2 === "SELECTED"
+                                ? "text-green-300"
+                                : team.selectedForRound2 === "REJECTED"
+                                  ? "text-red-300"
+                                  : team.selectedForRound2 === "NOT_DECIDED"
+                                    ? "text-yellow-300"
+                                    : "text-gray-400"
+                            }`}
+                          >
+                            {team.selectedForRound2 === "SELECTED"
+                              ? "Selected"
+                              : team.selectedForRound2 === "REJECTED"
+                                ? "Rejected"
+                                : team.selectedForRound2 === "NOT_DECIDED"
+                                  ? "Not Decided"
                                   : "Not Set"}
                           </span>
                         )}
@@ -437,6 +487,7 @@ UserDetailPopup.displayName = "UserDetailPopup";
 
 interface UserTableProps {
   users: (UserWithTeam & { visible?: boolean })[];
+  setUsers: Dispatch<SetStateAction<(UserWithTeam & { visible?: boolean })[]>>;
   initialUsers: UserWithTeam[];
   sortField: SortField;
   sortDir: SortDirection;
@@ -445,6 +496,7 @@ interface UserTableProps {
 
 export default function UserTable({
   users,
+  setUsers,
   initialUsers,
   sortField,
   sortDir,
@@ -696,6 +748,7 @@ export default function UserTable({
         onClose={closeUserDetail}
         isVisible={!!selectedUser}
         isAdmin={true}
+        setUsers={setUsers}
       />
     </>
   );

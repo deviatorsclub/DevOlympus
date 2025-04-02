@@ -50,6 +50,39 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
   const debouncedSearch = useDebounce(filters.search, 300);
 
+  // Define refreshData function before using it in useEffect
+  const refreshData = async () => {
+    try {
+      setIsRefreshing(true);
+      const users: UserWithTeam[] = await getData();
+      setUsers(users);
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Listen for team status updates from UserDetailPopup
+  useEffect(() => {
+    const handleTeamStatusUpdate = (event: CustomEvent) => {
+      if (event.detail?.updatedUsers) {
+        setUsers(event.detail.updatedUsers);
+      } else {
+        // If no updated users data is provided, refresh data from the server
+        refreshData();
+      }
+    };
+
+    // Add event listener for team status updates
+    window.addEventListener('teamStatusUpdated', handleTeamStatusUpdate as EventListener);
+    
+    // Clean up event listener
+    return () => {
+      window.removeEventListener('teamStatusUpdated', handleTeamStatusUpdate as EventListener);
+    };
+  }, []);
+
   useEffect(() => {
     const urlFilters: Partial<FilterState> = {};
     let hasUrlFilters = false;
@@ -200,17 +233,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     });
   }, []);
   
-  const refreshData = async () => {
-    try {
-      setIsRefreshing(true);
-      const users: UserWithTeam[] = await getData();
-      setUsers(users);
-    } catch (error) {
-      console.error('Error refreshing user data:', error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
+  // refreshData function is now defined above
   
   const usersWithVisibility = useMemo(() => {
     if (isLoading) return [];
@@ -448,6 +471,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         sortField={sortField}
         sortDir={sortDir}
         onSortChange={handleSortChange}
+        setUsers={setUsers}
       />
     </div>
   );

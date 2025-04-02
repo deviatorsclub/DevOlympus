@@ -30,17 +30,17 @@ enum TeamSelectionStatus {
 }
 
 model Team {
-  id                String              @id @default(cuid())
-  displayId         String              @unique
-  name              String
-  presentationUrl   String
-  theme             String
-  createdAt         DateTime            @default(now())
-  captain           User                @relation(fields: [captainId], references: [id])
-  captainId         String              @unique
-  selectedForRound2 TeamSelectionStatus @default(NOT_DECIDED)
-  selectionStatusLogs Json?             // Stores history of status changes with admin info
-  members           TeamMember[]
+  id                  String              @id @default(cuid())
+  displayId           String              @unique
+  name                String
+  presentationUrl     String
+  theme               String
+  createdAt           DateTime            @default(now())
+  captain             User                @relation(fields: [captainId], references: [id])
+  captainId           String              @unique
+  selectedForRound2   TeamSelectionStatus @default(NOT_DECIDED)
+  selectionStatusLogs Json?
+  members             TeamMember[]
 }
 
 model TeamMember {

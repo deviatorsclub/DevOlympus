@@ -1,15 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+"use server";
+
 import { PrismaClient, TeamSelectionStatus } from "@prisma/client";
 import { auth } from "@/lib/authOptions";
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ teamId: string }> }
+export async function updateTeamRound2Status(
+  teamId: string,
+  status: string | null
 ) {
   try {
     const session = await auth();
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return { error: "Unauthorized", status: 401 };
     }
 
     const prisma = new PrismaClient();
@@ -19,14 +20,11 @@ export async function PATCH(
     });
 
     if (!user?.isAdmin) {
-      return NextResponse.json(
-        { error: "Only admins can update Round 2 selection status" },
-        { status: 403 }
-      );
+      return {
+        error: "Only admins can update Round 2 selection status",
+        status: 403,
+      };
     }
-
-    const { teamId } = await params;
-    const { status } = await req.json();
 
     let selectionStatus: TeamSelectionStatus | null = null;
 
@@ -37,12 +35,9 @@ export async function PATCH(
       status === TeamSelectionStatus.REJECTED ||
       status === TeamSelectionStatus.NOT_DECIDED
     ) {
-      selectionStatus = status;
+      selectionStatus = status as TeamSelectionStatus;
     } else {
-      return NextResponse.json(
-        { error: "Invalid selection status" },
-        { status: 400 }
-      );
+      return { error: "Invalid selection status", status: 400 };
     }
 
     const currentTeam = await prisma.team.findUnique({
@@ -50,7 +45,7 @@ export async function PATCH(
     });
 
     if (!currentTeam) {
-      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+      return { error: "Team not found", status: 404 };
     }
 
     const newLog = {
@@ -72,14 +67,43 @@ export async function PATCH(
         selectedForRound2: selectionStatus ?? "NOT_DECIDED",
         selectionStatusLogs: [...currentLogs, newLog],
       },
+      select: {
+        selectedForRound2: true,
+      },
     });
 
-    return NextResponse.json(updatedTeam);
+    return { data: updatedTeam, status: 200 };
   } catch (error) {
     console.error("Error updating Round 2 selection status:", error);
-    return NextResponse.json(
-      { error: "Failed to update Round 2 selection status" },
-      { status: 500 }
-    );
+    return {
+      error: "Failed to update Round 2 selection status",
+      status: 500,
+    };
+  }
+}
+
+// Function to get all users with their teams
+export async function getAllUsers() {
+  try {
+    const prisma = new PrismaClient();
+    const users = await prisma.user.findMany({
+      orderBy: {
+        lastLogin: "desc",
+      },
+    });
+
+    const teams = await prisma.team.findMany({
+      include: {
+        members: true,
+      },
+    });
+
+    return { data: { users, teams }, status: 200 };
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return {
+      error: "Failed to fetch users",
+      status: 500,
+    };
   }
 }
