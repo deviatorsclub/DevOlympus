@@ -11,11 +11,13 @@ interface UserFiltersProps {
 
 const FilterSelect = memo(
   ({
+    name,
     value,
     onChange,
     options,
     onClick,
   }: {
+    name: string;
     value: string;
     onChange: (value: string) => void;
     options: { value: string; label: string }[];
@@ -24,7 +26,12 @@ const FilterSelect = memo(
     <select
       className="block w-full pl-2 pr-6 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => {
+        onChange(e.target.value);
+        const params = new URLSearchParams(window.location.search);
+        params.set(name, e.target.value);
+        window.history.replaceState(null, "", `?${params.toString()}`);
+      }}
       onClick={onClick}
     >
       {options.map((option) => (
@@ -135,7 +142,7 @@ const UserFilters = memo(
       ],
       []
     );
-    
+
     const round2Options = useMemo(
       () => [
         { value: "all", label: "Round 2" },
@@ -237,6 +244,7 @@ const UserFilters = memo(
                 },
               ].map((option) => (
                 <FilterSelect
+                  name={option.key}
                   key={option.key}
                   value={option.value}
                   onChange={(value) =>

@@ -119,22 +119,23 @@ const UserDetailPopup = memo(
     isVisible,
     isAdmin,
   }: UserDetailPopupProps) => {
-    const [updatingTeamIds, setUpdatingTeamIds] = useState<Record<string, boolean>>({});
+    const [updatingTeamIds, setUpdatingTeamIds] = useState<
+      Record<string, boolean>
+    >({});
 
     const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
       team?.selectedForRound2 ?? "NOT_DECIDED"
     );
-    
+
     const isUpdating = team?.id ? updatingTeamIds[team.id] : false;
 
     useEffect(() => {
       if (team && isVisible) {
         setSelectedStatus(team.selectedForRound2 ?? "NOT_DECIDED");
-        // Reset loading state when opening a new popup
         if (team.id) {
-          setUpdatingTeamIds(prev => ({
+          setUpdatingTeamIds((prev) => ({
             ...prev,
-            [team.id]: false
+            [team.id]: false,
           }));
         }
       }
@@ -280,7 +281,6 @@ const UserDetailPopup = memo(
                     {team.displayId}
                   </span>
                 </div>
-
                 <div className="bg-gray-700 bg-opacity-30 rounded-lg p-4 mb-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -320,7 +320,6 @@ const UserDetailPopup = memo(
                         </div>
                       )}
 
-                      {/* Round 2 Selection Status */}
                       <div className="flex items-center text-sm">
                         <Award className="w-4 h-4 mr-2 text-gray-400" />
                         <span className="text-gray-300">Round 2: </span>
@@ -340,9 +339,9 @@ const UserDetailPopup = memo(
                                 const status = value === "" ? null : value;
 
                                 if (team.id) {
-                                  setUpdatingTeamIds(prev => ({
+                                  setUpdatingTeamIds((prev) => ({
                                     ...prev,
-                                    [team.id]: true
+                                    [team.id]: true,
                                   }));
                                 }
                                 setSelectedStatus(value as TeamSelectionStatus);
@@ -374,9 +373,9 @@ const UserDetailPopup = memo(
                                   });
 
                                   if (isVisible && team.id) {
-                                    setUpdatingTeamIds(prev => ({
+                                    setUpdatingTeamIds((prev) => ({
                                       ...prev,
-                                      [team.id]: false
+                                      [team.id]: false,
                                     }));
                                   }
                                 } catch (error) {
@@ -389,9 +388,9 @@ const UserDetailPopup = memo(
                                   );
 
                                   if (isVisible && team.id) {
-                                    setUpdatingTeamIds(prev => ({
+                                    setUpdatingTeamIds((prev) => ({
                                       ...prev,
-                                      [team.id]: false
+                                      [team.id]: false,
                                     }));
                                   }
                                 }
@@ -425,7 +424,6 @@ const UserDetailPopup = memo(
                           </span>
                         )}
                       </div>
-
                       {team.presentationUrl && (
                         <div className="flex items-center text-sm">
                           <Link className="w-4 h-4 mr-2 text-gray-400" />
@@ -444,7 +442,6 @@ const UserDetailPopup = memo(
                     </div>
                   </div>
                 </div>
-
                 <div className="mb-2">
                   <h5 className="text-sm font-medium text-gray-300 mb-2">
                     Team Members
@@ -461,7 +458,6 @@ const UserDetailPopup = memo(
                   </div>
                 </div>
 
-                {/* Show user's team role information */}
                 {team && teamMembers.length > 0 && (
                   <div className="mt-4 p-3 rounded-lg bg-blue-900 bg-opacity-20 border border-blue-800">
                     <div className="flex items-center gap-2 text-blue-300 mb-2">

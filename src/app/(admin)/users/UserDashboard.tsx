@@ -13,7 +13,7 @@ import UserFilters from "./UserFilters";
 import { RefreshCw, Users } from "lucide-react";
 import { getTeam } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getData } from "./data";
 
@@ -37,8 +37,6 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     round2: "all",
   });
 
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const dateCache = useRef({
@@ -57,7 +55,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       const users: UserWithTeam[] = await getData();
       setUsers(users);
     } catch (error) {
-      console.error('Error refreshing user data:', error);
+      console.error("Error refreshing user data:", error);
     } finally {
       setIsRefreshing(false);
     }
@@ -75,11 +73,17 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     };
 
     // Add event listener for team status updates
-    window.addEventListener('teamStatusUpdated', handleTeamStatusUpdate as EventListener);
-    
+    window.addEventListener(
+      "teamStatusUpdated",
+      handleTeamStatusUpdate as EventListener
+    );
+
     // Clean up event listener
     return () => {
-      window.removeEventListener('teamStatusUpdated', handleTeamStatusUpdate as EventListener);
+      window.removeEventListener(
+        "teamStatusUpdated",
+        handleTeamStatusUpdate as EventListener
+      );
     };
   }, []);
 
@@ -164,44 +168,6 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  useEffect(() => {
-    if (isLoading) return;
-
-    const params = new URLSearchParams();
-
-    if (filters.search) {
-      params.set("search", filters.search);
-    }
-
-    if (filters.role !== "all") {
-      params.set("role", filters.role);
-    }
-
-    if (filters.status !== "all") {
-      params.set("status", filters.status);
-    }
-
-    if (filters.loginStatus !== "all") {
-      params.set("loginStatus", filters.loginStatus);
-    }
-
-    if (filters.team !== "all") {
-      params.set("team", filters.team);
-    }
-
-    if (filters.teamTheme !== "all") {
-      params.set("teamTheme", filters.teamTheme);
-    }
-
-    if (filters.round2 !== "all") {
-      params.set("round2", filters.round2);
-    }
-
-    const queryString = params.toString();
-    const url = pathname + (queryString ? `?${queryString}` : "");
-    router.replace(url, { scroll: false });
-  }, [filters, pathname, router, isLoading]);
-
   const handleSortChange = useCallback(
     (field: SortField) => {
       if (field === sortField) {
@@ -222,6 +188,8 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
   );
 
   const clearFilters = useCallback(() => {
+    const params = new URLSearchParams();
+    window.history.replaceState(null, "", `?${params.toString()}`);
     setFilters({
       search: "",
       role: "all",
@@ -232,12 +200,10 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       round2: "all",
     });
   }, []);
-  
-  // refreshData function is now defined above
-  
+
   const usersWithVisibility = useMemo(() => {
     if (isLoading) return [];
-    
+
     const hasActiveFilters =
       debouncedSearch ||
       filters.role !== "all" ||
@@ -439,15 +405,17 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           User Management
         </h1>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={refreshData} 
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshData}
             disabled={isRefreshing}
             className="flex items-center gap-1 bg-gray-800 border-gray-700 hover:bg-gray-700"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+            <RefreshCw
+              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            {isRefreshing ? "Refreshing..." : "Refresh Data"}
           </Button>
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-2 inline-flex items-center gap-2">
             <span className="text-sm text-gray-400">Active Today:</span>
