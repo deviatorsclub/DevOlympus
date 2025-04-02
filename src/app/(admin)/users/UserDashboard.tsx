@@ -15,7 +15,6 @@ import { getTeam } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const FILTER_STORAGE_KEY = "user-dashboard-filters";
 interface UserDashboardProps {
   initialUsers: UserWithTeam[];
 }
@@ -110,15 +109,6 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         ...prev,
         ...urlFilters,
       }));
-    } else {
-      try {
-        const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
-        if (savedFilters) {
-          setFilters(JSON.parse(savedFilters));
-        }
-      } catch (error) {
-        console.error("Failed to load filters from localStorage:", error);
-      }
     }
 
     const timer = setTimeout(() => setIsLoading(false), 300);
@@ -157,12 +147,6 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     const queryString = params.toString();
     const url = pathname + (queryString ? `?${queryString}` : "");
     router.replace(url, { scroll: false });
-
-    try {
-      localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
-    } catch (error) {
-      console.error("Failed to save filters to localStorage:", error);
-    }
   }, [filters, pathname, router, isLoading]);
 
   const handleSortChange = useCallback(
