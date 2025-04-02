@@ -119,15 +119,24 @@ const UserDetailPopup = memo(
     isVisible,
     isAdmin,
   }: UserDetailPopupProps) => {
-    const [isUpdating, setIsUpdating] = useState(false);
+    const [updatingTeamIds, setUpdatingTeamIds] = useState<Record<string, boolean>>({});
 
     const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
       team?.selectedForRound2 ?? "NOT_DECIDED"
     );
+    
+    const isUpdating = team?.id ? updatingTeamIds[team.id] : false;
 
     useEffect(() => {
       if (team && isVisible) {
         setSelectedStatus(team.selectedForRound2 ?? "NOT_DECIDED");
+        // Reset loading state when opening a new popup
+        if (team.id) {
+          setUpdatingTeamIds(prev => ({
+            ...prev,
+            [team.id]: false
+          }));
+        }
       }
     }, [team, isVisible]);
 
@@ -330,16 +339,18 @@ const UserDetailPopup = memo(
                                 const value = e.target.value;
                                 const status = value === "" ? null : value;
 
-                                setIsUpdating(true);
+                                if (team.id) {
+                                  setUpdatingTeamIds(prev => ({
+                                    ...prev,
+                                    [team.id]: true
+                                  }));
+                                }
                                 setSelectedStatus(value as TeamSelectionStatus);
                                 try {
                                   const res = await updateTeamRound2Status(
                                     team.id,
                                     status
                                   );
-
-                                  console.log(res);
-                                  
 
                                   if (res.error) {
                                     alert(res.error);
@@ -362,7 +373,12 @@ const UserDetailPopup = memo(
                                     });
                                   });
 
-                                  setIsUpdating(false);
+                                  if (isVisible && team.id) {
+                                    setUpdatingTeamIds(prev => ({
+                                      ...prev,
+                                      [team.id]: false
+                                    }));
+                                  }
                                 } catch (error) {
                                   console.error(
                                     "Error updating status:",
@@ -372,7 +388,12 @@ const UserDetailPopup = memo(
                                     "Failed to update Round 2 selection status"
                                   );
 
-                                  setIsUpdating(false);
+                                  if (isVisible && team.id) {
+                                    setUpdatingTeamIds(prev => ({
+                                      ...prev,
+                                      [team.id]: false
+                                    }));
+                                  }
                                 }
                               }}
                             >
