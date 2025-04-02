@@ -1,19 +1,18 @@
 "use server";
 
-import { PrismaClient, TeamSelectionStatus } from "@prisma/client";
+import { TeamSelectionStatus } from "@prisma/client";
 import { auth } from "@/lib/authOptions";
+import { prisma } from "@/prisma";
 
 export async function updateTeamRound2Status(
   teamId: string,
-  status: string | null,
+  status: string | null
 ) {
   try {
     const session = await auth();
     if (!session?.user) {
       return { error: "Unauthorized", status: 401 };
     }
-
-    const prisma = new PrismaClient();
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email as string },
@@ -82,10 +81,56 @@ export async function updateTeamRound2Status(
   }
 }
 
-// Function to get all users with their teams
+export async function getTeamHistory(teamId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { error: "Unauthorized", status: 401 };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email as string },
+    });
+
+    if (!user?.isAdmin) {
+      return {
+        error: "Only admins can view team history",
+        status: 403,
+      };
+    }
+
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      select: {
+        id: true,
+        name: true,
+        selectedForRound2: true,
+        selectionStatusLogs: true,
+      },
+    });
+
+    if (!team) {
+      return { error: "Team not found", status: 404 };
+    }
+
+    return {
+      data: {
+        selectionStatusLogs: team.selectionStatusLogs,
+        selectedForRound2: team.selectedForRound2,
+      },
+      status: 200,
+    };
+  } catch (error) {
+    console.error("Error fetching team history:", error);
+    return {
+      error: "Failed to fetch team history",
+      status: 500,
+    };
+  }
+}
+
 export async function getAllUsers() {
   try {
-    const prisma = new PrismaClient();
     const users = await prisma.user.findMany({
       orderBy: {
         lastLogin: "desc",

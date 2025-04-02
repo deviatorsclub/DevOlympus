@@ -8,16 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getTeam(
   users: UserWithTeam[],
-  userEmail: string,
+  userEmail: string
 ): UserTeam | null {
   const lowerCaseEmail = userEmail.toLowerCase();
   for (const user of users) {
     if (user.email.toLowerCase() === lowerCaseEmail) {
-      return user.team || null;
+      return (user.team || null) as UserTeam;
     } else {
       for (const teamMember of user.team?.members || []) {
         if (teamMember.email.toLowerCase() === lowerCaseEmail) {
-          return user.team || null;
+          return (user.team || null) as UserTeam;
         }
       }
     }

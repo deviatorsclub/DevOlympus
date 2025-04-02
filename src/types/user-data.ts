@@ -1,5 +1,5 @@
 import { Theme } from "@/lib/flags";
-import { Prisma } from "@prisma/client";
+import { Prisma, TeamSelectionStatus } from "@prisma/client";
 
 export type UserWithTeam = Prisma.UserGetPayload<{
   include: {
@@ -24,4 +24,15 @@ export interface FilterState {
   teamTheme: Theme | "all";
   round2: "all" | "SELECTED" | "REJECTED" | "NOT_DECIDED";
 }
-export type UserTeam = UserWithTeam["team"];
+export interface StatusChangeLog {
+  timestamp: Date | string;
+  adminId: string;
+  adminName: string;
+  adminEmail: string;
+  previousStatus: TeamSelectionStatus | null;
+  newStatus: TeamSelectionStatus;
+}
+
+export type UserTeam = UserWithTeam["team"] & {
+  selectionStatusLogs?: StatusChangeLog[];
+};

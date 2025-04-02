@@ -7,7 +7,10 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { updateTeamRound2Status } from "@/app/actions/teamActions";
+import {
+  updateTeamRound2Status,
+  getTeamHistory,
+} from "@/app/actions/teamActions";
 import {
   ArrowDown,
   ArrowUp,
@@ -24,6 +27,9 @@ import {
   Info,
   Award,
   Loader2,
+  Clock,
+  History,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import { TeamMember } from "@/types/registration";
@@ -32,6 +38,7 @@ import {
   SortField,
   UserWithTeam,
   UserTeam,
+  StatusChangeLog,
 } from "@/types/user-data";
 import { getTeam } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
@@ -97,7 +104,7 @@ const TeamMemberCard = memo(
         </div>
       </div>
     </div>
-  ),
+  )
 );
 TeamMemberCard.displayName = "TeamMemberCard";
 
@@ -124,8 +131,11 @@ const UserDetailPopup = memo(
     >({});
 
     const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
-      team?.selectedForRound2 ?? "NOT_DECIDED",
+      team?.selectedForRound2 ?? "NOT_DECIDED"
     );
+
+    const [isRefreshingHistory, setIsRefreshingHistory] = useState(false);
+    const [historyData, setHistoryData] = useState<StatusChangeLog[]>([]);
 
     const isUpdating = team?.id ? updatingTeamIds[team.id] : false;
 
@@ -137,9 +147,59 @@ const UserDetailPopup = memo(
             ...prev,
             [team.id]: false,
           }));
+
+          // Initialize history data from team
+          if (
+            team.selectionStatusLogs &&
+            Array.isArray(team.selectionStatusLogs)
+          ) {
+            setHistoryData(team.selectionStatusLogs as StatusChangeLog[]);
+          }
         }
       }
     }, [team, isVisible]);
+
+    const refreshTeamHistory = async () => {
+      if (!team?.id) return;
+
+      try {
+        setIsRefreshingHistory(true);
+        const response = await getTeamHistory(team.id);
+
+        if (response.error) {
+          console.error("Error refreshing history:", response.error);
+          return;
+        }
+
+        if (response.data?.selectionStatusLogs) {
+          setHistoryData(
+            response.data.selectionStatusLogs as unknown as StatusChangeLog[]
+          );
+
+          // Also update the team object in the users state
+          setUsers((prevUsers) => {
+            return prevUsers.map((user) => {
+              if (user.team?.id === team.id) {
+                return {
+                  ...user,
+                  team: {
+                    ...user.team,
+                    selectionStatusLogs: response.data.selectionStatusLogs,
+                    selectedForRound2: response.data
+                      .selectedForRound2 as TeamSelectionStatus,
+                  },
+                };
+              }
+              return user;
+            });
+          });
+        }
+      } catch (error) {
+        console.error("Failed to refresh team history:", error);
+      } finally {
+        setIsRefreshingHistory(false);
+      }
+    };
 
     if (!isVisible || !user) return null;
 
@@ -153,7 +213,7 @@ const UserDetailPopup = memo(
     const teamLead = teamMembers.find((member) => member.isLead);
 
     const currentMember = teamMembers.find(
-      (member) => member.email === user.email,
+      (member) => member.email === user.email
     );
 
     const userIsMember = !!currentMember;
@@ -348,7 +408,7 @@ const UserDetailPopup = memo(
                                 try {
                                   const res = await updateTeamRound2Status(
                                     team.id,
-                                    status,
+                                    status
                                   );
 
                                   if (res.error) {
@@ -381,10 +441,10 @@ const UserDetailPopup = memo(
                                 } catch (error) {
                                   console.error(
                                     "Error updating status:",
-                                    error,
+                                    error
                                   );
                                   alert(
-                                    "Failed to update Round 2 selection status",
+                                    "Failed to update Round 2 selection status"
                                   );
 
                                   if (isVisible && team.id) {
@@ -442,7 +502,7 @@ const UserDetailPopup = memo(
                     </div>
                   </div>
                 </div>
-                <div className="mb-2">
+                <div className="mb-4">
                   <h5 className="text-sm font-medium text-gray-300 mb-2">
                     Team Members
                   </h5>
@@ -458,21 +518,166 @@ const UserDetailPopup = memo(
                   </div>
                 </div>
 
-                {team && teamMembers.length > 0 && (
-                  <div className="mt-4 p-3 rounded-lg bg-blue-900 bg-opacity-20 border border-blue-800">
-                    <div className="flex items-center gap-2 text-blue-300 mb-2">
-                      <Info className="w-4 h-4" />
-                      <span className="font-medium">Team Role</span>
+                {
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h5 className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                        <History className="w-4 h-4 text-gray-400" />
+                        Round 2 Selection Status Change History
+                      </h5>
+                      {isRefreshingHistory ? (
+                        <div className="flex items-center gap-1 text-xs text-blue-400">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          <span>Refreshing...</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={refreshTeamHistory}
+                          className="text-gray-400 hover:text-gray-200 p-1 rounded-full hover:bg-gray-700 transition-colors"
+                          title="Refresh history"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
-                    <p className="text-sm text-blue-200">
-                      {userIsLead
-                        ? "This user is the team leader."
-                        : userIsMember
-                          ? "This user is a member of this team but not the team leader."
-                          : "This user is associated with this team but not listed as a team member."}
+                    <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                      <div className="max-h-48 overflow-y-auto">
+                        <table className="w-full text-xs">
+                          <thead className="bg-gray-700 text-gray-300 sticky top-0">
+                            <tr>
+                              <th className="p-2.5 text-left font-medium">
+                                Date & Time
+                              </th>
+                              <th className="p-2.5 text-left font-medium">
+                                Changed By
+                              </th>
+                              <th className="p-2.5 text-left font-medium">
+                                From Status
+                              </th>
+                              <th className="p-2.5 text-left font-medium">
+                                To Status
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-700">
+                            {historyData.length === 0 &&
+                              (!team.selectionStatusLogs ||
+                                !Array.isArray(team.selectionStatusLogs) ||
+                                team.selectionStatusLogs.length === 0) && (
+                                <tr>
+                                  <td
+                                    colSpan={4}
+                                    className="p-4 text-center text-gray-400"
+                                  >
+                                    <div className="flex flex-col items-center justify-center py-4">
+                                      <History className="w-5 h-5 mb-2 text-gray-500" />
+                                      <p>No status change history available</p>
+                                      <p className="text-xs mt-1">
+                                        Click the refresh button to check for
+                                        updates
+                                      </p>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+
+                            {(historyData.length > 0 ||
+                              (team.selectionStatusLogs &&
+                                Array.isArray(team.selectionStatusLogs) &&
+                                team.selectionStatusLogs.length > 0)) &&
+                              (historyData.length > 0
+                                ? historyData
+                                : (team.selectionStatusLogs as StatusChangeLog[])
+                              )
+                                .sort(
+                                  (a, b) =>
+                                    new Date(b.timestamp).getTime() -
+                                    new Date(a.timestamp).getTime()
+                                )
+                                .map((log, index) => (
+                                  <tr
+                                    key={index}
+                                    className="hover:bg-gray-750 transition-colors"
+                                  >
+                                    <td className="p-2.5 whitespace-nowrap">
+                                      <div className="flex items-center gap-1.5 text-gray-400">
+                                        <Clock className="w-3 h-3 flex-shrink-0" />
+                                        <span>
+                                          {new Date(
+                                            log.timestamp
+                                          ).toLocaleString(undefined, {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="p-2.5 text-gray-300">
+                                      <div className="flex items-center gap-1.5">
+                                        <User className="w-3 h-3 flex-shrink-0 text-gray-400" />
+                                        <span className="font-medium">
+                                          {log.adminName || log.adminEmail}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="p-2.5">
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full inline-block ${log.previousStatus === "SELECTED" ? "bg-green-900 bg-opacity-30 text-green-300" : log.previousStatus === "REJECTED" ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-yellow-900 bg-opacity-30 text-yellow-300"}`}
+                                      >
+                                        {log.previousStatus || "NOT_DECIDED"}
+                                      </span>
+                                    </td>
+                                    <td className="p-2.5">
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full inline-block ${log.newStatus === "SELECTED" ? "bg-green-900 bg-opacity-30 text-green-300" : log.newStatus === "REJECTED" ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-yellow-900 bg-opacity-30 text-yellow-300"}`}
+                                      >
+                                        {log.newStatus}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 italic">
+                      {historyData.length > 0 ||
+                      (team.selectionStatusLogs &&
+                        Array.isArray(team.selectionStatusLogs) &&
+                        team.selectionStatusLogs.length > 0) ? (
+                        <>
+                          Showing{" "}
+                          {historyData.length > 0
+                            ? historyData.length
+                            : team.selectionStatusLogs &&
+                                Array.isArray(team.selectionStatusLogs)
+                              ? (team.selectionStatusLogs as StatusChangeLog[])
+                                  .length
+                              : 0}{" "}
+                          status change
+                          {(historyData.length > 0
+                            ? historyData.length
+                            : team.selectionStatusLogs &&
+                                Array.isArray(team.selectionStatusLogs)
+                              ? (team.selectionStatusLogs as StatusChangeLog[])
+                                  .length
+                              : 0) !== 1
+                            ? "s"
+                            : ""}
+                          , sorted by most recent first
+                        </>
+                      ) : (
+                        <>
+                          No status changes yet. Use the refresh button to check
+                          for updates.
+                        </>
+                      )}
                     </p>
                   </div>
-                )}
+                }
               </>
             )}
 
@@ -497,7 +702,7 @@ const UserDetailPopup = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 UserDetailPopup.displayName = "UserDetailPopup";
@@ -523,11 +728,11 @@ export default function UserTable({
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) || null,
-    [users, selectedUserId],
+    [users, selectedUserId]
   );
   const selectedTeam = useMemo(
     () => getTeam(initialUsers, selectedUser?.email || ""),
-    [selectedUser, initialUsers],
+    [selectedUser, initialUsers]
   );
 
   const handleRowClick = useCallback((user: UserWithTeam) => {
@@ -547,12 +752,12 @@ export default function UserTable({
           <ArrowDown className="w-4 h-4" />
         )
       ) : null,
-    [sortField, sortDir],
+    [sortField, sortDir]
   );
 
   const visibleUsers = useMemo(
     () => users.filter((user) => user.visible !== false),
-    [users],
+    [users]
   );
   const isEmptyState = visibleUsers.length === 0;
 
@@ -702,7 +907,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  !member.isLead && member.email === user.email,
+                                  !member.isLead && member.email === user.email
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-blue-300 bg-blue-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Info className="w-3 h-3" /> Member
@@ -711,7 +916,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  member.isLead && member.email === user.email,
+                                  member.isLead && member.email === user.email
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-amber-300 bg-amber-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Shield className="w-3 h-3" /> Lead
@@ -761,7 +966,7 @@ export default function UserTable({
 
       <UserDetailPopup
         user={selectedUser}
-        team={selectedTeam}
+        team={selectedTeam!}
         onClose={closeUserDetail}
         isVisible={!!selectedUser}
         isAdmin={true}
