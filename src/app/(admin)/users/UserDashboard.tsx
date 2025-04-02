@@ -10,10 +10,12 @@ import {
 } from "@/types/user-data";
 import UserTable from "./UserTable";
 import UserFilters from "./UserFilters";
-import { Users } from "lucide-react";
+import { RefreshCw, Users } from "lucide-react";
 import { getTeam } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { getData } from "./page";
 
 interface UserDashboardProps {
   initialUsers: UserWithTeam[];
@@ -21,6 +23,8 @@ interface UserDashboardProps {
 
 export default function UserDashboard({ initialUsers }: UserDashboardProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [users, setUsers] = useState<UserWithTeam[]>(initialUsers);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [sortField, setSortField] = useState<SortField>("lastLogin");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
   const [filters, setFilters] = useState<FilterState>({
@@ -195,10 +199,22 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       round2: "all",
     });
   }, []);
-
+  
+  const refreshData = async () => {
+    try {
+      setIsRefreshing(true);
+      const users: UserWithTeam[] = await getData();
+      setUsers(users);
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+  
   const usersWithVisibility = useMemo(() => {
     if (isLoading) return [];
-
+    
     const hasActiveFilters =
       debouncedSearch ||
       filters.role !== "all" ||
@@ -211,12 +227,12 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     const teamCache = new Map<string, UserTeam | null>();
     const getTeamCached = (email: string) => {
       if (!teamCache.has(email)) {
-        teamCache.set(email, getTeam(initialUsers, email));
+        teamCache.set(email, getTeam(users, email));
       }
       return teamCache.get(email);
     };
 
-    const sortedUsers = [...initialUsers].sort((a, b) => {
+    const sortedUsers = [...users].sort((a, b) => {
       let comparison = 0;
 
       switch (sortField) {
@@ -381,12 +397,12 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
   const activeUsers = useMemo(
     () =>
-      initialUsers.filter(
+      users.filter(
         (user) =>
           new Date(user.lastLogin).toDateString() ===
           dateCache.now.toDateString()
       ).length,
-    [initialUsers, dateCache]
+    [users, dateCache]
   );
 
   return (
@@ -399,12 +415,24 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           <Users className="w-5 h-5" />
           User Management
         </h1>
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-2 inline-flex items-center gap-2">
-          <span className="text-sm text-gray-400">Active Today:</span>
-          <span className="text-lg font-semibold text-white">
-            {activeUsers}
-          </span>
-          <span className="text-sm text-gray-400">/ {initialUsers.length}</span>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={refreshData} 
+            disabled={isRefreshing}
+            className="flex items-center gap-1 bg-gray-800 border-gray-700 hover:bg-gray-700"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+          </Button>
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-2 inline-flex items-center gap-2">
+            <span className="text-sm text-gray-400">Active Today:</span>
+            <span className="text-lg font-semibold text-white">
+              {activeUsers}
+            </span>
+            <span className="text-sm text-gray-400">/ {users.length}</span>
+          </div>
         </div>
       </div>
 
@@ -416,7 +444,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
       <UserTable
         users={usersWithVisibility}
-        initialUsers={initialUsers}
+        initialUsers={users}
         sortField={sortField}
         sortDir={sortDir}
         onSortChange={handleSortChange}

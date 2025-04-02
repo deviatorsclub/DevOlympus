@@ -1,8 +1,10 @@
+"use server";
+
 import { prisma } from "@/prisma";
 import UserDashboard from "./UserDashboard";
 import { UserWithTeam } from "@/types/user-data";
 
-export default async function Page() {
+export async function getData() {
   const users: UserWithTeam[] = await prisma.user.findMany({
     include: {
       team: {
@@ -12,6 +14,11 @@ export default async function Page() {
       },
     },
   });
+  return users;
+}
+
+export default async function Page() {
+  const users: UserWithTeam[] = await getData();
 
   return (
     <div className="mt-20">
