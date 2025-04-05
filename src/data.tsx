@@ -4,6 +4,7 @@ import { StaticImageData } from "next/image";
 
 import XYZ from "@/assets/sponsors/xyz.png";
 import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.svg";
+import APPWRITE from "@/assets/sponsors/appwrite.svg";
 
 export const REGISTRATION_FORM_URL = "https://forms.gle/Mc9Yvd7yyQgrQizK8";
 export const HACKATHON_DATE = new Date("April 11, 2025 09:00:00");
@@ -194,5 +195,10 @@ export const sponsors: Sponsor[] = [
     name: "Interview Buddy",
     link: "https://interviewbuddy.net",
     image: INTERVIEW_BUDDY,
+  },
+  {
+    name: "Appwrite",
+    link: "https://appwrite.io",
+    image: APPWRITE,
   },
 ];

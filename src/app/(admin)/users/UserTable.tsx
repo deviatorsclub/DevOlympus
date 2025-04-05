@@ -518,166 +518,165 @@ const UserDetailPopup = memo(
                   </div>
                 </div>
 
-                {
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h5 className="text-sm font-medium text-gray-300 flex items-center gap-2">
-                        <History className="w-4 h-4 text-gray-400" />
-                        Round 2 Selection Status Change History
-                      </h5>
-                      {isRefreshingHistory ? (
-                        <div className="flex items-center gap-1 text-xs text-blue-400">
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                          <span>Refreshing...</span>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={refreshTeamHistory}
-                          className="text-gray-400 hover:text-gray-200 p-1 rounded-full hover:bg-gray-700 transition-colors"
-                          title="Refresh history"
-                        >
-                          <RefreshCw className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                    <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-                      <div className="max-h-48 overflow-y-auto">
-                        <table className="w-full text-xs">
-                          <thead className="bg-gray-700 text-gray-300 sticky top-0">
-                            <tr>
-                              <th className="p-2.5 text-left font-medium">
-                                Date & Time
-                              </th>
-                              <th className="p-2.5 text-left font-medium">
-                                Changed By
-                              </th>
-                              <th className="p-2.5 text-left font-medium">
-                                From Status
-                              </th>
-                              <th className="p-2.5 text-left font-medium">
-                                To Status
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-700">
-                            {historyData.length === 0 &&
-                              (!team.selectionStatusLogs ||
-                                !Array.isArray(team.selectionStatusLogs) ||
-                                team.selectionStatusLogs.length === 0) && (
-                                <tr>
-                                  <td
-                                    colSpan={4}
-                                    className="p-4 text-center text-gray-400"
-                                  >
-                                    <div className="flex flex-col items-center justify-center py-4">
-                                      <History className="w-5 h-5 mb-2 text-gray-500" />
-                                      <p>No status change history available</p>
-                                      <p className="text-xs mt-1">
-                                        Click the refresh button to check for
-                                        updates
-                                      </p>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h5 className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                      <History className="w-4 h-4 text-gray-400" />
+                      Round 2 Selection Status Change History
+                    </h5>
+                    {isRefreshingHistory ? (
+                      <div className="flex items-center gap-1 text-xs text-blue-400">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>Refreshing...</span>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={refreshTeamHistory}
+                        className="text-gray-400 hover:text-gray-200 p-1 rounded-full hover:bg-gray-700 transition-colors"
+                        title="Refresh history"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                    <div className="max-h-48 overflow-y-auto">
+                      <table className="w-full text-xs">
+                        <thead className="bg-gray-700 text-gray-300 sticky top-0">
+                          <tr>
+                            <th className="p-2.5 text-left font-medium">
+                              Date & Time
+                            </th>
+                            <th className="p-2.5 text-left font-medium">
+                              Changed By
+                            </th>
+                            <th className="p-2.5 text-left font-medium">
+                              From Status
+                            </th>
+                            <th className="p-2.5 text-left font-medium">
+                              To Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-700">
+                          {historyData.length === 0 &&
+                            (!team.selectionStatusLogs ||
+                              !Array.isArray(team.selectionStatusLogs) ||
+                              team.selectionStatusLogs.length === 0) && (
+                              <tr>
+                                <td
+                                  colSpan={4}
+                                  className="p-4 text-center text-gray-400"
+                                >
+                                  <div className="flex flex-col items-center justify-center py-4">
+                                    <History className="w-5 h-5 mb-2 text-gray-500" />
+                                    <p>No status change history available</p>
+                                    <p className="text-xs mt-1">
+                                      Click the refresh button to check for
+                                      updates
+                                    </p>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
 
-                            {(historyData.length > 0 ||
-                              (team.selectionStatusLogs &&
-                                Array.isArray(team.selectionStatusLogs) &&
-                                team.selectionStatusLogs.length > 0)) &&
-                              (historyData.length > 0
-                                ? historyData
-                                : (team.selectionStatusLogs as StatusChangeLog[])
+                          {(historyData.length > 0 ||
+                            (team.selectionStatusLogs &&
+                              Array.isArray(team.selectionStatusLogs) &&
+                              team.selectionStatusLogs.length > 0)) &&
+                            (historyData.length > 0
+                              ? historyData
+                              : (team.selectionStatusLogs as StatusChangeLog[])
+                            )
+                              .sort(
+                                (a, b) =>
+                                  new Date(b.timestamp).getTime() -
+                                  new Date(a.timestamp).getTime()
                               )
-                                .sort(
-                                  (a, b) =>
-                                    new Date(b.timestamp).getTime() -
-                                    new Date(a.timestamp).getTime()
-                                )
-                                .map((log, index) => (
-                                  <tr
-                                    key={index}
-                                    className="hover:bg-gray-750 transition-colors"
-                                  >
-                                    <td className="p-2.5 whitespace-nowrap">
-                                      <div className="flex items-center gap-1.5 text-gray-400">
-                                        <Clock className="w-3 h-3 flex-shrink-0" />
-                                        <span>
-                                          {new Date(
-                                            log.timestamp
-                                          ).toLocaleString(undefined, {
+                              .map((log, index) => (
+                                <tr
+                                  key={index}
+                                  className="hover:bg-gray-750 transition-colors"
+                                >
+                                  <td className="p-2.5 whitespace-nowrap">
+                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                      <Clock className="w-3 h-3 flex-shrink-0" />
+                                      <span>
+                                        {new Date(log.timestamp).toLocaleString(
+                                          undefined,
+                                          {
                                             year: "numeric",
                                             month: "short",
                                             day: "numeric",
                                             hour: "2-digit",
                                             minute: "2-digit",
-                                          })}
-                                        </span>
-                                      </div>
-                                    </td>
-                                    <td className="p-2.5 text-gray-300">
-                                      <div className="flex items-center gap-1.5">
-                                        <User className="w-3 h-3 flex-shrink-0 text-gray-400" />
-                                        <span className="font-medium">
-                                          {log.adminName || log.adminEmail}
-                                        </span>
-                                      </div>
-                                    </td>
-                                    <td className="p-2.5">
-                                      <span
-                                        className={`px-2 py-0.5 rounded-full inline-block ${log.previousStatus === "SELECTED" ? "bg-green-900 bg-opacity-30 text-green-300" : log.previousStatus === "REJECTED" ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-yellow-900 bg-opacity-30 text-yellow-300"}`}
-                                      >
-                                        {log.previousStatus || "NOT_DECIDED"}
+                                          }
+                                        )}
                                       </span>
-                                    </td>
-                                    <td className="p-2.5">
-                                      <span
-                                        className={`px-2 py-0.5 rounded-full inline-block ${log.newStatus === "SELECTED" ? "bg-green-900 bg-opacity-30 text-green-300" : log.newStatus === "REJECTED" ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-yellow-900 bg-opacity-30 text-yellow-300"}`}
-                                      >
-                                        {log.newStatus}
+                                    </div>
+                                  </td>
+                                  <td className="p-2.5 text-gray-300">
+                                    <div className="flex items-center gap-1.5">
+                                      <User className="w-3 h-3 flex-shrink-0 text-gray-400" />
+                                      <span className="font-medium">
+                                        {log.adminName || log.adminEmail}
                                       </span>
-                                    </td>
-                                  </tr>
-                                ))}
-                          </tbody>
-                        </table>
-                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="p-2.5">
+                                    <span
+                                      className={`px-2 py-0.5 rounded-full inline-block ${log.previousStatus === "SELECTED" ? "bg-green-900 bg-opacity-30 text-green-300" : log.previousStatus === "REJECTED" ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-yellow-900 bg-opacity-30 text-yellow-300"}`}
+                                    >
+                                      {log.previousStatus || "NOT_DECIDED"}
+                                    </span>
+                                  </td>
+                                  <td className="p-2.5">
+                                    <span
+                                      className={`px-2 py-0.5 rounded-full inline-block ${log.newStatus === "SELECTED" ? "bg-green-900 bg-opacity-30 text-green-300" : log.newStatus === "REJECTED" ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-yellow-900 bg-opacity-30 text-yellow-300"}`}
+                                    >
+                                      {log.newStatus}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                        </tbody>
+                      </table>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2 italic">
-                      {historyData.length > 0 ||
-                      (team.selectionStatusLogs &&
-                        Array.isArray(team.selectionStatusLogs) &&
-                        team.selectionStatusLogs.length > 0) ? (
-                        <>
-                          Showing{" "}
-                          {historyData.length > 0
-                            ? historyData.length
-                            : team.selectionStatusLogs &&
-                                Array.isArray(team.selectionStatusLogs)
-                              ? (team.selectionStatusLogs as StatusChangeLog[])
-                                  .length
-                              : 0}{" "}
-                          status change
-                          {(historyData.length > 0
-                            ? historyData.length
-                            : team.selectionStatusLogs &&
-                                Array.isArray(team.selectionStatusLogs)
-                              ? (team.selectionStatusLogs as StatusChangeLog[])
-                                  .length
-                              : 0) !== 1
-                            ? "s"
-                            : ""}
-                          , sorted by most recent first
-                        </>
-                      ) : (
-                        <>
-                          No status changes yet. Use the refresh button to check
-                          for updates.
-                        </>
-                      )}
-                    </p>
                   </div>
-                }
+                  <p className="text-xs text-gray-500 mt-2 italic">
+                    {historyData.length > 0 ||
+                    (team.selectionStatusLogs &&
+                      Array.isArray(team.selectionStatusLogs) &&
+                      team.selectionStatusLogs.length > 0) ? (
+                      <>
+                        Showing{" "}
+                        {historyData.length > 0
+                          ? historyData.length
+                          : team.selectionStatusLogs &&
+                              Array.isArray(team.selectionStatusLogs)
+                            ? (team.selectionStatusLogs as StatusChangeLog[])
+                                .length
+                            : 0}{" "}
+                        status change
+                        {(historyData.length > 0
+                          ? historyData.length
+                          : team.selectionStatusLogs &&
+                              Array.isArray(team.selectionStatusLogs)
+                            ? (team.selectionStatusLogs as StatusChangeLog[])
+                                .length
+                            : 0) !== 1
+                          ? "s"
+                          : ""}
+                        , sorted by most recent first
+                      </>
+                    ) : (
+                      <>
+                        No status changes yet. Use the refresh button to check
+                        for updates.
+                      </>
+                    )}
+                  </p>
+                </div>
               </>
             )}
 

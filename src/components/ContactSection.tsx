@@ -26,7 +26,6 @@ export default function SimplifiedContactSection() {
       ref={ref}
       className="relative py-20 bg-slate-900/50 overflow-hidden"
     >
-      {/* Animated background elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl"></div>

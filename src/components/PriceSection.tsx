@@ -15,7 +15,7 @@ export default function PriceSection(): JSX.Element {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     if (sectionRef.current) {
@@ -31,16 +31,13 @@ export default function PriceSection(): JSX.Element {
       ref={sectionRef}
       className="py-12 sm:py-16 md:py-24 relative overflow-hidden"
     >
-      {/* Background elements */}
       <div className="absolute inset-0 bg-[url('/stars.svg')] bg-repeat opacity-10"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-slate-900/0 via-purple-900/10 to-slate-900/0"></div>
 
-      {/* Decorative elements */}
       <div className="absolute top-20 left-10 w-24 h-24 bg-purple-500/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section header */}
         <div
           className={`text-center mb-10 sm:mb-16 transition-all duration-700 
             ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
@@ -57,10 +54,8 @@ export default function PriceSection(): JSX.Element {
           </p>
         </div>
 
-        {/* Main prizes podium */}
         <div className="max-w-5xl mx-auto mb-12 sm:mb-16 md:mb-20">
           <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-8 sm:gap-6 md:gap-8 relative">
-            {/* Second Prize */}
             <div
               className={`relative z-10 transition-all duration-700 mb-8 md:mb-0 ${isVisible ? "opacity-100 md:translate-y-0" : "opacity-0 md:translate-y-12"}`}
               style={{ transitionDelay: "200ms" }}
@@ -87,7 +82,6 @@ export default function PriceSection(): JSX.Element {
               </div>
             </div>
 
-            {/* First Prize - Elevated in the middle */}
             <div
               className={`relative z-20 transition-all duration-700 mb-8 md:mb-0 md:-mt-16 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
               style={{ transitionDelay: "100ms" }}
@@ -114,7 +108,6 @@ export default function PriceSection(): JSX.Element {
               </div>
             </div>
 
-            {/* Third Prize */}
             <div
               className={`relative z-10 transition-all duration-700 ${isVisible ? "opacity-100 md:translate-y-0" : "opacity-0 md:translate-y-12"}`}
               style={{ transitionDelay: "300ms" }}
@@ -143,7 +136,6 @@ export default function PriceSection(): JSX.Element {
           </div>
         </div>
 
-        {/* Exclusive Rewards Section */}
         <div
           className={`max-w-5xl mx-auto mt-16 sm:mt-20 md:mt-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           style={{ transitionDelay: "400ms" }}

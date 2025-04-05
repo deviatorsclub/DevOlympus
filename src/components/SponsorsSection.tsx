@@ -1,4 +1,3 @@
-// @/components/SponsorsSection.tsx
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +6,6 @@ import { sponsors } from "@/data";
 const SponsorsSection: React.FC = () => {
   return (
     <section className="w-full bg-black py-20 relative">
-      {/* Purple corner accents similar to those in the header */}
       <div className="absolute top-0 left-0 w-3 h-3 bg-purple-600"></div>
       <div className="absolute top-0 right-0 w-3 h-3 bg-purple-600"></div>
       <div className="absolute bottom-0 left-0 w-3 h-3 bg-purple-600"></div>

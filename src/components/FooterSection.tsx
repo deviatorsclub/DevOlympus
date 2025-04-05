@@ -25,10 +25,8 @@ export default function EnhancedFooter() {
 
   return (
     <footer ref={ref} className="relative bg-slate-900 py-16 overflow-hidden">
-      {/* Gradient divider */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
 
-      {/* Background subtle elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-blue-500/3 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-72 h-72 bg-purple-500/3 rounded-full blur-3xl"></div>
