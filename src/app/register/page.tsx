@@ -4,6 +4,7 @@ import { auth } from "@/lib/authOptions";
 import { prisma } from "@/prisma";
 import TeamIsRegistered from "./TeamIsRegistered";
 import { TeamWithMembers } from "@/types/registration";
+import { FLAGS } from "@/lib/flags";
 
 export default async function page() {
   const session = await auth();
@@ -25,6 +26,7 @@ export default async function page() {
         name: true,
         presentationUrl: true,
         theme: true,
+        selectedForRound2: FLAGS.startShowingRound2Status < new Date(),
         members: {
           select: {
             email: true,

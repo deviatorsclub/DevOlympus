@@ -69,6 +69,7 @@ export type TeamWithMembers = Prisma.TeamGetPayload<{
     name: true;
     presentationUrl: true;
     theme: true;
+    selectedForRound2: true;
     members: {
       select: {
         email: true;

@@ -19,6 +19,7 @@ export interface FeatureFlags {
   defaultTheme: Theme;
   submissionDeadline: Date;
   minTeamSize: number;
+  startShowingRound2Status: Date;
 }
 
 export const FLAGS: FeatureFlags = {
@@ -27,6 +28,7 @@ export const FLAGS: FeatureFlags = {
   minTeamSize: 3,
   defaultTheme: "AI & Machine Learning",
   submissionDeadline: new Date("2025-04-02T00:30:00+05:30"),
+  startShowingRound2Status: new Date("2025-04-07T09:00:00+05:30"),
 };
 
 export const DEFAULT_VALUES = {
