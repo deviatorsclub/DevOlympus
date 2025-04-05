@@ -13,6 +13,7 @@ import {
 } from "@/app/actions/teamActions";
 import {
   ArrowDown,
+  ExternalLink,
   ArrowUp,
   CheckCircle,
   XCircle,
@@ -21,7 +22,7 @@ import {
   UserCircle,
   X,
   Users,
-  Link,
+  Link as LinkIcon,
   Palette,
   User,
   Info,
@@ -42,6 +43,7 @@ import {
 } from "@/types/user-data";
 import { getTeam } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
+import Link from "next/link";
 
 interface DetailItemProps {
   icon: React.ReactNode;
@@ -56,11 +58,13 @@ type TeamSelectionStatus = Prisma.TeamGetPayload<{
 }>["selectedForRound2"];
 
 const DetailItem = memo(({ icon, label, value }: DetailItemProps) => (
-  <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-700 bg-opacity-50">
-    <div className="text-gray-400 mt-0.5">{icon}</div>
-    <div className="flex-1">
+  <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gray-700 bg-opacity-50">
+    <div className="text-gray-400 mt-0.5 flex-shrink-0">{icon}</div>
+    <div className="flex-1 min-w-0">
       <div className="text-xs text-gray-400 mb-1">{label}</div>
-      <div className="text-gray-200 font-medium">{value}</div>
+      <div className="text-gray-200 font-medium overflow-hidden text-ellipsis">
+        {value}
+      </div>
     </div>
   </div>
 ));
@@ -75,31 +79,38 @@ interface TeamMemberCardProps {
 const TeamMemberCard = memo(
   ({ member, isLead, isCurrentUser }: TeamMemberCardProps) => (
     <div
-      className={`flex items-center p-2 rounded-lg ${isCurrentUser ? "bg-blue-900 bg-opacity-30" : "bg-gray-700 bg-opacity-30"}`}
+      className={`flex items-start p-2 rounded-lg ${isCurrentUser ? "bg-blue-900 bg-opacity-30" : "bg-gray-700 bg-opacity-30"}`}
     >
-      <div className="h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-300 mr-3">
+      <div className="h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-300 mr-3 flex-shrink-0">
         <User className="w-4 h-4" />
       </div>
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-200">
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+          <div className="flex gap-2 items-center text-sm font-medium text-gray-200 break-all">
             {member.name}
-          </span>
+            <Link
+              href={`/register?e=${member.email}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="w-4 h-4 text-gray-400" />
+            </Link>
+          </div>
           {isLead && (
-            <span className="bg-amber-900 bg-opacity-40 text-amber-300 text-xs px-1.5 py-0.5 rounded-full">
+            <span className="bg-amber-900 bg-opacity-40 text-amber-300 text-xs px-1.5 py-0.5 rounded-full flex-shrink-0">
               Lead
             </span>
           )}
           {isCurrentUser && (
-            <span className="bg-blue-900 bg-opacity-40 text-blue-300 text-xs px-1.5 py-0.5 rounded-full">
+            <span className="bg-blue-900 bg-opacity-40 text-blue-300 text-xs px-1.5 py-0.5 rounded-full flex-shrink-0">
               You
             </span>
           )}
         </div>
-        <div className="text-xs text-gray-400">{member.email}</div>
-        <div className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
+        <div className="text-xs text-gray-400 break-all">{member.email}</div>
+        <div className="text-xs text-gray-500 flex flex-wrap items-center gap-1 sm:gap-2 mt-0.5">
           <span>Roll: {member.rollNo}</span>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <span>Ph: {member.number}</span>
         </div>
       </div>
@@ -148,7 +159,6 @@ const UserDetailPopup = memo(
             [team.id]: false,
           }));
 
-          // Initialize history data from team
           if (
             team.selectionStatusLogs &&
             Array.isArray(team.selectionStatusLogs)
@@ -176,7 +186,6 @@ const UserDetailPopup = memo(
             response.data.selectionStatusLogs as unknown as StatusChangeLog[]
           );
 
-          // Also update the team object in the users state
           setUsers((prevUsers) => {
             return prevUsers.map((user) => {
               if (user.team?.id === team.id) {
@@ -222,14 +231,14 @@ const UserDetailPopup = memo(
 
     return (
       <div
-        className="fixed inset-0 backdrop-blur-xl bg-opacity-60 flex items-center justify-center p-4 z-50 transition-opacity"
+        className="fixed inset-0 backdrop-blur-xl bg-opacity-60 flex items-center justify-center p-2 sm:p-4 z-50 transition-opacity"
         onClick={handleBackdropClick}
       >
         <div
-          className="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in duration-300"
+          className="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in duration-300"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="relative bg-gray-900 p-6">
+          <div className="relative bg-gray-900 p-3 sm:p-6">
             <button
               onClick={onClose}
               className="absolute right-4 top-4 text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700"
@@ -237,8 +246,8 @@ const UserDetailPopup = memo(
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-4">
-              <div className="h-20 w-20 bg-gray-700 rounded-full overflow-hidden ring-2 ring-gray-600">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 bg-gray-700 rounded-full overflow-hidden ring-2 ring-gray-600">
                 {user.image ? (
                   <Image
                     src={user.image.replace("=s96-c", "")}
@@ -255,12 +264,22 @@ const UserDetailPopup = memo(
                   </div>
                 )}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">
-                  {user.name || "Unnamed User"}
+              <div className="text-center sm:text-left mt-2 sm:mt-0">
+                <h3 className="text-lg sm:text-xl font-bold text-white flex gap-2 items-center">
+                  {user.name || "Unnamed User"}{" "}
+                  {teamLead && (
+                    <Link
+                      target="_blank"
+                      href={"/register?e=" + teamLead.email}
+                    >
+                      <ExternalLink className="w-4 h-4 text-gray-400" />
+                    </Link>
+                  )}
                 </h3>
-                <div className="text-sm text-gray-400 mt-1">{user.email}</div>
-                <div className="flex gap-2 mt-2">
+                <div className="text-sm text-gray-400 mt-1 break-all">
+                  {user.email}
+                </div>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
                   {user.isBlocked ? (
                     <span className="inline-flex items-center gap-1 text-red-300 bg-red-900 bg-opacity-40 px-2 py-1 rounded-full text-sm">
                       <XCircle className="w-3 h-3" /> Blocked
@@ -285,12 +304,12 @@ const UserDetailPopup = memo(
             </div>
           </div>
 
-          <div className="p-6 flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+          <div className="p-3 sm:p-6 flex-1 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
               <DetailItem
                 icon={<Info className="w-4 h-4" />}
                 label="User ID"
-                value={`#${user.id}`}
+                value={<span className="break-all">{`#${user.id}`}</span>}
               />
               <DetailItem
                 icon={<Shield className="w-4 h-4" />}
@@ -341,8 +360,8 @@ const UserDetailPopup = memo(
                     {team.displayId}
                   </span>
                 </div>
-                <div className="bg-gray-700 bg-opacity-30 rounded-lg p-4 mb-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-gray-700 bg-opacity-30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <h5 className="text-md font-medium text-white">
                         {team.name}
@@ -369,7 +388,7 @@ const UserDetailPopup = memo(
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 mt-3 sm:mt-0">
                       {team.theme && (
                         <div className="flex items-center text-sm">
                           <Palette className="w-4 h-4 mr-2 text-gray-400" />
@@ -485,18 +504,22 @@ const UserDetailPopup = memo(
                         )}
                       </div>
                       {team.presentationUrl && (
-                        <div className="flex items-center text-sm">
-                          <Link className="w-4 h-4 mr-2 text-gray-400" />
-                          <span className="text-gray-300">Presentation: </span>
-                          <a
-                            href={team.presentationUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-1 text-blue-400 hover:underline truncate max-w-[200px]"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {team.presentationUrl}
-                          </a>
+                        <div className="flex items-start text-sm">
+                          <LinkIcon className="w-4 h-4 mr-2 text-gray-400 mt-1 flex-shrink-0" />
+                          <div className="flex-1">
+                            <span className="text-gray-300">
+                              Presentation:{" "}
+                            </span>
+                            <a
+                              href={team.presentationUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="ml-1 text-blue-400 hover:underline break-all inline-block"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {team.presentationUrl}
+                            </a>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -506,7 +529,7 @@ const UserDetailPopup = memo(
                   <h5 className="text-sm font-medium text-gray-300 mb-2">
                     Team Members
                   </h5>
-                  <div className="grid grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {teamMembers.map((member) => (
                       <TeamMemberCard
                         key={member.id}
@@ -524,36 +547,38 @@ const UserDetailPopup = memo(
                       <History className="w-4 h-4 text-gray-400" />
                       Round 2 Selection Status Change History
                     </h5>
-                    {isRefreshingHistory ? (
-                      <div className="flex items-center gap-1 text-xs text-blue-400">
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        <span>Refreshing...</span>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={refreshTeamHistory}
-                        className="text-gray-400 hover:text-gray-200 p-1 rounded-full hover:bg-gray-700 transition-colors"
-                        title="Refresh history"
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                    <div className="w-24 h-5 flex justify-end">
+                      {isRefreshingHistory ? (
+                        <div className="flex items-center gap-1 text-xs text-blue-400">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Refreshing...</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={refreshTeamHistory}
+                          className="text-gray-400 hover:text-gray-200 p-1 rounded-full hover:bg-gray-700 transition-colors"
+                          title="Refresh history"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-                    <div className="max-h-48 overflow-y-auto">
+                    <div className="max-h-48 overflow-x-auto overflow-y-auto">
                       <table className="w-full text-xs">
                         <thead className="bg-gray-700 text-gray-300 sticky top-0">
                           <tr>
-                            <th className="p-2.5 text-left font-medium">
+                            <th className="p-1.5 sm:p-2.5 text-left font-medium whitespace-nowrap">
                               Date & Time
                             </th>
-                            <th className="p-2.5 text-left font-medium">
+                            <th className="p-1.5 sm:p-2.5 text-left font-medium whitespace-nowrap">
                               Changed By
                             </th>
-                            <th className="p-2.5 text-left font-medium">
+                            <th className="p-1.5 sm:p-2.5 text-left font-medium whitespace-nowrap">
                               From Status
                             </th>
-                            <th className="p-2.5 text-left font-medium">
+                            <th className="p-1.5 sm:p-2.5 text-left font-medium whitespace-nowrap">
                               To Status
                             </th>
                           </tr>
@@ -598,7 +623,7 @@ const UserDetailPopup = memo(
                                   key={index}
                                   className="hover:bg-gray-750 transition-colors"
                                 >
-                                  <td className="p-2.5 whitespace-nowrap">
+                                  <td className="p-1.5 sm:p-2.5 whitespace-nowrap">
                                     <div className="flex items-center gap-1.5 text-gray-400">
                                       <Clock className="w-3 h-3 flex-shrink-0" />
                                       <span>
@@ -690,7 +715,7 @@ const UserDetailPopup = memo(
             )}
           </div>
 
-          <div className="border-t border-gray-700 p-4 flex justify-end">
+          <div className="border-t border-gray-700 p-3 sm:p-4 flex justify-end">
             <button
               className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
               onClick={onClose}

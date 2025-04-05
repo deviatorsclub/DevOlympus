@@ -6,8 +6,14 @@ import TeamIsRegistered from "./TeamIsRegistered";
 import { TeamWithMembers } from "@/types/registration";
 import { FLAGS } from "@/lib/flags";
 
-export default async function page() {
+export default async function page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const teamLeadEmail = (await searchParams).e as string;
   const session = await auth();
+  const isAdmin = session?.user?.isAdmin;
 
   let teams: TeamWithMembers[] = [];
 
@@ -16,7 +22,11 @@ export default async function page() {
       where: {
         members: {
           some: {
-            email: session?.user?.email,
+            email: isAdmin
+              ? teamLeadEmail
+                ? teamLeadEmail
+                : session?.user?.email
+              : session?.user?.email,
           },
         },
       },
