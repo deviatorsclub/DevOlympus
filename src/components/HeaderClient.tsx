@@ -11,7 +11,7 @@ import {
 } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, User, X, LogOut, UserCircle } from "lucide-react";
+import { Menu, User, X, LogOut, FileText, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeviatorsLogo from "@/assets/sm.svg";
 import { signIn, signOut } from "next-auth/react";
@@ -19,6 +19,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { FLAGS } from "@/lib/flags";
+import { CreditCard } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -55,22 +56,33 @@ const actionItems: {
   onlyForAdmins?: boolean;
   onlyForSelectedParticipants?: boolean;
   onlyShowIf?: boolean;
+  icon: FC<{ className?: string }>;
 }[] = [
   {
     title: "Register for hackathon",
     url: "/register",
     onlyForSelectedParticipants: true,
+    icon: FileText,
   },
   {
     title: "View All Users",
     url: "/users",
     onlyForAdmins: true,
+    icon: Users,
   },
   {
     title: "Pay for Round 2",
     url: "/round-2-payment",
     onlyForSelectedParticipants: true,
-    onlyShowIf: FLAGS.showPaymentForm,
+    onlyShowIf: FLAGS.showPaymentFormAndConsent,
+    icon: CreditCard,
+  },
+  {
+    title: "Upload Consent",
+    url: "/round-2-consent",
+    onlyForSelectedParticipants: true,
+    onlyShowIf: FLAGS.showPaymentFormAndConsent,
+    icon: FileText,
   },
 ];
 
@@ -309,7 +321,7 @@ const UserIcon: FC<UserIconProps> = (props) => {
                     <MenuItem
                       key={index}
                       closeMenu={closeMenu}
-                      icon={UserCircle}
+                      icon={item.icon}
                       label={item.title}
                       href={item.url}
                     />

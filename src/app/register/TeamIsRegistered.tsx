@@ -30,6 +30,7 @@ export default function TeamIsRegistered({ team }: TeamIsRegisteredProps) {
         <Round2Status
           selectedForRound2={team.selectedForRound2}
           paymentStatus={team.payment}
+          team={team}
         />
 
         <Accordion

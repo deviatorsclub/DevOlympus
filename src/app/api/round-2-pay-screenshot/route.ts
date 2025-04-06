@@ -46,7 +46,7 @@ export async function GET() {
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch image: ${response.status} ${response.statusText}`
+          `Failed to fetch image: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -77,7 +77,7 @@ export async function GET() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
     }
   } catch (error) {
@@ -92,7 +92,7 @@ export async function GET() {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
   }
 }

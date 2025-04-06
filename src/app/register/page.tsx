@@ -49,6 +49,13 @@ export default async function page({
         payment: {
           select: {
             id: true,
+            screenshotUrl: true,
+          },
+        },
+        consentLetter: {
+          select: {
+            id: true,
+            fileUrl: true,
           },
         },
       },

@@ -82,6 +82,13 @@ export type TeamWithMembers = Prisma.TeamGetPayload<{
     payment: {
       select: {
         id: true;
+        screenshotUrl: true;
+      };
+    };
+    consentLetter: {
+      select: {
+        id: true;
+        fileUrl: true;
       };
     };
   };

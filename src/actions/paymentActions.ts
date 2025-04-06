@@ -135,7 +135,7 @@ export async function getPaymentStatus() {
 
 export async function updatePaymentVerificationStatus(
   teamId: string,
-  verified: boolean
+  verified: boolean,
 ) {
   try {
     const session = await auth();

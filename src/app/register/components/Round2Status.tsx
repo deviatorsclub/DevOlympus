@@ -3,16 +3,19 @@
 import { Clock, CheckCircle, Award, Info, CreditCard } from "lucide-react";
 import { FLAGS } from "@/lib/flags";
 import Link from "next/link";
+import { ConsentLetterUpload } from "./ConsentLetterUpload";
 import { TeamWithMembers } from "@/types/registration";
 
 interface Round2StatusProps {
   selectedForRound2: string | null;
   paymentStatus?: TeamWithMembers["payment"];
+  team: TeamWithMembers;
 }
 
 export function Round2Status({
   selectedForRound2,
   paymentStatus,
+  team,
 }: Round2StatusProps) {
   if (
     new Date() < FLAGS.startShowingRound2Status ||
@@ -50,24 +53,28 @@ export function Round2Status({
           Great news! Your team has been selected to advance to Round 2 of the
           hackathon. We look forward to seeing your project develop further.
         </p>
-        {FLAGS.showPaymentForm &&
-          (paymentStatus?.id ? (
-            <Link
-              href="/round-2-payment"
-              className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
-            >
-              <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
-              Check Payment Status
-            </Link>
-          ) : (
-            <Link
-              href="/round-2-payment"
-              className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
-            >
-              <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
-              <p>Pay for Round 2</p>
-            </Link>
-          ))}
+        {FLAGS.showPaymentFormAndConsent && (
+          <>
+            {paymentStatus?.id ? (
+              <Link
+                href="/round-2-payment"
+                className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
+              >
+                <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
+                Check Payment Status
+              </Link>
+            ) : (
+              <Link
+                href="/round-2-payment"
+                className="mt-4 bg-red-900/100 p-3 rounded text-sm text-red-200 flex items-center gap-2 hover:bg-red-800 transition-colors"
+              >
+                <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
+                <p>Pay for Round 2</p>
+              </Link>
+            )}
+            <ConsentLetterUpload team={team} />
+          </>
+        )}
       </div>
     );
   }

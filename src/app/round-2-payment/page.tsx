@@ -11,7 +11,7 @@ export default async function PaymentPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  if (!FLAGS.showPaymentForm) {
+  if (!FLAGS.showPaymentFormAndConsent) {
     return notFound();
   }
 
@@ -67,7 +67,7 @@ export default async function PaymentPage({
 
   const isTeamLead = user.team.members.some(
     (member) =>
-      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead
+      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead,
   );
 
   if (!isTeamLead) {
