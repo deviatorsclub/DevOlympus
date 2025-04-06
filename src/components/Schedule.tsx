@@ -37,7 +37,6 @@ interface ScheduleDay {
   textColor?: string;
 }
 
-// Format date as "4th April, 2025"
 const formatDate = (date: Date): string => {
   const day = date.getDate();
   const month = date.toLocaleString("en-US", { month: "long" });

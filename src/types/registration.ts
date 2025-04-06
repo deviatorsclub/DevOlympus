@@ -56,7 +56,7 @@ export interface TeamMemberCardProps {
   updateMember: (
     id: string,
     field: keyof Omit<TeamMember, "id" | "isLead">,
-    value: string
+    value: string,
   ) => void;
   errors: Record<string, string>;
   disabled: boolean;

@@ -49,7 +49,7 @@ export function PaymentForm() {
 
     if (!mobileNumber || !senderName || !screenshot) {
       setError(
-        "Please provide sender name, mobile number, and payment screenshot"
+        "Please provide sender name, mobile number, and payment screenshot",
       );
       return;
     }
@@ -80,6 +80,7 @@ export function PaymentForm() {
         window.location.reload();
       }
     } catch (err) {
+      console.error("Error submitting payment:", err);
       setError("Failed to submit payment details. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -151,7 +152,7 @@ export function PaymentForm() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="senderName" className="text-white">
-                  Sender's Name
+                  Sender&apos;s Name
                 </Label>
                 <Input
                   id="senderName"

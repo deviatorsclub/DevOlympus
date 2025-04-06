@@ -56,10 +56,9 @@ export default async function PaymentPage() {
     );
   }
 
-  // Check if the user is a team lead
   const isTeamLead = user.team.members.some(
     (member) =>
-      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead
+      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead,
   );
 
   if (!isTeamLead) {

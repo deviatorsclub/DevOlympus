@@ -243,17 +243,13 @@ export default function RegistrationForm({
       )
         return;
 
-      // Format input based on field type
       let formattedValue = value;
 
       if (field === "number") {
-        // Ensure phone numbers contain only digits and limit to 10
         formattedValue = value.replace(/\D/g, "").substring(0, 10);
       } else if (field === "rollNo") {
-        // Trim whitespace from roll numbers
         formattedValue = value.trim();
       } else if (field === "email") {
-        // Trim whitespace from emails
         formattedValue = value.trim();
       }
 

@@ -40,7 +40,7 @@ const FilterSelect = memo(
         </option>
       ))}
     </select>
-  ),
+  )
 );
 FilterSelect.displayName = "FilterSelect";
 
@@ -63,11 +63,16 @@ const SearchInput = memo(
         className="block w-full pl-8 pr-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
         placeholder="Search users..."
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value);
+          const params = new URLSearchParams(window.location.search);
+          params.set("search", e.target.value);
+          window.history.replaceState(null, "", `?${params.toString()}`);
+        }}
         onClick={onClick}
       />
     </div>
-  ),
+  )
 );
 SearchInput.displayName = "SearchInput";
 
@@ -82,12 +87,12 @@ const UserFilters = memo(
 
     const toggleExpanded = useCallback(
       () => setIsExpanded((prev) => !prev),
-      [],
+      []
     );
 
     const handleClick = useCallback(
       (e: React.MouseEvent) => e.stopPropagation(),
-      [],
+      []
     );
 
     const roleOptions = useMemo(
@@ -98,7 +103,7 @@ const UserFilters = memo(
         { value: "lead", label: "Lead" },
         { value: "member", label: "Member" },
       ],
-      [],
+      []
     );
 
     const statusOptions = useMemo(
@@ -107,7 +112,7 @@ const UserFilters = memo(
         { value: "active", label: "Active" },
         { value: "blocked", label: "Blocked" },
       ],
-      [],
+      []
     );
 
     const loginOptions = useMemo(
@@ -119,7 +124,7 @@ const UserFilters = memo(
         { value: "month", label: "Month" },
         { value: "never", label: "Never" },
       ],
-      [],
+      []
     );
 
     const teamOptions = useMemo(
@@ -128,7 +133,7 @@ const UserFilters = memo(
         { value: "yes", label: "Has Team" },
         { value: "no", label: "No Team" },
       ],
-      [],
+      []
     );
 
     const teamThemeOptions = useMemo<{ value: Theme | "all"; label: string }[]>(
@@ -140,7 +145,7 @@ const UserFilters = memo(
         { value: "Open Innovation", label: "Open Innovation" },
         { value: "Robotics", label: "Robotics" },
       ],
-      [],
+      []
     );
 
     const round2Options = useMemo(
@@ -150,7 +155,7 @@ const UserFilters = memo(
         { value: "REJECTED", label: "Rejected" },
         { value: "NOT_DECIDED", label: "Not Decided" },
       ],
-      [],
+      []
     );
 
     const paymentOptions = useMemo(
@@ -160,7 +165,7 @@ const UserFilters = memo(
         { value: "NOT_VERIFIED", label: "Not Verified" },
         { value: "UNPAID", label: "Unpaid" },
       ],
-      [],
+      []
     );
 
     return (
@@ -243,8 +248,7 @@ const UserFilters = memo(
                 options={teamOptions}
                 onClick={handleClick}
               />
-            </div>
-            <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 mt-2">
+
               <FilterSelect
                 name="teamTheme"
                 value={filters.teamTheme}
@@ -266,13 +270,12 @@ const UserFilters = memo(
                 options={paymentOptions}
                 onClick={handleClick}
               />
-
             </div>
           </div>
         </div>
       </div>
     );
-  },
+  }
 );
 UserFilters.displayName = "UserFilters";
 

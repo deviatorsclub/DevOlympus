@@ -57,7 +57,7 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
 
       if (dbUser) {
         console.log(
-          `User ${email} logged in ${dbUser.loggedInTimes + 1} times`
+          `User ${email} logged in ${dbUser.loggedInTimes + 1} times`,
         );
 
         await prisma.user.update({
