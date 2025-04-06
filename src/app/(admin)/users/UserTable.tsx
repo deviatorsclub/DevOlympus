@@ -637,7 +637,7 @@ const UserDetailPopup = memo(
                                     [team.id]: true,
                                   }));
                                 }
-                                setSelectedStatus(value as TeamSelectionStatus);
+
                                 try {
                                   const res = await updateTeamRound2Status(
                                     team.id,
@@ -646,39 +646,41 @@ const UserDetailPopup = memo(
 
                                   if (res.error) {
                                     alert(res.error);
-                                    return;
-                                  }
-
-                                  setUsers((prevUsers) => {
-                                    return prevUsers.map((user) => {
-                                      if (user.team?.id === team.id) {
-                                        return {
-                                          ...user,
-                                          team: {
-                                            ...user.team,
-                                            selectedForRound2:
-                                              status as TeamSelectionStatus,
-                                          },
-                                        };
-                                      }
-                                      return user;
+                                    if (isVisible && team.id) {
+                                      setUpdatingTeamIds((prev) => ({
+                                        ...prev,
+                                        [team.id]: false,
+                                      }));
+                                    }
+                                  } else {
+                                    setUsers((prevUsers) => {
+                                      return prevUsers.map((user) => {
+                                        if (user.team?.id === team.id) {
+                                          return {
+                                            ...user,
+                                            team: {
+                                              ...user.team,
+                                              selectedForRound2:
+                                                status as TeamSelectionStatus,
+                                            },
+                                          };
+                                        }
+                                        return user;
+                                      });
                                     });
-                                  });
 
-                                  if (isVisible && team.id) {
-                                    setUpdatingTeamIds((prev) => ({
-                                      ...prev,
-                                      [team.id]: false,
-                                    }));
+                                    if (isVisible && team.id) {
+                                      setUpdatingTeamIds((prev) => ({
+                                        ...prev,
+                                        [team.id]: false,
+                                      }));
+                                    }
                                   }
                                 } catch (error) {
                                   console.error(
                                     "Error updating status:",
                                     error
                                   );
-                                  alert(
-                                    "Failed to update Round 2 selection status"
-                                  );
 
                                   if (isVisible && team.id) {
                                     setUpdatingTeamIds((prev) => ({
@@ -686,6 +688,10 @@ const UserDetailPopup = memo(
                                       [team.id]: false,
                                     }));
                                   }
+
+                                  alert(
+                                    "Failed to update Round 2 selection status"
+                                  );
                                 }
                               }}
                             >
