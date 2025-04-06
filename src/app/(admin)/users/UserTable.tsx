@@ -7,10 +7,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import {
-  updateTeamRound2Status,
-  getTeamHistory,
-} from "@/app/actions/teamActions";
+import { updateTeamRound2Status, getTeamHistory } from "@/actions/teamActions";
 import {
   ArrowDown,
   ExternalLink,
@@ -115,7 +112,7 @@ const TeamMemberCard = memo(
         </div>
       </div>
     </div>
-  )
+  ),
 );
 TeamMemberCard.displayName = "TeamMemberCard";
 
@@ -142,7 +139,7 @@ const UserDetailPopup = memo(
     >({});
 
     const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
-      team?.selectedForRound2 ?? "NOT_DECIDED"
+      team?.selectedForRound2 ?? "NOT_DECIDED",
     );
 
     const [isRefreshingHistory, setIsRefreshingHistory] = useState(false);
@@ -183,7 +180,7 @@ const UserDetailPopup = memo(
 
         if (response.data?.selectionStatusLogs) {
           setHistoryData(
-            response.data.selectionStatusLogs as unknown as StatusChangeLog[]
+            response.data.selectionStatusLogs as unknown as StatusChangeLog[],
           );
 
           setUsers((prevUsers) => {
@@ -222,7 +219,7 @@ const UserDetailPopup = memo(
     const teamLead = teamMembers.find((member) => member.isLead);
 
     const currentMember = teamMembers.find(
-      (member) => member.email === user.email
+      (member) => member.email === user.email,
     );
 
     const userIsMember = !!currentMember;
@@ -427,7 +424,7 @@ const UserDetailPopup = memo(
                                 try {
                                   const res = await updateTeamRound2Status(
                                     team.id,
-                                    status
+                                    status,
                                   );
 
                                   if (res.error) {
@@ -460,10 +457,10 @@ const UserDetailPopup = memo(
                                 } catch (error) {
                                   console.error(
                                     "Error updating status:",
-                                    error
+                                    error,
                                   );
                                   alert(
-                                    "Failed to update Round 2 selection status"
+                                    "Failed to update Round 2 selection status",
                                   );
 
                                   if (isVisible && team.id) {
@@ -616,7 +613,7 @@ const UserDetailPopup = memo(
                               .sort(
                                 (a, b) =>
                                   new Date(b.timestamp).getTime() -
-                                  new Date(a.timestamp).getTime()
+                                  new Date(a.timestamp).getTime(),
                               )
                               .map((log, index) => (
                                 <tr
@@ -635,7 +632,7 @@ const UserDetailPopup = memo(
                                             day: "numeric",
                                             hour: "2-digit",
                                             minute: "2-digit",
-                                          }
+                                          },
                                         )}
                                       </span>
                                     </div>
@@ -726,7 +723,7 @@ const UserDetailPopup = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 UserDetailPopup.displayName = "UserDetailPopup";
@@ -752,11 +749,11 @@ export default function UserTable({
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) || null,
-    [users, selectedUserId]
+    [users, selectedUserId],
   );
   const selectedTeam = useMemo(
     () => getTeam(initialUsers, selectedUser?.email || ""),
-    [selectedUser, initialUsers]
+    [selectedUser, initialUsers],
   );
 
   const handleRowClick = useCallback((user: UserWithTeam) => {
@@ -776,12 +773,12 @@ export default function UserTable({
           <ArrowDown className="w-4 h-4" />
         )
       ) : null,
-    [sortField, sortDir]
+    [sortField, sortDir],
   );
 
   const visibleUsers = useMemo(
     () => users.filter((user) => user.visible !== false),
-    [users]
+    [users],
   );
   const isEmptyState = visibleUsers.length === 0;
 
@@ -931,7 +928,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  !member.isLead && member.email === user.email
+                                  !member.isLead && member.email === user.email,
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-blue-300 bg-blue-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Info className="w-3 h-3" /> Member
@@ -940,7 +937,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  member.isLead && member.email === user.email
+                                  member.isLead && member.email === user.email,
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-amber-300 bg-amber-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Shield className="w-3 h-3" /> Lead

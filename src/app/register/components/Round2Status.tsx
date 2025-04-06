@@ -1,13 +1,19 @@
 "use client";
 
-import { Clock, CheckCircle, Award, Info } from "lucide-react";
+import { Clock, CheckCircle, Award, Info, CreditCard } from "lucide-react";
 import { FLAGS } from "@/lib/flags";
+import Link from "next/link";
+import { TeamWithMembers } from "@/types/registration";
 
 interface Round2StatusProps {
   selectedForRound2: string | null;
+  paymentStatus?: TeamWithMembers["payment"];
 }
 
-export function Round2Status({ selectedForRound2 }: Round2StatusProps) {
+export function Round2Status({
+  selectedForRound2,
+  paymentStatus,
+}: Round2StatusProps) {
   if (
     new Date() < FLAGS.startShowingRound2Status ||
     !selectedForRound2 ||
@@ -26,8 +32,7 @@ export function Round2Status({ selectedForRound2 }: Round2StatusProps) {
         <div className="mt-4 bg-amber-900/30 p-3 rounded text-sm text-amber-200 flex items-start gap-2">
           <Info size={18} className="mt-0.5 flex-shrink-0" />
           <p>
-            Selection results will be shared on our community page and
-            website.
+            Selection results will be shared on our community page and website.
           </p>
         </div>
       </div>
@@ -45,13 +50,34 @@ export function Round2Status({ selectedForRound2 }: Round2StatusProps) {
           Great news! Your team has been selected to advance to Round 2 of the
           hackathon. We look forward to seeing your project develop further.
         </p>
-        <div className="mt-4 bg-emerald-900/30 p-3 rounded text-sm text-emerald-200 flex items-start gap-2">
-          <Info size={18} className="mt-0.5 flex-shrink-0" />
-          <p>
-            Check our community page for important information about next
-            steps.
-          </p>
-        </div>
+        {FLAGS.showPaymentForm ? (
+          paymentStatus?.id ? (
+            <>
+              <div className="mt-4 bg-emerald-900/30 p-3 rounded text-sm text-emerald-200 flex items-start gap-2">
+                <Info size={18} className="mt-0.5 flex-shrink-0" />
+                <p>
+                  Your payment for Round 2 has been successfully processed.
+                  Thank you!
+                </p>
+              </div>
+              <Link
+                href="/round-2-payment"
+                className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
+              >
+                <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
+                Check Payment Status
+              </Link>
+            </>
+          ) : (
+            <Link
+              href="/round-2-payment"
+              className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
+            >
+              <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
+              <p>Pay for Round 2</p>
+            </Link>
+          )
+        ) : null}
       </div>
     );
   }
@@ -63,9 +89,9 @@ export function Round2Status({ selectedForRound2 }: Round2StatusProps) {
         <h3 className="text-xl font-medium">Thank You for Participating</h3>
       </div>
       <p className="text-gray-200 text-base">
-        We appreciate your participation and effort. While your team
-        wasn&apos;t selected for Round 2, we encourage you to continue
-        developing your skills.
+        We appreciate your participation and effort. While your team wasn&apos;t
+        selected for Round 2, we encourage you to continue developing your
+        skills.
       </p>
       <div className="mt-4 bg-rose-900/30 p-3 rounded text-sm text-rose-200 flex items-start gap-2">
         <Info size={18} className="mt-0.5 flex-shrink-0" />

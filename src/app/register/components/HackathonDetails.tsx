@@ -11,10 +11,7 @@ export function HackathonDetails() {
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-violet-200">
         <div className="flex items-center">
-          <Calendar
-            size={18}
-            className="mr-2 text-violet-400 flex-shrink-0"
-          />
+          <Calendar size={18} className="mr-2 text-violet-400 flex-shrink-0" />
           <span>
             {HACKATHON_DATE.toLocaleDateString("en-US", {
               month: "long",

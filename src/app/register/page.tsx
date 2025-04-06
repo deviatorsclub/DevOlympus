@@ -46,6 +46,11 @@ export default async function page({
             number: true,
           },
         },
+        payment: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }

@@ -56,7 +56,7 @@ export interface TeamMemberCardProps {
   updateMember: (
     id: string,
     field: keyof Omit<TeamMember, "id" | "isLead">,
-    value: string,
+    value: string
   ) => void;
   errors: Record<string, string>;
   disabled: boolean;
@@ -77,6 +77,11 @@ export type TeamWithMembers = Prisma.TeamGetPayload<{
         isLead: true;
         rollNo: true;
         number: true;
+      };
+    };
+    payment: {
+      select: {
+        id: true;
       };
     };
   };

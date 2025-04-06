@@ -7,6 +7,7 @@ import {
 } from "@/lib/constants";
 
 import { prisma } from "@/prisma";
+import { TeamWithMembers } from "@/types/registration";
 
 declare module "next-auth" {
   interface Session {
@@ -16,6 +17,7 @@ declare module "next-auth" {
       name?: string | null;
       image?: string | null;
       isAdmin: boolean;
+      selectedForRound2?: TeamWithMembers["selectedForRound2"];
     };
   }
 }
@@ -55,7 +57,7 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
 
       if (dbUser) {
         console.log(
-          `User ${email} logged in ${dbUser.loggedInTimes + 1} times`,
+          `User ${email} logged in ${dbUser.loggedInTimes + 1} times`
         );
 
         await prisma.user.update({
@@ -106,12 +108,18 @@ const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
             id: true,
             isBlocked: true,
             isAdmin: true,
+            team: {
+              select: {
+                selectedForRound2: true,
+              },
+            },
           },
         });
 
         if (dbUser) {
           session.user.id = dbUser.id.toString();
           session.user.isAdmin = dbUser.isAdmin;
+          session.user.selectedForRound2 = dbUser.team?.selectedForRound2;
 
           if (dbUser.isBlocked) {
             throw new Error("User is blocked");

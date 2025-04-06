@@ -3,10 +3,11 @@
 import { TeamSelectionStatus } from "@prisma/client";
 import { auth } from "@/lib/authOptions";
 import { prisma } from "@/prisma";
+import { FLAGS } from "@/lib/flags";
 
 export async function updateTeamRound2Status(
   teamId: string,
-  status: string | null
+  status: string | null,
 ) {
   try {
     const session = await auth();
@@ -23,6 +24,10 @@ export async function updateTeamRound2Status(
         error: "Only admins can update Round 2 selection status",
         status: 403,
       };
+    }
+
+    if (FLAGS.isRound2ResultFinalized) {
+      return { error: "Round 2 results are finalized", status: 403 };
     }
 
     let selectionStatus: TeamSelectionStatus | null = null;

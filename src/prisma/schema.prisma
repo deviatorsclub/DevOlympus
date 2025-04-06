@@ -41,6 +41,7 @@ model Team {
   selectedForRound2   TeamSelectionStatus @default(NOT_DECIDED)
   selectionStatusLogs Json?
   members             TeamMember[]
+  payment             Payment?
 }
 
 model TeamMember {
@@ -54,4 +55,17 @@ model TeamMember {
   teamId String
 
   @@unique([email, teamId])
+}
+
+model Payment {
+  id               String   @id @default(cuid())
+  teamId           String   @unique
+  team             Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  senderName       String
+  mobileNumber     String
+  screenshotUrl    String
+  screenshotPublicId String
+  verified         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

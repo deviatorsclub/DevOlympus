@@ -13,7 +13,11 @@ interface ProjectDetailsProps {
   presentationUrl: string;
 }
 
-export function ProjectDetails({ theme, displayId, presentationUrl }: ProjectDetailsProps) {
+export function ProjectDetails({
+  theme,
+  displayId,
+  presentationUrl,
+}: ProjectDetailsProps) {
   return (
     <AccordionItem
       value="project"
@@ -39,9 +43,7 @@ export function ProjectDetails({ theme, displayId, presentationUrl }: ProjectDet
               </p>
             </div>
             <div>
-              <p className="text-sm text-violet-200 mb-1">
-                Registration ID
-              </p>
+              <p className="text-sm text-violet-200 mb-1">Registration ID</p>
               <p className="text-white text-base font-medium break-all">
                 {displayId}
               </p>

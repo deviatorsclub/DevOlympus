@@ -14,10 +14,11 @@ import Link from "next/link";
 import { Menu, User, X, LogOut, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeviatorsLogo from "@/assets/sm.svg";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { FLAGS } from "@/lib/flags";
 
 type NavItem = {
   name: string;
@@ -25,8 +26,8 @@ type NavItem = {
 };
 
 type UserIconProps =
-  | { imgUrl?: string; name: string; isLoggedIn: true }
-  | { isLoggedIn: false };
+  | { imgUrl?: string; name: string; isLoggedIn: true; session: Session }
+  | { isLoggedIn: false; session?: Session };
 
 type MenuItemProps = {
   icon: FC<{ className?: string }>;
@@ -52,6 +53,8 @@ const actionItems: {
   title: string;
   url: string;
   onlyForAdmins?: boolean;
+  onlyForSelectedParticipants?: boolean;
+  onlyShowIf?: boolean;
 }[] = [
   {
     title: "Register for hackathon",
@@ -62,11 +65,12 @@ const actionItems: {
     url: "/users",
     onlyForAdmins: true,
   },
-  // {
-  //   title: "View All Teams",
-  //   url: "/teams",
-  //   onlyForAdmins: true,
-  // },
+  {
+    title: "Pay for Round 2",
+    url: "/round-2-payment",
+    onlyForSelectedParticipants: true,
+    onlyShowIf: FLAGS.showPaymentForm,
+  },
 ];
 
 const menuItemVariants = {
@@ -132,7 +136,7 @@ const MenuItem: FC<MenuItemProps> = ({
 
 const useClickOutside = (
   ref: React.RefObject<HTMLElement | null>,
-  handler: () => void,
+  handler: () => void
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -183,7 +187,7 @@ const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
         {item.name}
       </Link>
     </motion.li>
-  ),
+  )
 );
 MobileNavItem.displayName = "MobileNavItem";
 
@@ -204,15 +208,23 @@ const DesktopNavItem = memo<{ item: NavItem }>(({ item }) => (
 DesktopNavItem.displayName = "DesktopNavItem";
 
 function menuItemsBasedOnAccess(user?: Session["user"]) {
-  return user
-    ? user.isAdmin
-      ? actionItems
-      : actionItems.filter((a) => a.onlyForAdmins !== true)
-    : actionItems.filter((a) => a.onlyForAdmins !== true);
+  let items: typeof actionItems = [];
+
+  if (user?.isAdmin) {
+    items = actionItems;
+  } else if (user?.selectedForRound2 === "SELECTED") {
+    items = actionItems.filter((item) => item.onlyForSelectedParticipants);
+  } else {
+    items = actionItems.filter(
+      (item) => !item.onlyForAdmins && !item.onlyForSelectedParticipants
+    );
+  }
+
+  return items.filter((item) => item.onlyShowIf !== false);
 }
 
 const UserIcon: FC<UserIconProps> = (props) => {
-  const { data: session } = useSession();
+  const { session } = props;
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -392,6 +404,7 @@ export default function HeaderClient({ initialSession }: HeaderClientProps) {
                       isLoggedIn={true}
                       imgUrl={session.user.image ?? undefined}
                       name={session.user.name ?? ""}
+                      session={session}
                     />
                   ) : (
                     <UserIcon isLoggedIn={false} />
@@ -412,6 +425,7 @@ export default function HeaderClient({ initialSession }: HeaderClientProps) {
                       isLoggedIn={true}
                       imgUrl={session.user.image ?? undefined}
                       name={session.user.name ?? ""}
+                      session={session}
                     />
                   ) : (
                     <UserIcon isLoggedIn={false} />

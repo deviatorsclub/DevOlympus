@@ -32,9 +32,7 @@ export function TeamMembers({ teamLead, teamMembers }: TeamMembersProps) {
           <div className="p-2.5 bg-violet-900/30 rounded-full">
             <Users size={20} className="text-violet-400" />
           </div>
-          <h2 className="text-lg font-medium text-violet-300">
-            Team Members
-          </h2>
+          <h2 className="text-lg font-medium text-violet-300">Team Members</h2>
         </div>
       </AccordionTrigger>
       <AccordionContent className="bg-[#0f0d24]">

@@ -27,7 +27,10 @@ export default function TeamIsRegistered({ team }: TeamIsRegisteredProps) {
       <div className="bg-[#0a0918] border border-indigo-600/80 rounded-xl shadow-lg p-6 md:p-8 text-gray-100 relative">
         <TeamHeader teamName={team.name} teamId={team.displayId} />
 
-        <Round2Status selectedForRound2={team.selectedForRound2} />
+        <Round2Status
+          selectedForRound2={team.selectedForRound2}
+          paymentStatus={team.payment}
+        />
 
         <Accordion
           collapsible

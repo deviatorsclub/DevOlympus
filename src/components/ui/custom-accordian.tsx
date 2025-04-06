@@ -31,7 +31,7 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [internalValue, setInternalValue] = React.useState<
       string | undefined
@@ -44,7 +44,7 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
         setInternalValue(newValue);
         onValueChange?.(newValue as string);
       },
-      [internalValue, collapsible, onValueChange]
+      [internalValue, collapsible, onValueChange],
     );
 
     React.useEffect(() => {
@@ -65,7 +65,7 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
         </div>
       </AccordionContext.Provider>
     );
-  }
+  },
 );
 Accordion.displayName = "Accordion";
 
@@ -91,7 +91,7 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
           className={cn(
             "rounded-lg border overflow-hidden transition-colors",
             disabled && "opacity-50 cursor-not-allowed",
-            className
+            className,
           )}
           {...props}
         >
@@ -99,7 +99,7 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
         </div>
       </AccordionItemContext.Provider>
     );
-  }
+  },
 );
 AccordionItem.displayName = "AccordionItem";
 
@@ -131,7 +131,7 @@ const AccordionTrigger = React.forwardRef<
       onClick={() => onValueChange(itemContext.value)}
       className={cn(
         "flex w-full items-center justify-between py-4 px-5 font-medium transition-all hover:bg-muted/10 [&[data-state=open]>svg]:rotate-180",
-        className
+        className,
       )}
       {...props}
     >
@@ -177,7 +177,7 @@ const AccordionContent = React.forwardRef<
       data-state={isOpen ? "open" : "closed"}
       className={cn(
         "overflow-hidden transition-all duration-300 ease-in-out",
-        className
+        className,
       )}
       style={{ height: isOpen ? `${height}px` : "0px" }}
       {...props}
