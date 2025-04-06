@@ -28,7 +28,7 @@ export const FLAGS: FeatureFlags = {
   minTeamSize: 3,
   defaultTheme: "AI & Machine Learning",
   submissionDeadline: new Date("2025-04-02T00:30:00+05:30"),
-  startShowingRound2Status: new Date("2025-04-07T09:00:00+05:30"),
+  startShowingRound2Status: new Date("2025-04-06T16:00:00+05:30"), // 6th April 2025, 4:00 PM
 };
 
 export const DEFAULT_VALUES = {
