@@ -53,7 +53,9 @@ export async function submitPayment(formData: FormData) {
     const dataURI = `data:${screenshot.type};base64,${base64Image}`;
 
     const uploadResult = await cloudinary.uploader.upload(dataURI, {
-      folder: "round2-payments",
+      folder:
+        "round2-payments" +
+        (process.env.NODE_ENV === "development" ? "-dev" : ""),
       resource_type: "image",
       public_id: `payment-${user.team.id}`,
     });
@@ -133,7 +135,7 @@ export async function getPaymentStatus() {
 
 export async function updatePaymentVerificationStatus(
   teamId: string,
-  verified: boolean,
+  verified: boolean
 ) {
   try {
     const session = await auth();

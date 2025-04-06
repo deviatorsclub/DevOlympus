@@ -59,6 +59,7 @@ const actionItems: {
   {
     title: "Register for hackathon",
     url: "/register",
+    onlyForSelectedParticipants: true,
   },
   {
     title: "View All Users",

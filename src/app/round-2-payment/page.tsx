@@ -3,16 +3,21 @@ import { prisma } from "@/prisma";
 import { PaymentForm } from "./components/PaymentForm";
 import { PaymentSuccess } from "./components/PaymentSuccess";
 import { PaymentStatus } from "./components/PaymentStatus";
-import { writeFileSync } from "fs";
 import { FLAGS } from "@/lib/flags";
 import { notFound } from "next/navigation";
 
-export default async function PaymentPage() {
+export default async function PaymentPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   if (!FLAGS.showPaymentForm) {
     return notFound();
   }
 
+  const teamLeadEmail = (await searchParams).e as string;
   const session = await auth();
+  const isAdmin = session?.user?.isAdmin;
 
   if (!session?.user) {
     return (
@@ -27,7 +32,13 @@ export default async function PaymentPage() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: {
+      email: isAdmin
+        ? teamLeadEmail
+          ? teamLeadEmail
+          : session?.user?.email
+        : session?.user?.email,
+    },
     include: {
       team: {
         include: {
@@ -37,8 +48,6 @@ export default async function PaymentPage() {
       },
     },
   });
-
-  writeFileSync("user.json", JSON.stringify(user, null, 2));
 
   if (!user?.team) {
     return (
@@ -58,7 +67,7 @@ export default async function PaymentPage() {
 
   const isTeamLead = user.team.members.some(
     (member) =>
-      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead,
+      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead
   );
 
   if (!isTeamLead) {

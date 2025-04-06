@@ -121,12 +121,20 @@ const TeamMemberCard = memo(
         </div>
       </div>
     </div>
-  ),
+  )
 );
 TeamMemberCard.displayName = "TeamMemberCard";
 
 const PaymentDetails = memo(
-  ({ team, isAdmin }: { team: UserTeam; isAdmin?: boolean }) => {
+  ({
+    team,
+    user,
+    isAdmin,
+  }: {
+    team: UserTeam;
+    user: UserWithTeam;
+    isAdmin?: boolean;
+  }) => {
     const payment = team?.payment;
     const [isUpdating, setIsUpdating] = useState(false);
     const [verificationStatus, setVerificationStatus] = useState<
@@ -158,7 +166,7 @@ const PaymentDetails = memo(
 
           const result = await updatePaymentVerificationStatus(
             team.id,
-            newStatus,
+            newStatus
           );
 
           if (result.error) {
@@ -185,54 +193,62 @@ const PaymentDetails = memo(
           setIsUpdating(false);
         }
       },
-      [payment, team.id],
+      [payment, team.id]
     );
 
     const paymentDetails = useMemo(() => {
-      if (!payment) return [];
-      return [
-        {
-          icon: <CreditCard className="w-4 h-4" />,
-          label: "Payment Status",
-          value:
-            isAdmin && FLAGS.canUpdatePayment ? (
-              <div className="flex items-center gap-2">
-                <span
-                  className={`${verificationStatus ? "text-green-400" : "text-yellow-400"}`}
-                >
-                  {paymentStatus}
-                </span>
-                {isUpdating ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
-                ) : (
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => handleVerificationChange(true)}
-                      disabled={isUpdating || verificationStatus === true}
-                      className={`p-1 rounded ${verificationStatus === true ? "bg-green-900/30 text-green-400" : "hover:bg-green-900/30 text-gray-400 hover:text-green-400"}`}
-                      title="Mark as verified"
-                    >
-                      <CheckSquare className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleVerificationChange(false)}
-                      disabled={isUpdating || verificationStatus === false}
-                      className={`p-1 rounded ${verificationStatus === false ? "bg-yellow-900/30 text-yellow-400" : "hover:bg-yellow-900/30 text-gray-400 hover:text-yellow-400"}`}
-                      title="Mark as pending"
-                    >
-                      <XSquare className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
+      const statusDetail = {
+        icon: <CreditCard className="w-4 h-4" />,
+        label: "Payment Status",
+        value: payment ? (
+          isAdmin && FLAGS.canUpdatePayment ? (
+            <div className="flex items-center gap-2">
               <span
                 className={`${verificationStatus ? "text-green-400" : "text-yellow-400"}`}
               >
                 {paymentStatus}
               </span>
-            ),
-        },
+              {isUpdating ? (
+                <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+              ) : (
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => handleVerificationChange(true)}
+                    disabled={isUpdating || verificationStatus === true}
+                    className={`p-1 rounded ${verificationStatus === true ? "bg-green-900/30 text-green-400" : "hover:bg-green-900/30 text-gray-400 hover:text-green-400"}`}
+                    title="Mark as verified"
+                  >
+                    <CheckSquare className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleVerificationChange(false)}
+                    disabled={isUpdating || verificationStatus === false}
+                    className={`p-1 rounded ${verificationStatus === false ? "bg-yellow-900/30 text-yellow-400" : "hover:bg-yellow-900/30 text-gray-400 hover:text-yellow-400"}`}
+                    title="Mark as pending"
+                  >
+                    <XSquare className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <span
+              className={`${verificationStatus ? "text-green-400" : "text-yellow-400"}`}
+            >
+              {paymentStatus}
+            </span>
+          )
+        ) : (
+          <span className="text-gray-400">UNPAID</span>
+        ),
+      };
+
+      if (!payment) {
+        return [statusDetail];
+      }
+
+      return [
+        statusDetail,
         {
           icon: <DollarSign className="w-4 h-4" />,
           label: "Sender Name",
@@ -276,7 +292,12 @@ const PaymentDetails = memo(
 
     return (
       <div className="mt-6 border-t border-gray-700 pt-4">
-        <h3 className="text-lg font-medium text-white mb-3">Payment Details</h3>
+        <div className="flex gap-2 items-center mb-3">
+          <h3 className="text-lg font-medium text-white">Payment Details</h3>
+          <Link href={"/round-2-payment?e=" + user.email} target="_blank">
+            <ExternalLink className="w-4 h-4" />
+          </Link>
+        </div>
         {statusMessage && (
           <div
             className={`mb-3 p-2 rounded-md flex items-center gap-2 text-sm ${statusMessage.type === "success" ? "bg-green-900/30 text-green-400" : "bg-red-900/30 text-red-400"}`}
@@ -287,6 +308,12 @@ const PaymentDetails = memo(
               <AlertCircle className="w-4 h-4" />
             )}
             {statusMessage.text}
+          </div>
+        )}
+        {!payment && !isAdmin && (
+          <div className="mb-3 p-3 rounded-md bg-gray-700 bg-opacity-30 text-sm text-gray-300 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-gray-400" />
+            No payment has been submitted yet
           </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
@@ -301,7 +328,7 @@ const PaymentDetails = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 PaymentDetails.displayName = "PaymentDetails";
@@ -329,7 +356,7 @@ const UserDetailPopup = memo(
     >({});
 
     const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
-      team?.selectedForRound2 ?? "NOT_DECIDED",
+      team?.selectedForRound2 ?? "NOT_DECIDED"
     );
 
     const [isRefreshingHistory, setIsRefreshingHistory] = useState(false);
@@ -370,7 +397,7 @@ const UserDetailPopup = memo(
 
         if (response.data?.selectionStatusLogs) {
           setHistoryData(
-            response.data.selectionStatusLogs as unknown as StatusChangeLog[],
+            response.data.selectionStatusLogs as unknown as StatusChangeLog[]
           );
 
           setUsers((prevUsers) => {
@@ -409,7 +436,7 @@ const UserDetailPopup = memo(
     const teamLead = teamMembers.find((member) => member.isLead);
 
     const currentMember = teamMembers.find(
-      (member) => member.email === user.email,
+      (member) => member.email === user.email
     );
 
     const userIsMember = !!currentMember;
@@ -614,7 +641,7 @@ const UserDetailPopup = memo(
                                 try {
                                   const res = await updateTeamRound2Status(
                                     team.id,
-                                    status,
+                                    status
                                   );
 
                                   if (res.error) {
@@ -647,10 +674,10 @@ const UserDetailPopup = memo(
                                 } catch (error) {
                                   console.error(
                                     "Error updating status:",
-                                    error,
+                                    error
                                   );
                                   alert(
-                                    "Failed to update Round 2 selection status",
+                                    "Failed to update Round 2 selection status"
                                   );
 
                                   if (isVisible && team.id) {
@@ -803,7 +830,7 @@ const UserDetailPopup = memo(
                               .sort(
                                 (a, b) =>
                                   new Date(b.timestamp).getTime() -
-                                  new Date(a.timestamp).getTime(),
+                                  new Date(a.timestamp).getTime()
                               )
                               .map((log, index) => (
                                 <tr
@@ -822,7 +849,7 @@ const UserDetailPopup = memo(
                                             day: "numeric",
                                             hour: "2-digit",
                                             minute: "2-digit",
-                                          },
+                                          }
                                         )}
                                       </span>
                                     </div>
@@ -901,7 +928,9 @@ const UserDetailPopup = memo(
               </div>
             )}
 
-            {team && <PaymentDetails team={team} isAdmin={isAdmin} />}
+            {team && (
+              <PaymentDetails team={team} user={user} isAdmin={isAdmin} />
+            )}
           </div>
 
           <div className="border-t border-gray-700 p-3 sm:p-4 flex justify-end">
@@ -915,7 +944,7 @@ const UserDetailPopup = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 UserDetailPopup.displayName = "UserDetailPopup";
@@ -941,11 +970,11 @@ export default function UserTable({
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) || null,
-    [users, selectedUserId],
+    [users, selectedUserId]
   );
   const selectedTeam = useMemo(
     () => getTeam(initialUsers, selectedUser?.email || ""),
-    [selectedUser, initialUsers],
+    [selectedUser, initialUsers]
   );
 
   const handleRowClick = useCallback((user: UserWithTeam) => {
@@ -965,12 +994,12 @@ export default function UserTable({
           <ArrowDown className="w-4 h-4" />
         )
       ) : null,
-    [sortField, sortDir],
+    [sortField, sortDir]
   );
 
   const visibleUsers = useMemo(
     () => users.filter((user) => user.visible !== false),
-    [users],
+    [users]
   );
   const isEmptyState = visibleUsers.length === 0;
 
@@ -1120,7 +1149,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  !member.isLead && member.email === user.email,
+                                  !member.isLead && member.email === user.email
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-blue-300 bg-blue-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Info className="w-3 h-3" /> Member
@@ -1129,7 +1158,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  member.isLead && member.email === user.email,
+                                  member.isLead && member.email === user.email
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-amber-300 bg-amber-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Shield className="w-3 h-3" /> Lead
