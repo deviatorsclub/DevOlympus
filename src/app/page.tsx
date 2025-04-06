@@ -6,6 +6,7 @@ import ScheduleSection from "@/components/Schedule";
 import ThemesSection from "@/components/TheneSection";
 import SponsorsSection from "@/components/SponsorsSection";
 import PriceSection from "@/components/PriceSection";
+import LeadOrganizersSection from "@/components/LeadOrganizersSection";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <ThemesSection />
       <PriceSection />
       <ScheduleSection />
+      <LeadOrganizersSection />
       <FAQSection />
       <ContactSection />
     </main>
