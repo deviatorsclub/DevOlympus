@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { FaGithub, FaLinkedin, FaInstagram, FaEnvelope } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
@@ -41,11 +40,9 @@ export default function EnhancedFooter() {
             className="md:col-span-4"
           >
             <Link href="/" className="inline-block mb-4">
-              <Image
+              <img
                 src={DeviatorsLogo}
                 alt="Deviators Club"
-                width={200}
-                height={50}
                 className="h-10 w-auto"
               />
             </Link>
@@ -118,7 +115,7 @@ export default function EnhancedFooter() {
                       {item}
                     </Link>
                   </motion.li>
-                ),
+                )
               )}
             </ul>
           </motion.div>

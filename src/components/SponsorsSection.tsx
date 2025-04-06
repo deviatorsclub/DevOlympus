@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { sponsors } from "@/data";
 
@@ -33,12 +32,10 @@ const SponsorsSection: React.FC = () => {
             >
               <div className="bg-gray-900 border border-purple-600/30 rounded-lg p-6 flex flex-col items-center hover:shadow-[0_0_15px_rgba(147,51,234,0.5)] transition-shadow duration-300">
                 <div className="relative w-36 h-36 mb-4 flex items-center justify-center">
-                  <Image
-                    src={sponsor.image}
+                  <img
+                    src={sponsor.image.src}
                     alt={sponsor.name}
-                    fill
-                    style={{ objectFit: "contain" }}
-                    className="p-2"
+                    className="p-2 size-full"
                   />
                 </div>
                 <h3 className="text-white text-lg font-semibold group-hover:text-purple-400 transition-colors duration-300">

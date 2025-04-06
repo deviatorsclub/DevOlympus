@@ -9,7 +9,6 @@ import {
   useMemo,
   useEffect,
 } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Menu, User, X, LogOut, FileText, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -149,7 +148,7 @@ const MenuItem: FC<MenuItemProps> = ({
 
 const useClickOutside = (
   ref: React.RefObject<HTMLElement | null>,
-  handler: () => void,
+  handler: () => void
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -200,7 +199,7 @@ const MobileNavItem = memo<{ item: NavItem; onClose: () => void }>(
         {item.name}
       </Link>
     </motion.li>
-  ),
+  )
 );
 MobileNavItem.displayName = "MobileNavItem";
 
@@ -229,7 +228,7 @@ function menuItemsBasedOnAccess(user?: Session["user"]) {
     items = actionItems.filter((item) => item.onlyForSelectedParticipants);
   } else {
     items = actionItems.filter(
-      (item) => !item.onlyForAdmins && !item.onlyForSelectedParticipants,
+      (item) => !item.onlyForAdmins && !item.onlyForSelectedParticipants
     );
   }
 
@@ -262,7 +261,7 @@ const UserIcon: FC<UserIconProps> = (props) => {
         >
           {props.isLoggedIn ? (
             props.imgUrl && (
-              <Image
+              <img
                 src={props.imgUrl}
                 alt={`${props.name}'s profile`}
                 className="h-full w-full object-cover"
@@ -297,7 +296,7 @@ const UserIcon: FC<UserIconProps> = (props) => {
                   <div className="flex items-center gap-3">
                     {props.imgUrl && (
                       <div className="h-10 w-10 rounded-full overflow-hidden">
-                        <Image
+                        <img
                           src={props.imgUrl}
                           alt={`${props.name}'s profile`}
                           width={40}
@@ -393,13 +392,10 @@ export default function HeaderClient({ initialSession }: HeaderClientProps) {
             href="/"
             className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
           >
-            <Image
-              src={DeviatorsLogo}
+            <img
+              src={DeviatorsLogo.src}
               alt="Deviators Club"
-              width={200}
-              height={50}
               className="h-6 w-auto md:h-8"
-              priority
             />
           </Link>
         </div>

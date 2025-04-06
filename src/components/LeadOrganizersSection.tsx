@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import Image, { StaticImageData } from "next/image";
+import { StaticImageData } from "next/image";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 
@@ -101,11 +101,10 @@ export default function LeadOrganizersSection() {
                 className="aspect-square relative overflow-hidden group"
                 variants={imageVariants}
               >
-                <Image
-                  src={organizer.image}
+                <img
+                  src={organizer.image.src}
                   alt={organizer.name}
-                  fill
-                  className="object-cover"
+                  className="object-cover w-full h-full"
                 />
               </motion.div>
               <div className="p-3 sm:p-4 md:p-5 text-center">

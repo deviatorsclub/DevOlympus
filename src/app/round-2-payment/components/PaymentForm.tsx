@@ -2,7 +2,6 @@
 
 import type React from "react";
 import { useState } from "react";
-import Image from "next/image";
 import {
   Card,
   CardHeader,
@@ -49,7 +48,7 @@ export function PaymentForm() {
 
     if (!mobileNumber || !senderName || !screenshot) {
       setError(
-        "Please provide sender name, mobile number, and payment screenshot",
+        "Please provide sender name, mobile number, and payment screenshot"
       );
       return;
     }
@@ -104,12 +103,10 @@ export function PaymentForm() {
               onClick={() => setQrBlurred((prev) => !prev)}
             >
               <div className="relative w-full h-full select-none">
-                <Image
-                  src={QrPayImage || "/placeholder.svg"}
+                <img
+                  src={QrPayImage.src || "/placeholder.svg"}
                   alt="Payment QR Code"
-                  className={`transition-all duration-300 ${qrBlurred ? "blur-md" : ""}`}
-                  style={{ objectFit: "contain" }}
-                  priority
+                  className={`transition-all duration-300 ${qrBlurred ? "blur-md" : ""} w-full h-auto object-contain`}
                 />
                 {qrBlurred && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 rounded-md transition-opacity">
@@ -221,11 +218,10 @@ export function PaymentForm() {
                     Your Screenshot Preview:
                   </p>
                   <div className="relative w-full h-[200px] border border-gray-700 rounded-md overflow-hidden">
-                    <Image
+                    <img
                       src={previewUrl || "/placeholder.svg"}
                       alt="Screenshot Preview"
-                      fill
-                      style={{ objectFit: "contain" }}
+                      className="w-full h-auto object-contain"
                     />
                   </div>
                 </div>

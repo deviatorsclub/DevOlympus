@@ -1,5 +1,5 @@
 "use client";
-import Image, { type StaticImageData } from "next/image";
+import { type StaticImageData } from "next/image";
 import { Button } from "@/components/ui/button";
 
 interface ExampleScreenshotPopupProps {
@@ -14,7 +14,6 @@ export function ExampleScreenshotPopup({
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-md max-h-[90vh] flex flex-col relative border border-purple-700">
-        {/* Fixed header with close button */}
         <div className="p-4 border-b border-gray-800 flex justify-between items-center sticky top-0 bg-gray-900 rounded-t-lg z-10">
           <h3 className="text-lg font-medium text-white">
             Example Payment Screenshot
@@ -41,16 +40,13 @@ export function ExampleScreenshotPopup({
           </button>
         </div>
 
-        {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <div className="flex items-center justify-center">
             <div className="relative w-full max-w-[300px] h-auto aspect-[3/5]">
-              <Image
-                src={exampleImage || "/placeholder.svg"}
+              <img
+                src={exampleImage.src || "/placeholder.svg"}
                 alt="Example Screenshot"
-                style={{ objectFit: "contain" }}
-                className="rounded-md"
-                fill
+                className="rounded-md w-full h-auto object-contain"
               />
             </div>
           </div>
@@ -68,7 +64,6 @@ export function ExampleScreenshotPopup({
           </ul>
         </div>
 
-        {/* Fixed footer */}
         <div className="p-4 border-t border-gray-800 sticky bottom-0 bg-gray-900 rounded-b-lg">
           <div className="flex justify-end">
             <Button

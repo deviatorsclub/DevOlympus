@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
 
 interface PaymentSuccessProps {
   paymentDetails?: {
@@ -75,11 +74,9 @@ export function PaymentSuccess({ paymentDetails }: PaymentSuccessProps) {
                 target="_blank"
                 className="block h-[300px] w-[300px] my-4 rounded-lg overflow-hidden"
               >
-                <Image
+                <img
                   src={"/api/round-2-pay-screenshot"}
                   alt="Payment Screenshot"
-                  width={800}
-                  height={800}
                   className="w-full h-full object-cover"
                 />
               </Link>

@@ -37,7 +37,6 @@ import {
   CheckSquare,
   XSquare,
 } from "lucide-react";
-import Image from "next/image";
 import { TeamMember } from "@/types/registration";
 import {
   SortDirection,
@@ -121,7 +120,7 @@ const TeamMemberCard = memo(
         </div>
       </div>
     </div>
-  ),
+  )
 );
 TeamMemberCard.displayName = "TeamMemberCard";
 
@@ -166,7 +165,7 @@ const PaymentDetails = memo(
 
           const result = await updatePaymentVerificationStatus(
             team.id,
-            newStatus,
+            newStatus
           );
 
           if (result.error) {
@@ -193,7 +192,7 @@ const PaymentDetails = memo(
           setIsUpdating(false);
         }
       },
-      [payment, team.id],
+      [payment, team.id]
     );
 
     const paymentDetails = useMemo(() => {
@@ -328,7 +327,7 @@ const PaymentDetails = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 PaymentDetails.displayName = "PaymentDetails";
@@ -356,7 +355,7 @@ const UserDetailPopup = memo(
     >({});
 
     const [selectedStatus, setSelectedStatus] = useState<TeamSelectionStatus>(
-      team?.selectedForRound2 ?? "NOT_DECIDED",
+      team?.selectedForRound2 ?? "NOT_DECIDED"
     );
 
     const [isRefreshingHistory, setIsRefreshingHistory] = useState(false);
@@ -397,7 +396,7 @@ const UserDetailPopup = memo(
 
         if (response.data?.selectionStatusLogs) {
           setHistoryData(
-            response.data.selectionStatusLogs as unknown as StatusChangeLog[],
+            response.data.selectionStatusLogs as unknown as StatusChangeLog[]
           );
 
           setUsers((prevUsers) => {
@@ -436,7 +435,7 @@ const UserDetailPopup = memo(
     const teamLead = teamMembers.find((member) => member.isLead);
 
     const currentMember = teamMembers.find(
-      (member) => member.email === user.email,
+      (member) => member.email === user.email
     );
 
     const userIsMember = !!currentMember;
@@ -463,14 +462,11 @@ const UserDetailPopup = memo(
             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
               <div className="h-16 w-16 sm:h-20 sm:w-20 bg-gray-700 rounded-full overflow-hidden ring-2 ring-gray-600">
                 {user.image ? (
-                  <Image
+                  <img
                     src={user.image.replace("=s96-c", "")}
                     alt={user.name || "User"}
-                    className="h-full w-full object-cover"
+                    className="h-[200px] w-[200px] object-cover"
                     loading="lazy"
-                    unoptimized
-                    width={200}
-                    height={200}
                   />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center text-gray-400">
@@ -641,7 +637,7 @@ const UserDetailPopup = memo(
                                 try {
                                   const res = await updateTeamRound2Status(
                                     team.id,
-                                    status,
+                                    status
                                   );
 
                                   if (res.error) {
@@ -679,7 +675,7 @@ const UserDetailPopup = memo(
                                 } catch (error) {
                                   console.error(
                                     "Error updating status:",
-                                    error,
+                                    error
                                   );
 
                                   if (isVisible && team.id) {
@@ -690,7 +686,7 @@ const UserDetailPopup = memo(
                                   }
 
                                   alert(
-                                    "Failed to update Round 2 selection status",
+                                    "Failed to update Round 2 selection status"
                                   );
                                 }
                               }}
@@ -836,7 +832,7 @@ const UserDetailPopup = memo(
                               .sort(
                                 (a, b) =>
                                   new Date(b.timestamp).getTime() -
-                                  new Date(a.timestamp).getTime(),
+                                  new Date(a.timestamp).getTime()
                               )
                               .map((log, index) => (
                                 <tr
@@ -855,7 +851,7 @@ const UserDetailPopup = memo(
                                             day: "numeric",
                                             hour: "2-digit",
                                             minute: "2-digit",
-                                          },
+                                          }
                                         )}
                                       </span>
                                     </div>
@@ -950,7 +946,7 @@ const UserDetailPopup = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 UserDetailPopup.displayName = "UserDetailPopup";
@@ -976,11 +972,11 @@ export default function UserTable({
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) || null,
-    [users, selectedUserId],
+    [users, selectedUserId]
   );
   const selectedTeam = useMemo(
     () => getTeam(initialUsers, selectedUser?.email || ""),
-    [selectedUser, initialUsers],
+    [selectedUser, initialUsers]
   );
 
   const handleRowClick = useCallback((user: UserWithTeam) => {
@@ -1000,12 +996,12 @@ export default function UserTable({
           <ArrowDown className="w-4 h-4" />
         )
       ) : null,
-    [sortField, sortDir],
+    [sortField, sortDir]
   );
 
   const visibleUsers = useMemo(
     () => users.filter((user) => user.visible !== false),
-    [users],
+    [users]
   );
   const isEmptyState = visibleUsers.length === 0;
 
@@ -1105,12 +1101,10 @@ export default function UserTable({
                         <div className="flex items-center gap-2">
                           <div className="h-9 w-9 flex-shrink-0 bg-gray-600 rounded-full overflow-hidden">
                             {user.image ? (
-                              <Image
+                              <img
                                 src={user.image}
                                 alt={user.name || "User"}
-                                width={36}
-                                height={36}
-                                className="h-full w-full object-cover"
+                                className="h-[36px] w-[36px] object-cover"
                                 loading="lazy"
                               />
                             ) : (
@@ -1155,7 +1149,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  !member.isLead && member.email === user.email,
+                                  !member.isLead && member.email === user.email
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-blue-300 bg-blue-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Info className="w-3 h-3" /> Member
@@ -1164,7 +1158,7 @@ export default function UserTable({
                             {team.members &&
                               team.members.some(
                                 (member) =>
-                                  member.isLead && member.email === user.email,
+                                  member.isLead && member.email === user.email
                               ) && (
                                 <span className="inline-flex items-center gap-1 text-amber-300 bg-amber-900 bg-opacity-40 px-2 py-0.5 rounded-full text-xs">
                                   <Shield className="w-3 h-3" /> Lead
