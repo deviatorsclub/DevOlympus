@@ -165,7 +165,16 @@ const UserFilters = memo(
         { value: "NOT_VERIFIED", label: "Not Verified" },
         { value: "UNPAID", label: "Unpaid" },
       ],
-      [],
+      []
+    );
+
+    const consentLetterOptions = useMemo(
+      () => [
+        { value: "all", label: "Consent Letter" },
+        { value: "UPLOADED", label: "Uploaded" },
+        { value: "NOT_UPLOADED", label: "Not Uploaded" },
+      ],
+      []
     );
 
     return (
@@ -268,6 +277,13 @@ const UserFilters = memo(
                 value={filters.payment}
                 onChange={(value) => onFilterChange("payment", value)}
                 options={paymentOptions}
+                onClick={handleClick}
+              />
+              <FilterSelect
+                name="consentLetter"
+                value={filters.consentLetter}
+                onChange={(value) => onFilterChange("consentLetter", value)}
+                options={consentLetterOptions}
                 onClick={handleClick}
               />
             </div>

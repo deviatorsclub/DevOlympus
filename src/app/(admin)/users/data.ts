@@ -10,6 +10,7 @@ export async function getData() {
         include: {
           members: true,
           payment: true,
+          consentLetter: true,
         },
       },
     },

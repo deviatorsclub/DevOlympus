@@ -36,6 +36,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     teamTheme: "all",
     round2: "all",
     payment: "all",
+    consentLetter: "all",
   });
 
   const searchParams = useSearchParams();
@@ -161,6 +162,14 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       }
     }
 
+    if (searchParams.has("consentLetter")) {
+      const consentLetter = searchParams.get("consentLetter");
+      if (consentLetter && ["all", "UPLOADED", "NOT_UPLOADED"].includes(consentLetter)) {
+        urlFilters.consentLetter = consentLetter as FilterState["consentLetter"];
+        hasUrlFilters = true;
+      }
+    }
+
     if (hasUrlFilters) {
       setFilters((prev) => ({
         ...prev,
@@ -203,6 +212,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       teamTheme: "all",
       round2: "all",
       payment: "all",
+      consentLetter: "all",
     });
   }, []);
 
@@ -217,7 +227,8 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       filters.team !== "all" ||
       filters.teamTheme !== "all" ||
       filters.round2 !== "all" ||
-      filters.payment !== "all";
+      filters.payment !== "all" ||
+      filters.consentLetter !== "all";
 
     const teamCache = new Map<string, UserTeam | null>();
     const getTeamCached = (email: string) => {
@@ -395,6 +406,23 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         }
       }
 
+      if (visible && filters.consentLetter !== "all") {
+        const userTeam = getTeamCached(user.email);
+        if (!userTeam) {
+          visible = false;
+        } else {
+          if (filters.consentLetter === "UPLOADED") {
+            if (!userTeam.consentLetter) {
+              visible = false;
+            }
+          } else if (filters.consentLetter === "NOT_UPLOADED") {
+            if (userTeam.consentLetter) {
+              visible = false;
+            }
+          }
+        }
+      }
+
       return { ...user, visible };
     });
   }, [
@@ -406,6 +434,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     filters.teamTheme,
     filters.round2,
     filters.payment,
+    filters.consentLetter,
     isLoading,
     dateCache,
     sortField,
