@@ -153,6 +153,14 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       }
     }
 
+    if (searchParams.has("payment")) {
+      const payment = searchParams.get("payment");
+      if (payment && ["all", "VERIFIED", "NOT_VERIFIED"].includes(payment)) {
+        urlFilters.payment = payment as FilterState["payment"];
+        hasUrlFilters = true;
+      }
+    }
+
     if (hasUrlFilters) {
       setFilters((prev) => ({
         ...prev,

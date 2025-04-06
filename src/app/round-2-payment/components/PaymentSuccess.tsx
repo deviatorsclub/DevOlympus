@@ -8,11 +8,16 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 
 interface PaymentSuccessProps {
   paymentDetails?: {
     createdAt: string;
     verified: boolean;
+    senderName: string;
+    mobileNumber: string;
+    screenshotUrl: string;
   };
 }
 
@@ -56,6 +61,27 @@ export function PaymentSuccess({ paymentDetails }: PaymentSuccessProps) {
               Verification status:{" "}
               {paymentDetails.verified ? "Verified" : "Pending"}
             </p>
+            <div className="mt-4 px-4 py-2 bg-gray-700 rounded-lg flex items-start flex-col">
+              <p className="text-sm font-medium text-white">
+                Sender Name: {paymentDetails.senderName}
+              </p>
+              <p className="text-sm font-medium text-white">
+                Mobile Number: {paymentDetails.mobileNumber}
+              </p>
+            </div>
+            {paymentDetails.screenshotUrl && (
+              <Link
+                href={"/api/round-2-pay-screenshot"}
+                target="_blank"
+                className="block h-[300px] w-[300px] my-4 rounded-lg overflow-hidden"
+              >
+                <img
+                  src={"/api/round-2-pay-screenshot"}
+                  alt="Payment Screenshot"
+                  className="w-full h-full object-cover"
+                />
+              </Link>
+            )}
           </div>
         )}
       </CardContent>

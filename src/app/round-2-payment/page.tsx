@@ -85,6 +85,9 @@ export default async function PaymentPage({
           paymentDetails={{
             createdAt: user.team.payment.createdAt.toISOString(),
             verified: user.team.payment.verified,
+            senderName: user.team.payment.senderName,
+            mobileNumber: user.team.payment.mobileNumber,
+            screenshotUrl: user.team.payment.screenshotUrl,
           }}
         />
       </div>

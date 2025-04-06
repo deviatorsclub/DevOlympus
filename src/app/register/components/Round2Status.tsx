@@ -50,24 +50,15 @@ export function Round2Status({
           Great news! Your team has been selected to advance to Round 2 of the
           hackathon. We look forward to seeing your project develop further.
         </p>
-        {FLAGS.showPaymentForm ? (
-          paymentStatus?.id ? (
-            <>
-              <div className="mt-4 bg-emerald-900/30 p-3 rounded text-sm text-emerald-200 flex items-start gap-2">
-                <Info size={18} className="mt-0.5 flex-shrink-0" />
-                <p>
-                  Your payment for Round 2 has been successfully processed.
-                  Thank you!
-                </p>
-              </div>
-              <Link
-                href="/round-2-payment"
-                className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
-              >
-                <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
-                Check Payment Status
-              </Link>
-            </>
+        {FLAGS.showPaymentForm &&
+          (paymentStatus?.id ? (
+            <Link
+              href="/round-2-payment"
+              className="mt-4 bg-emerald-900/100 p-3 rounded text-sm text-emerald-200 flex items-center gap-2 hover:bg-emerald-800 transition-colors"
+            >
+              <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
+              Check Payment Status
+            </Link>
           ) : (
             <Link
               href="/round-2-payment"
@@ -76,8 +67,7 @@ export function Round2Status({
               <CreditCard size={18} className="mt-0.5 flex-shrink-0" />
               <p>Pay for Round 2</p>
             </Link>
-          )
-        ) : null}
+          ))}
       </div>
     );
   }
