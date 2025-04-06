@@ -153,6 +153,16 @@ const UserFilters = memo(
       [],
     );
 
+    const paymentOptions = useMemo(
+      () => [
+        { value: "all", label: "Payment" },
+        { value: "VERIFIED", label: "Verified" },
+        { value: "NOT_VERIFIED", label: "Not Verified" },
+        { value: "UNPAID", label: "Unpaid" },
+      ],
+      [],
+    );
+
     return (
       <div className="bg-gray-800 rounded-lg shadow">
         <div
@@ -204,56 +214,59 @@ const UserFilters = memo(
               onClick={handleClick}
             />
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              {[
-                {
-                  value: filters.role,
-                  key: "role",
-                  options: roleOptions,
-                  onClick: handleClick,
-                },
-                {
-                  value: filters.status,
-                  key: "status",
-                  options: statusOptions,
-                  onClick: handleClick,
-                },
-                {
-                  value: filters.loginStatus,
-                  key: "loginStatus",
-                  options: loginOptions,
-                  onClick: handleClick,
-                },
-                {
-                  value: filters.team,
-                  key: "team",
-                  options: teamOptions,
-                  onClick: handleClick,
-                },
-                {
-                  value: filters.teamTheme,
-                  key: "teamTheme",
-                  options: teamThemeOptions,
-                  onClick: handleClick,
-                },
-                {
-                  value: filters.round2,
-                  key: "round2",
-                  options: round2Options,
-                  onClick: handleClick,
-                },
-              ].map((option) => (
-                <FilterSelect
-                  name={option.key}
-                  key={option.key}
-                  value={option.value}
-                  onChange={(value) =>
-                    onFilterChange(option.key as keyof FilterState, value)
-                  }
-                  options={option.options}
-                  onClick={option.onClick}
-                />
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <FilterSelect
+                name="role"
+                value={filters.role}
+                onChange={(value) => onFilterChange("role", value)}
+                options={roleOptions}
+                onClick={handleClick}
+              />
+              <FilterSelect
+                name="status"
+                value={filters.status}
+                onChange={(value) => onFilterChange("status", value)}
+                options={statusOptions}
+                onClick={handleClick}
+              />
+              <FilterSelect
+                name="loginStatus"
+                value={filters.loginStatus}
+                onChange={(value) => onFilterChange("loginStatus", value)}
+                options={loginOptions}
+                onClick={handleClick}
+              />
+              <FilterSelect
+                name="team"
+                value={filters.team}
+                onChange={(value) => onFilterChange("team", value)}
+                options={teamOptions}
+                onClick={handleClick}
+              />
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 mt-2">
+              <FilterSelect
+                name="teamTheme"
+                value={filters.teamTheme}
+                onChange={(value) => onFilterChange("teamTheme", value)}
+                options={teamThemeOptions}
+                onClick={handleClick}
+              />
+              <FilterSelect
+                name="round2"
+                value={filters.round2}
+                onChange={(value) => onFilterChange("round2", value)}
+                options={round2Options}
+                onClick={handleClick}
+              />
+              <FilterSelect
+                name="payment"
+                value={filters.payment}
+                onChange={(value) => onFilterChange("payment", value)}
+                options={paymentOptions}
+                onClick={handleClick}
+              />
+
             </div>
           </div>
         </div>

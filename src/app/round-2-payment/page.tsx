@@ -38,6 +38,8 @@ export default async function PaymentPage() {
     },
   });
 
+  writeFileSync("user.json", JSON.stringify(user, null, 2));
+
   if (!user?.team) {
     return (
       <div className="container mx-auto py-10 px-4 max-w-3xl my-20">

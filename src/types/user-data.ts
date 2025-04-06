@@ -6,6 +6,7 @@ export type UserWithTeam = Prisma.UserGetPayload<{
     team: {
       include: {
         members: true;
+        payment: true;
       };
     };
   };
@@ -23,6 +24,7 @@ export interface FilterState {
   team: "all" | "yes" | "no";
   teamTheme: Theme | "all";
   round2: "all" | "SELECTED" | "REJECTED" | "NOT_DECIDED";
+  payment: "all" | "VERIFIED" | "NOT_VERIFIED" | "UNPAID";
 }
 export interface StatusChangeLog {
   timestamp: Date | string;

@@ -9,6 +9,7 @@ export async function getData() {
       team: {
         include: {
           members: true,
+          payment: true,
         },
       },
     },

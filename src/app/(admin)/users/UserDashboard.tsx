@@ -35,6 +35,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     team: "all",
     teamTheme: "all",
     round2: "all",
+    payment: "all",
   });
 
   const searchParams = useSearchParams();
@@ -48,7 +49,6 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
   const debouncedSearch = useDebounce(filters.search, 300);
 
-  // Define refreshData function before using it in useEffect
   const refreshData = async () => {
     try {
       setIsRefreshing(true);
@@ -61,28 +61,24 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     }
   };
 
-  // Listen for team status updates from UserDetailPopup
   useEffect(() => {
     const handleTeamStatusUpdate = (event: CustomEvent) => {
       if (event.detail?.updatedUsers) {
         setUsers(event.detail.updatedUsers);
       } else {
-        // If no updated users data is provided, refresh data from the server
         refreshData();
       }
     };
 
-    // Add event listener for team status updates
     window.addEventListener(
       "teamStatusUpdated",
-      handleTeamStatusUpdate as EventListener,
+      handleTeamStatusUpdate as EventListener
     );
 
-    // Clean up event listener
     return () => {
       window.removeEventListener(
         "teamStatusUpdated",
-        handleTeamStatusUpdate as EventListener,
+        handleTeamStatusUpdate as EventListener
       );
     };
   }, []);
@@ -117,7 +113,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       if (
         loginStatus &&
         ["all", "today", "yesterday", "week", "month", "never"].includes(
-          loginStatus,
+          loginStatus
         )
       ) {
         urlFilters.loginStatus = loginStatus as FilterState["loginStatus"];
@@ -138,7 +134,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       if (
         teamTheme &&
         ["all", "ai", "blockchain", "security", "robotics", "open"].includes(
-          teamTheme,
+          teamTheme
         )
       ) {
         urlFilters.teamTheme = teamTheme as FilterState["teamTheme"];
@@ -177,14 +173,14 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         setSortDir("asc");
       }
     },
-    [sortField],
+    [sortField]
   );
 
   const handleFilterChange = useCallback(
     (key: keyof FilterState, value: string) => {
       setFilters((prev) => ({ ...prev, [key]: value }));
     },
-    [],
+    []
   );
 
   const clearFilters = useCallback(() => {
@@ -198,6 +194,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       team: "all",
       teamTheme: "all",
       round2: "all",
+      payment: "all",
     });
   }, []);
 
@@ -211,7 +208,8 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       filters.loginStatus !== "all" ||
       filters.team !== "all" ||
       filters.teamTheme !== "all" ||
-      filters.round2 !== "all";
+      filters.round2 !== "all" ||
+      filters.payment !== "all";
 
     const teamCache = new Map<string, UserTeam | null>();
     const getTeamCached = (email: string) => {
@@ -273,7 +271,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           visible = false;
         } else {
           const currentMember = userTeam.members.find(
-            (member) => member.email === user.email,
+            (member) => member.email === user.email
           );
 
           if (!currentMember) {
@@ -360,9 +358,31 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         if (!userTeam) {
           visible = false;
         } else {
-          // Only filter if the team's Round 2 selection status doesn't match the filter
           if (userTeam.selectedForRound2 !== filters.round2) {
             visible = false;
+          }
+        }
+      }
+
+      if (visible && filters.payment !== "all") {
+        const userTeam = getTeamCached(user.email);
+        if (!userTeam) {
+          visible = false;
+        } else {
+          const payment = userTeam.payment;
+
+          if (filters.payment === "VERIFIED") {
+            if (!payment || !payment.verified) {
+              visible = false;
+            }
+          } else if (filters.payment === "NOT_VERIFIED") {
+            if (!payment || payment.verified) {
+              visible = false;
+            }
+          } else if (filters.payment === "UNPAID") {
+            if (payment) {
+              visible = false;
+            }
           }
         }
       }
@@ -377,6 +397,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     filters.team,
     filters.teamTheme,
     filters.round2,
+    filters.payment,
     isLoading,
     dateCache,
     sortField,
@@ -389,9 +410,9 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       users.filter(
         (user) =>
           new Date(user.lastLogin).toDateString() ===
-          dateCache.now.toDateString(),
+          dateCache.now.toDateString()
       ).length,
-    [users, dateCache],
+    [users, dateCache]
   );
 
   return (
