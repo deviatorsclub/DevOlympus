@@ -36,6 +36,7 @@ import {
   AlertCircle,
   CheckSquare,
   XSquare,
+  FileText,
 } from "lucide-react";
 import { TeamMember } from "@/types/registration";
 import {
@@ -54,6 +55,7 @@ interface DetailItemProps {
   icon: React.ReactNode;
   label: string | undefined;
   value: React.ReactNode;
+  extLink?: string;
 }
 
 type TeamSelectionStatus = Prisma.TeamGetPayload<{
@@ -62,11 +64,18 @@ type TeamSelectionStatus = Prisma.TeamGetPayload<{
   };
 }>["selectedForRound2"];
 
-const DetailItem = memo(({ icon, label, value }: DetailItemProps) => (
+const DetailItem = memo(({ icon, label, value, extLink }: DetailItemProps) => (
   <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gray-700 bg-opacity-50">
     <div className="text-gray-400 mt-0.5 flex-shrink-0">{icon}</div>
     <div className="flex-1 min-w-0">
-      <div className="text-xs text-gray-400 mb-1">{label}</div>
+      <div className="text-xs flex items-center gap-1 text-gray-400 mb-1">
+        {label}
+        {extLink && (
+          <Link href={extLink} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="w-3 h-3 text-gray-400" />
+          </Link>
+        )}
+      </div>
       <div className="text-gray-200 font-medium overflow-hidden text-ellipsis">
         {value}
       </div>
@@ -547,17 +556,37 @@ const UserDetailPopup = memo(
                 icon={<Calendar className="w-4 h-4" />}
                 label="Last Login"
                 value={
-                  <div>
-                    <div>{new Date(user.lastLogin).toLocaleDateString()}</div>
-                    <div className="text-xs text-gray-400 mt-1">
+                  <>
+                    {new Date(user.lastLogin).toLocaleDateString()}{" "}
+                    <span className="text-gray-400">
                       {new Date(user.lastLogin).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
-                    </div>
-                  </div>
+                    </span>
+                  </>
                 }
               />
+              {team && (
+                <DetailItem
+                  icon={<FileText className="w-4 h-4" />}
+                  label="Consent Letter"
+                  extLink={"/round-2-payment?e=" + user.email}
+                  value={
+                    team.consentLetter ? (
+                      <Link
+                        href={team.consentLetter.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View
+                      </Link>
+                    ) : (
+                      <span className="text-yellow-300">Not Uploaded</span>
+                    )
+                  }
+                />
+              )}
             </div>
 
             {team && (
@@ -1065,6 +1094,9 @@ export default function UserTable({
                     </div>
                   </th>
                   <th className="p-3 text-left text-xs font-medium text-gray-300 uppercase">
+                    Consent Letter
+                  </th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-300 uppercase">
                     <div
                       className="flex items-center gap-1 cursor-pointer"
                       onClick={() => onSortChange("lastLogin")}
@@ -1177,6 +1209,17 @@ export default function UserTable({
                         ) : (
                           <span className="inline-flex items-center gap-1 text-green-300 bg-green-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
                             <CheckCircle className="w-3 h-3" /> Active
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {team?.consentLetter ? (
+                          <span className="inline-flex items-center gap-1 text-green-300 bg-green-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
+                            <FileText className="w-3 h-3" /> Uploaded
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-yellow-300 bg-yellow-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
+                            <FileText className="w-3 h-3" /> Not Uploaded
                           </span>
                         )}
                       </td>

@@ -10,7 +10,7 @@ export default async function Page() {
 
   return (
     <div className="mt-20">
-      <div className="max-w-screen-xl mx-auto p-4 md:p-6">
+      <div className="max-w-screen-2xl mx-auto p-4 md:p-6">
         <UserDashboard initialUsers={users} />
       </div>
     </div>

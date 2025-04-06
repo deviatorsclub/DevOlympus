@@ -41,7 +41,7 @@ export default function EnhancedFooter() {
           >
             <Link href="/" className="inline-block mb-4">
               <img
-                src={DeviatorsLogo}
+                src={DeviatorsLogo.src}
                 alt="Deviators Club"
                 className="h-10 w-auto"
               />
