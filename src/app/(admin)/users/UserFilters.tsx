@@ -29,7 +29,11 @@ const FilterSelect = memo(
       onChange={(e) => {
         onChange(e.target.value);
         const params = new URLSearchParams(window.location.search);
-        params.set(name, e.target.value);
+        if(e.target.value === "all") {
+          params.delete(name);
+        } else {
+          params.set(name, e.target.value);
+        }
         window.history.replaceState(null, "", `?${params.toString()}`);
       }}
       onClick={onClick}
@@ -40,7 +44,7 @@ const FilterSelect = memo(
         </option>
       ))}
     </select>
-  ),
+  )
 );
 FilterSelect.displayName = "FilterSelect";
 
@@ -72,7 +76,7 @@ const SearchInput = memo(
         onClick={onClick}
       />
     </div>
-  ),
+  )
 );
 SearchInput.displayName = "SearchInput";
 
@@ -87,12 +91,12 @@ const UserFilters = memo(
 
     const toggleExpanded = useCallback(
       () => setIsExpanded((prev) => !prev),
-      [],
+      []
     );
 
     const handleClick = useCallback(
       (e: React.MouseEvent) => e.stopPropagation(),
-      [],
+      []
     );
 
     const roleOptions = useMemo(
@@ -103,7 +107,7 @@ const UserFilters = memo(
         { value: "lead", label: "Lead" },
         { value: "member", label: "Member" },
       ],
-      [],
+      []
     );
 
     const statusOptions = useMemo(
@@ -112,7 +116,7 @@ const UserFilters = memo(
         { value: "active", label: "Active" },
         { value: "blocked", label: "Blocked" },
       ],
-      [],
+      []
     );
 
     const loginOptions = useMemo(
@@ -124,7 +128,7 @@ const UserFilters = memo(
         { value: "month", label: "Month" },
         { value: "never", label: "Never" },
       ],
-      [],
+      []
     );
 
     const teamOptions = useMemo(
@@ -133,7 +137,7 @@ const UserFilters = memo(
         { value: "yes", label: "Has Team" },
         { value: "no", label: "No Team" },
       ],
-      [],
+      []
     );
 
     const teamThemeOptions = useMemo<{ value: Theme | "all"; label: string }[]>(
@@ -145,7 +149,7 @@ const UserFilters = memo(
         { value: "Open Innovation", label: "Open Innovation" },
         { value: "Robotics", label: "Robotics" },
       ],
-      [],
+      []
     );
 
     const round2Options = useMemo(
@@ -155,7 +159,7 @@ const UserFilters = memo(
         { value: "REJECTED", label: "Rejected" },
         { value: "NOT_DECIDED", label: "Not Decided" },
       ],
-      [],
+      []
     );
 
     const paymentOptions = useMemo(
@@ -229,69 +233,82 @@ const UserFilters = memo(
             />
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <FilterSelect
-                name="role"
-                value={filters.role}
-                onChange={(value) => onFilterChange("role", value)}
-                options={roleOptions}
-                onClick={handleClick}
-              />
-              <FilterSelect
-                name="status"
-                value={filters.status}
-                onChange={(value) => onFilterChange("status", value)}
-                options={statusOptions}
-                onClick={handleClick}
-              />
-              <FilterSelect
-                name="loginStatus"
-                value={filters.loginStatus}
-                onChange={(value) => onFilterChange("loginStatus", value)}
-                options={loginOptions}
-                onClick={handleClick}
-              />
-              <FilterSelect
-                name="team"
-                value={filters.team}
-                onChange={(value) => onFilterChange("team", value)}
-                options={teamOptions}
-                onClick={handleClick}
-              />
-
-              <FilterSelect
-                name="teamTheme"
-                value={filters.teamTheme}
-                onChange={(value) => onFilterChange("teamTheme", value)}
-                options={teamThemeOptions}
-                onClick={handleClick}
-              />
-              <FilterSelect
-                name="round2"
-                value={filters.round2}
-                onChange={(value) => onFilterChange("round2", value)}
-                options={round2Options}
-                onClick={handleClick}
-              />
-              <FilterSelect
-                name="payment"
-                value={filters.payment}
-                onChange={(value) => onFilterChange("payment", value)}
-                options={paymentOptions}
-                onClick={handleClick}
-              />
-              <FilterSelect
-                name="consentLetter"
-                value={filters.consentLetter}
-                onChange={(value) => onFilterChange("consentLetter", value)}
-                options={consentLetterOptions}
-                onClick={handleClick}
-              />
+              {[
+                {
+                  name: "role",
+                  value: filters.role,
+                  onChange: (value: string) => onFilterChange("role", value),
+                  options: roleOptions,
+                  onClick: handleClick,
+                },
+                {
+                  name: "status",
+                  value: filters.status,
+                  onChange: (value: string) => onFilterChange("status", value),
+                  options: statusOptions,
+                  onClick: handleClick,
+                },
+                {
+                  name: "loginStatus",
+                  value: filters.loginStatus,
+                  onChange: (value: string) =>
+                    onFilterChange("loginStatus", value),
+                  options: loginOptions,
+                  onClick: handleClick,
+                },
+                {
+                  name: "team",
+                  value: filters.team,
+                  onChange: (value: string) => onFilterChange("team", value),
+                  options: teamOptions,
+                  onClick: handleClick,
+                },
+                {
+                  name: "teamTheme",
+                  value: filters.teamTheme,
+                  onChange: (value: string) =>
+                    onFilterChange("teamTheme", value),
+                  options: teamThemeOptions,
+                  onClick: handleClick,
+                },
+                {
+                  name: "round2",
+                  value: filters.round2,
+                  onChange: (value: string) => onFilterChange("round2", value),
+                  options: round2Options,
+                  onClick: handleClick,
+                },
+                {
+                  name: "payment",
+                  value: filters.payment,
+                  onChange: (value: string) => onFilterChange("payment", value),
+                  options: paymentOptions,
+                  onClick: handleClick,
+                },
+                {
+                  name: "consentLetter",
+                  value: filters.consentLetter,
+                  onChange: (value: string) =>
+                    onFilterChange("consentLetter", value),
+                  options: consentLetterOptions,
+                  onClick: handleClick,
+                },
+              ].map((filter) => (
+                <FilterSelect
+                  key={filter.name}
+                  name={filter.name}
+                  value={filter.value}
+                  onChange={filter.onChange}
+                  options={filter.options}
+                  onClick={filter.onClick}
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
     );
-  },
+  }
 );
 UserFilters.displayName = "UserFilters";
 
