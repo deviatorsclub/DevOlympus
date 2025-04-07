@@ -8,19 +8,27 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getTeam(
   users: UserWithTeam[],
-  userEmail: string,
+  userEmail: string
 ): UserTeam | null {
+  if (!userEmail) return null;
+
   const lowerCaseEmail = userEmail.toLowerCase();
+
   for (const user of users) {
-    if (user.email.toLowerCase() === lowerCaseEmail) {
-      return (user.team || null) as UserTeam;
-    } else {
-      for (const teamMember of user.team?.members || []) {
+    if (user.email.toLowerCase() === lowerCaseEmail && user.team) {
+      return user.team as UserTeam;
+    }
+  }
+
+  for (const user of users) {
+    if (user.team?.members?.length) {
+      for (const teamMember of user.team.members) {
         if (teamMember.email.toLowerCase() === lowerCaseEmail) {
-          return (user.team || null) as UserTeam;
+          return user.team as UserTeam;
         }
       }
     }
   }
+
   return null;
 }

@@ -17,19 +17,20 @@ export async function GET() {
 
     const consentLetter = await prisma.consentLetter.findFirst({
       where: {
-        team: {
-          members: {
-            some: {
-              email: session.user.email,
-            },
-          },
+        user: {
+          email: session.user.email,
         },
       },
       select: {
         fileUrl: true,
-        team: {
+        user: {
           select: {
-            displayId: true,
+            id: true,
+            team: {
+              select: {
+                displayId: true,
+              },
+            },
           },
         },
       },
@@ -86,7 +87,7 @@ export async function GET() {
           "Cache-Control":
             "public, max-age=604800, stale-while-revalidate=86400",
           ETag: `"${Buffer.from(consentLetter.fileUrl).toString("base64").slice(0, 16)}"`,
-          "Content-Disposition": `inline; filename="consent-letter-${consentLetter.team.displayId}.${extension}"`,
+          "Content-Disposition": `inline; filename="consent-letter-${consentLetter.user.team?.displayId || consentLetter.user.id}.${extension}"`,
         },
       });
     } catch (error: unknown) {

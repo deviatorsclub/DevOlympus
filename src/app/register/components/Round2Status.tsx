@@ -5,17 +5,20 @@ import { FLAGS } from "@/lib/flags";
 import Link from "next/link";
 import { ConsentLetterUpload } from "./ConsentLetterUpload";
 import { TeamWithMembers } from "@/types/registration";
+import { User } from "@prisma/client";
 
 interface Round2StatusProps {
   selectedForRound2: string | null;
   paymentStatus?: TeamWithMembers["payment"];
   team: TeamWithMembers;
+  user: User & { consentLetter?: { fileUrl: string } | null };
 }
 
 export function Round2Status({
   selectedForRound2,
   paymentStatus,
   team,
+  user,
 }: Round2StatusProps) {
   if (
     new Date() < FLAGS.startShowingRound2Status ||
@@ -72,7 +75,7 @@ export function Round2Status({
                 <p>Pay for Round 2</p>
               </Link>
             )}
-            <ConsentLetterUpload team={team} />
+            <ConsentLetterUpload user={user} team={team} />
           </>
         )}
       </div>

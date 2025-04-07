@@ -7,7 +7,12 @@ export type UserWithTeam = Prisma.UserGetPayload<{
       include: {
         members: true;
         payment: true;
-        consentLetter: true;
+      };
+    };
+    consentLetter: {
+      select: {
+        id: true;
+        fileUrl: true;
       };
     };
   };

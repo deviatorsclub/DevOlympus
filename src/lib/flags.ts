@@ -33,8 +33,8 @@ export const FLAGS: FeatureFlags = {
   submissionDeadline: new Date("2025-04-02T00:30:00+05:30"),
   startShowingRound2Status: new Date("2025-04-06T16:00:00+05:30"),
   isRound2ResultFinalized: true,
-  showPaymentFormAndConsent: false,
-  canUpdatePayment: false,
+  showPaymentFormAndConsent: true,
+  canUpdatePayment: true,
 };
 
 export const DEFAULT_VALUES = {

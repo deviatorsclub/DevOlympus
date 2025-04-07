@@ -32,21 +32,59 @@ export async function uploadConsentLetter(formData: FormData) {
       return { error: "File size must be less than 5MB" };
     }
 
-    const team = await prisma.team.findFirst({
-      where: {
-        members: {
-          some: {
-            email: session.user.email,
+    const userHasTeam = await prisma.user.findFirst({
+      include: {
+        team: {
+          select: {
+            selectedForRound2: true,
+            members: {
+              select: {
+                email: true,
+                isLead: true,
+              },
+            },
           },
         },
       },
-      include: {
-        payment: true,
+      where: {
+        team: {
+          selectedForRound2: "SELECTED",
+          members: {
+            some: {
+              email: session.user.email,
+            },
+          },
+        },
       },
     });
 
-    if (!team) {
-      return { error: "Team not found" };
+    const user = await prisma.user.findFirst({
+      where: {
+        email: session.user.email,
+      },
+      select: {
+        id: true,
+        email: true,
+        team: {
+          select: {
+            selectedForRound2: true,
+            members: {
+              select: {
+                email: true,
+                isLead: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return { error: "User not found" };
+    }
+
+    if (!userHasTeam) {
+      return { error: "User does not belong to a team selected for Round 2" };
     }
 
     const arrayBuffer = await file.arrayBuffer();
@@ -59,11 +97,11 @@ export async function uploadConsentLetter(formData: FormData) {
         "consent-letters" +
         (process.env.NODE_ENV === "development" ? "-dev" : ""),
       resource_type: file.type.startsWith("image/") ? "image" : "raw",
-      public_id: `consent-letter-${team.id}`,
+      public_id: `consent-letter-${user.id}`,
     });
 
     const existingConsentLetter = await prisma.consentLetter.findUnique({
-      where: { teamId: team.id },
+      where: { userId: user.id },
     });
 
     if (existingConsentLetter) {
@@ -77,7 +115,7 @@ export async function uploadConsentLetter(formData: FormData) {
     } else {
       await prisma.consentLetter.create({
         data: {
-          teamId: team.id,
+          userId: user.id,
           fileUrl: uploadResult.secure_url,
           publicId: uploadResult.public_id,
         },

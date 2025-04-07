@@ -10,7 +10,14 @@ export type TeamMember = Prisma.TeamMemberGetPayload<{
     number: true;
     isLead: true;
   };
-}>;
+}> & {
+  consentLetter: Prisma.ConsentLetterGetPayload<{
+    select: {
+      id: true;
+      fileUrl: true;
+    };
+  }>;
+};
 
 export interface FormState {
   teamName: string;
@@ -56,7 +63,7 @@ export interface TeamMemberCardProps {
   updateMember: (
     id: string,
     field: keyof Omit<TeamMember, "id" | "isLead">,
-    value: string,
+    value: string
   ) => void;
   errors: Record<string, string>;
   disabled: boolean;
@@ -83,12 +90,6 @@ export type TeamWithMembers = Prisma.TeamGetPayload<{
       select: {
         id: true;
         screenshotUrl: true;
-      };
-    };
-    consentLetter: {
-      select: {
-        id: true;
-        fileUrl: true;
       };
     };
   };

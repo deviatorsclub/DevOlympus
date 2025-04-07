@@ -5,6 +5,7 @@ import { prisma } from "@/prisma";
 import TeamIsRegistered from "./TeamIsRegistered";
 import { TeamWithMembers } from "@/types/registration";
 import { FLAGS } from "@/lib/flags";
+import { Prisma } from "@prisma/client";
 
 export default async function page({
   searchParams,
@@ -16,8 +17,20 @@ export default async function page({
   const isAdmin = session?.user?.isAdmin;
 
   let teams: TeamWithMembers[] = [];
+  let currentUser: Prisma.UserGetPayload<{
+    include: { consentLetter: true };
+  }> | null = null;
 
   if (session?.user?.email) {
+    currentUser = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+      include: {
+        consentLetter: true,
+      },
+    });
+
     teams = await prisma.team.findMany({
       where: {
         members: {
@@ -52,12 +65,6 @@ export default async function page({
             screenshotUrl: true,
           },
         },
-        consentLetter: {
-          select: {
-            id: true,
-            fileUrl: true,
-          },
-        },
       },
     });
   }
@@ -66,7 +73,7 @@ export default async function page({
     teams.length === 0 ? (
       <RegistrationForm initialSession={session ?? undefined} />
     ) : (
-      <TeamIsRegistered team={teams[0]} />
+      currentUser && <TeamIsRegistered team={teams[0]} user={currentUser} />
     )
   ) : (
     <LoginFallback />

@@ -19,6 +19,7 @@ model User {
   loggedInTimes Int      @default(1)
   lastLogin     DateTime @default(now())
   isAdmin       Boolean  @default(false)
+  consentLetter ConsentLetter?
 
   @@unique([id])
 }
@@ -42,7 +43,6 @@ model Team {
   selectionStatusLogs Json?
   members             TeamMember[]
   payment             Payment?
-  consentLetter       ConsentLetter?
 }
 
 model TeamMember {
@@ -73,8 +73,8 @@ model Payment {
 
 model ConsentLetter {
   id        String   @id @default(cuid())
-  teamId    String   @unique
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   fileUrl   String
   publicId  String
   createdAt DateTime @default(now())

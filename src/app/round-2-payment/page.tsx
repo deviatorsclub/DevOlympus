@@ -31,13 +31,21 @@ export default async function PaymentPage({
     );
   }
 
-  const user = await prisma.user.findUnique({
+  const emailForVerification = isAdmin
+    ? teamLeadEmail
+      ? teamLeadEmail
+      : session?.user?.email
+    : session?.user?.email;
+
+  const user = await prisma.user.findFirst({
     where: {
-      email: isAdmin
-        ? teamLeadEmail
-          ? teamLeadEmail
-          : session?.user?.email
-        : session?.user?.email,
+      team: {
+        members: {
+          some: {
+            email: emailForVerification,
+          },
+        },
+      },
     },
     include: {
       team: {
@@ -67,7 +75,8 @@ export default async function PaymentPage({
 
   const isTeamLead = user.team.members.some(
     (member) =>
-      member.email.toLowerCase() === user.email.toLowerCase() && member.isLead,
+      member.email.toLowerCase() === emailForVerification?.toLowerCase() &&
+      member.isLead
   );
 
   if (!isTeamLead) {

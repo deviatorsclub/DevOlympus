@@ -10,9 +10,9 @@ export async function getData() {
         include: {
           members: true,
           payment: true,
-          consentLetter: true,
         },
       },
+      consentLetter: true,
     },
   });
   return users;

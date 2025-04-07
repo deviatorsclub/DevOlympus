@@ -4,6 +4,7 @@ import type { TeamWithMembers } from "@/types/registration";
 import Link from "next/link";
 import { useState } from "react";
 import { Accordion } from "@/components/ui/custom-accordian";
+import { Prisma } from "@prisma/client";
 
 import {
   TeamHeader,
@@ -15,9 +16,13 @@ import {
 
 interface TeamIsRegisteredProps {
   team: TeamWithMembers;
+  user: Prisma.UserGetPayload<{ include: { consentLetter: true } }>;
 }
 
-export default function TeamIsRegistered({ team }: TeamIsRegisteredProps) {
+export default function TeamIsRegistered({
+  team,
+  user,
+}: TeamIsRegisteredProps) {
   const teamLead = team.members.find((member) => member.isLead);
   const teamMembers = team.members.filter((member) => !member.isLead);
   const [open, setOpen] = useState<string | undefined>(undefined);
@@ -31,6 +36,7 @@ export default function TeamIsRegistered({ team }: TeamIsRegisteredProps) {
           selectedForRound2={team.selectedForRound2}
           paymentStatus={team.payment}
           team={team}
+          user={user}
         />
 
         <Accordion

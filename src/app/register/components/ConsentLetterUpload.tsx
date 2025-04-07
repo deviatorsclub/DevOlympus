@@ -8,15 +8,16 @@ import {
   Loader2,
   ExternalLink,
 } from "lucide-react";
-import { uploadConsentLetter } from "@/app/actions/uploadConsentLetter";
-import { TeamWithMembers } from "@/types/registration";
+import { uploadConsentLetter } from "@/actions/uploadConsentLetter";
+import { User } from "@prisma/client";
 import Link from "next/link";
 
 interface ConsentLetterUploadProps {
-  team: TeamWithMembers;
+  user: User & { consentLetter?: { fileUrl: string } | null };
+  team?: { selectedForRound2: string };
 }
 
-export function ConsentLetterUpload({ team }: ConsentLetterUploadProps) {
+export function ConsentLetterUpload({ user, team }: ConsentLetterUploadProps) {
   const [uploadState, setUploadState] = useState<{
     isUploading: boolean;
     error: string | null;
@@ -24,7 +25,9 @@ export function ConsentLetterUpload({ team }: ConsentLetterUploadProps) {
   }>({ isUploading: false, error: null, success: false });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const hasConsentLetter = !!team?.consentLetter?.fileUrl;
+  const hasConsentLetter = !!user?.consentLetter?.fileUrl;
+
+  const isTeamSelectedForRound2 = team?.selectedForRound2 === "SELECTED";
 
   const handleFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,10 +61,14 @@ export function ConsentLetterUpload({ team }: ConsentLetterUploadProps) {
         });
       }
     },
-    [],
+    []
   );
 
   const { isUploading, error, success } = uploadState;
+
+  if (!isTeamSelectedForRound2) {
+    return null;
+  }
 
   if (hasConsentLetter) {
     return (

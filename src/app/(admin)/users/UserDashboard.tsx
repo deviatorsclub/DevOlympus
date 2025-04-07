@@ -407,18 +407,13 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       }
 
       if (visible && filters.consentLetter !== "all") {
-        const userTeam = getTeamCached(user.email);
-        if (!userTeam) {
-          visible = false;
-        } else {
-          if (filters.consentLetter === "UPLOADED") {
-            if (!userTeam.consentLetter) {
-              visible = false;
-            }
-          } else if (filters.consentLetter === "NOT_UPLOADED") {
-            if (userTeam.consentLetter) {
-              visible = false;
-            }
+        if (filters.consentLetter === "UPLOADED") {
+          if (!user.consentLetter) {
+            visible = false;
+          }
+        } else if (filters.consentLetter === "NOT_UPLOADED") {
+          if (user.consentLetter) {
+            visible = false;
           }
         }
       }

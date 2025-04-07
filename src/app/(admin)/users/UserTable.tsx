@@ -38,7 +38,6 @@ import {
   XSquare,
   FileText,
 } from "lucide-react";
-import { TeamMember } from "@/types/registration";
 import {
   SortDirection,
   SortField,
@@ -85,13 +84,28 @@ const DetailItem = memo(({ icon, label, value, extLink }: DetailItemProps) => (
 DetailItem.displayName = "DetailItem";
 
 interface TeamMemberCardProps {
-  member: TeamMember;
+  member: {
+    number: string;
+    name: string;
+    id: string;
+    email: string;
+    rollNo: string;
+    isLead: boolean;
+    teamId: string;
+    consentLetter?: Prisma.ConsentLetterGetPayload<{
+      select: {
+        id: true;
+        fileUrl: true;
+      };
+    }>;
+  };
   isLead: boolean;
   isCurrentUser?: boolean;
+  consentUploaded?: boolean;
 }
 
 const TeamMemberCard = memo(
-  ({ member, isLead, isCurrentUser }: TeamMemberCardProps) => (
+  ({ member, isLead, isCurrentUser, consentUploaded }: TeamMemberCardProps) => (
     <div
       className={`flex items-start p-2 rounded-lg ${isCurrentUser ? "bg-blue-900 bg-opacity-30" : "bg-gray-700 bg-opacity-30"}`}
     >
@@ -126,6 +140,12 @@ const TeamMemberCard = memo(
           <span>Roll: {member.rollNo}</span>
           <span className="hidden sm:inline">•</span>
           <span>Ph: {member.number}</span>
+        </div>
+        {/* consent */}
+        <div className="text-xs text-gray-500 flex flex-wrap items-center gap-1 sm:gap-2 mt-0.5">
+          <span>Consent Letter:</span>
+          <span className="hidden sm:inline">•</span>
+          <span>{consentUploaded ? "Uploaded" : "Not Uploaded"}</span>
         </div>
       </div>
     </div>
@@ -342,6 +362,7 @@ const PaymentDetails = memo(
 PaymentDetails.displayName = "PaymentDetails";
 
 interface UserDetailPopupProps {
+  users: (UserWithTeam & { visible?: boolean })[];
   user: UserWithTeam | null;
   setUsers: Dispatch<SetStateAction<(UserWithTeam & { visible?: boolean })[]>>;
   team: UserTeam;
@@ -352,6 +373,7 @@ interface UserDetailPopupProps {
 
 const UserDetailPopup = memo(
   ({
+    users,
     user,
     setUsers,
     team,
@@ -359,6 +381,11 @@ const UserDetailPopup = memo(
     isVisible,
     isAdmin,
   }: UserDetailPopupProps) => {
+    console.log({
+      user,
+      team,
+    });
+
     const [updatingTeamIds, setUpdatingTeamIds] = useState<
       Record<string, boolean>
     >({});
@@ -441,6 +468,24 @@ const UserDetailPopup = memo(
     };
 
     const teamMembers = team?.members || [];
+
+    const consentStatus = teamMembers.map((a) => ({
+      uploaded: false,
+      email: a.email,
+    }));
+
+    for (const member of consentStatus) {
+      const user = users.find((u) => u.email === member.email);
+      console.log({
+        user,
+        member,
+      });
+
+      if (user?.consentLetter?.fileUrl) {
+        member.uploaded = true;
+      }
+    }
+
     const teamLead = teamMembers.find((member) => member.isLead);
 
     const currentMember = teamMembers.find(
@@ -567,26 +612,24 @@ const UserDetailPopup = memo(
                   </>
                 }
               />
-              {team && (
-                <DetailItem
-                  icon={<FileText className="w-4 h-4" />}
-                  label="Consent Letter"
-                  extLink={"/round-2-payment?e=" + user.email}
-                  value={
-                    team.consentLetter ? (
-                      <Link
-                        href={team.consentLetter.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View
-                      </Link>
-                    ) : (
-                      <span className="text-yellow-300">Not Uploaded</span>
-                    )
-                  }
-                />
-              )}
+              <DetailItem
+                icon={<FileText className="w-4 h-4" />}
+                label="Consent Letter"
+                extLink={"/round-2-payment?e=" + user.email}
+                value={
+                  user.consentLetter?.fileUrl ? (
+                    <Link
+                      href={user.consentLetter.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View
+                    </Link>
+                  ) : (
+                    <span className="text-yellow-300">Not Uploaded</span>
+                  )
+                }
+              />
             </div>
 
             {team && (
@@ -781,6 +824,10 @@ const UserDetailPopup = memo(
                         member={member}
                         isLead={member.isLead}
                         isCurrentUser={member.email === user.email}
+                        consentUploaded={
+                          consentStatus.find((s) => s.email === member.email)
+                            ?.uploaded
+                        }
                       />
                     ))}
                   </div>
@@ -1213,7 +1260,7 @@ export default function UserTable({
                         )}
                       </td>
                       <td className="p-3 whitespace-nowrap">
-                        {team?.consentLetter ? (
+                        {user.consentLetter?.fileUrl ? (
                           <span className="inline-flex items-center gap-1 text-green-300 bg-green-900 bg-opacity-40 px-2 py-0.5 rounded-full text-sm">
                             <FileText className="w-3 h-3" /> Uploaded
                           </span>
@@ -1250,6 +1297,7 @@ export default function UserTable({
       </div>
 
       <UserDetailPopup
+        users={users}
         user={selectedUser}
         team={selectedTeam!}
         onClose={closeUserDetail}

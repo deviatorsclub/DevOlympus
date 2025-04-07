@@ -76,13 +76,6 @@ const actionItems: {
     onlyShowIf: FLAGS.showPaymentFormAndConsent,
     icon: CreditCard,
   },
-  {
-    title: "Upload Consent",
-    url: "/round-2-consent",
-    onlyForSelectedParticipants: true,
-    onlyShowIf: FLAGS.showPaymentFormAndConsent,
-    icon: FileText,
-  },
 ];
 
 const menuItemVariants = {
