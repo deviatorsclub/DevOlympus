@@ -6,6 +6,8 @@ import XYZ from "@/assets/sponsors/xyz.png";
 import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.svg";
 import APPWRITE from "@/assets/sponsors/appwrite.svg";
 
+export const ROUND_1_SPREADSHEET_URL =
+  "https://docs.google.com/spreadsheets/d/1eiHDhYHNzqHf59-VA_-eW65uL1WRYou41I7pKOy3RNs/edit?usp=sharing";
 export const REGISTRATION_FORM_URL = "https://forms.gle/Mc9Yvd7yyQgrQizK8";
 export const HACKATHON_DATE = new Date("April 11, 2025 09:00:00");
 export const HACKATHON_END_DATE = new Date("April 12, 2025 12:00:00");

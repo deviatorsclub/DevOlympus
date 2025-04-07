@@ -13,6 +13,7 @@ import {
   TeamMembers,
   HackathonDetails,
 } from "./components";
+import Round2Results from "./components/Round2Results";
 
 interface TeamIsRegisteredProps {
   team: TeamWithMembers;
@@ -38,6 +39,8 @@ export default function TeamIsRegistered({
           team={team}
           user={user}
         />
+
+        <Round2Results />
 
         <Accordion
           collapsible

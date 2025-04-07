@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { HACKATHON_DATE } from "@/data";
+import { HACKATHON_DATE, ROUND_1_SPREADSHEET_URL } from "@/data";
 
 type TimeLeft = {
   days: number;
@@ -163,7 +163,7 @@ const CircuitLines = memo((): JSX.Element => {
       { x1: "80%", y1: "50%", x2: "60%", y2: "50%" },
       { x1: "60%", y1: "50%", x2: "60%", y2: "90%" },
     ],
-    [],
+    []
   );
 
   return (
@@ -243,7 +243,7 @@ const TitleCharacter = memo(
         </AnimatePresence>
       </motion.div>
     );
-  },
+  }
 );
 TitleCharacter.displayName = "TitleCharacter";
 
@@ -358,7 +358,7 @@ const CountdownDigit = memo(
         </span>
       </div>
     );
-  },
+  }
 );
 CountdownDigit.displayName = "CountdownDigit";
 
@@ -384,7 +384,7 @@ export const CountdownTimer = memo(
           setTimeLeft({
             days: Math.floor(distance / (1000 * 60 * 60 * 24)),
             hours: Math.floor(
-              (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+              (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
             ),
             minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
             seconds: Math.floor((distance % (1000 * 60)) / 1000),
@@ -415,7 +415,7 @@ export const CountdownTimer = memo(
         </div>
       </motion.div>
     );
-  },
+  }
 );
 CountdownTimer.displayName = "CountdownTimer";
 
@@ -427,21 +427,20 @@ const ActionButtons = memo((): JSX.Element => {
       animate="visible"
       className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
     >
-      <Link href={"/register"}>
+      <Link href={ROUND_1_SPREADSHEET_URL} target="_blank" rel="noopener noreferrer">
         <motion.div
           variants={registerButtonVariants}
           whileHover="hover"
           whileTap="tap"
         >
           <Button className="relative overflow-hidden group bg-gradient-to-r from-blue-600 to-purple-600 border-0 text-white hover:from-blue-700 hover:to-purple-700 cursor-pointer">
-            <span className="relative z-10">Register Now</span>
+            <span className="relative z-10">Round 1 Results</span>
             <motion.span
               className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700"
               initial={{ x: "-100%" }}
               variants={registerButtonVariants}
               whileHover="gradientMove"
             />
-
             <motion.div
               className="absolute -inset-1 rounded-lg opacity-0 group-hover:opacity-100 blur-lg bg-gradient-to-r from-blue-400 to-purple-400"
               variants={registerButtonVariants}
