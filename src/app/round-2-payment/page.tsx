@@ -79,7 +79,7 @@ export default async function PaymentPage({
       member.isLead
   );
 
-  if (!isTeamLead) {
+  if (!isTeamLead && !user.team.payment) {
     return (
       <div className="container mx-auto py-10 px-4 max-w-3xl my-20">
         <PaymentStatus hasTeam={true} isSelected={true} isTeamLead={false} />
