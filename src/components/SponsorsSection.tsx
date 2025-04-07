@@ -12,8 +12,12 @@ const SponsorsSection: React.FC = () => {
 
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-purple-600 mb-4 uppercase tracking-wider">
-            Our Sponsors
+          <h2 className="text-3xl mb-16 md:text-4xl lg:text-5xl font-bold">
+            Our{" "}
+            <span className="text-purple-500 relative">
+              Sponsors
+              <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></span>
+            </span>
           </h2>
           <p className="text-gray-300 text-xl max-w-3xl mx-auto">
             DEVOLYMPUS is made possible thanks to the generous support of our

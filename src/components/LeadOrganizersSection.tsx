@@ -84,9 +84,11 @@ export default function LeadOrganizersSection() {
         variants={sectionVariants}
         className="container mx-auto px-4"
       >
-        <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 md:mb-10">
-          <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text font-bold text-transparent">
-            Lead Organizers
+        <h2 className="text-center text-3xl mb-16 md:text-4xl lg:text-5xl font-bold">
+          Our{" "}
+          <span className="text-purple-500 relative">
+            Sponsors
+            <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></span>
           </span>
         </h2>
 
