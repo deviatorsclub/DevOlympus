@@ -3,8 +3,8 @@ import { CategoryData } from "./types";
 import { StaticImageData } from "next/image";
 
 import XYZ from "@/assets/sponsors/xyz.png";
-import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.svg";
-import APPWRITE from "@/assets/sponsors/appwrite.svg";
+import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.png";
+import APPWRITE from "@/assets/sponsors/appwrite.png";
 
 export const ROUND_1_SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1eiHDhYHNzqHf59-VA_-eW65uL1WRYou41I7pKOy3RNs/edit?usp=sharing";

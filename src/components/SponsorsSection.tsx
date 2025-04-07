@@ -39,7 +39,7 @@ const SponsorsSection: React.FC = () => {
                   <img
                     src={sponsor.image.src}
                     alt={sponsor.name}
-                    className="p-2 size-full"
+                    className="p-2 size-full object-contain"
                   />
                 </div>
                 <h3 className="text-white text-lg font-semibold group-hover:text-purple-400 transition-colors duration-300">
