@@ -53,14 +53,12 @@ const actionItems: {
   title: string;
   url: string;
   onlyForAdmins?: boolean;
-  onlyForSelectedParticipants?: boolean;
   onlyShowIf?: boolean;
   icon: FC<{ className?: string }>;
 }[] = [
   {
     title: "Register for hackathon",
     url: "/register",
-    onlyForSelectedParticipants: true,
     icon: FileText,
   },
   {
@@ -72,7 +70,6 @@ const actionItems: {
   {
     title: "Pay for Round 2",
     url: "/round-2-payment",
-    onlyForSelectedParticipants: true,
     onlyShowIf: FLAGS.showPaymentFormAndConsent,
     icon: CreditCard,
   },
@@ -213,19 +210,17 @@ const DesktopNavItem = memo<{ item: NavItem }>(({ item }) => (
 DesktopNavItem.displayName = "DesktopNavItem";
 
 function menuItemsBasedOnAccess(user?: Session["user"]) {
-  let items: typeof actionItems = [];
+  let filteredItems = [...actionItems];
+
+  filteredItems = filteredItems.filter((item) => {
+    return item.onlyShowIf !== false;
+  });
 
   if (user?.isAdmin) {
-    items = actionItems;
-  } else if (user?.selectedForRound2 === "SELECTED") {
-    items = actionItems.filter((item) => item.onlyForSelectedParticipants);
+    return filteredItems.filter((item) => item.onlyForAdmins === true);
   } else {
-    items = actionItems.filter(
-      (item) => !item.onlyForAdmins && !item.onlyForSelectedParticipants
-    );
+    return filteredItems.filter((item) => item.onlyForAdmins !== true);
   }
-
-  return items.filter((item) => item.onlyShowIf !== false);
 }
 
 const UserIcon: FC<UserIconProps> = (props) => {
