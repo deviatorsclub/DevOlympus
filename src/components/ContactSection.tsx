@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function SimplifiedContactSection() {
   const [ref, inView] = useInView({
@@ -167,9 +168,9 @@ export default function SimplifiedContactSection() {
                   className="w-full border-slate-700 hover:bg-slate-800 text-white"
                   asChild
                 >
-                  <a href="mailto:clubdeviators@gmail.com?subject=DevOlympus%20Sponsorship%20Inquiry">
+                  <Link href="mailto:clubdeviators@gmail.com?subject=DevOlympus%20Sponsorship%20Inquiry">
                     Become a Sponsor
-                  </a>
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>

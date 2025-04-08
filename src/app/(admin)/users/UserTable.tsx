@@ -292,19 +292,19 @@ const PaymentDetails = memo(
           label: "Payment Date",
           value: new Date(payment.createdAt).toLocaleDateString(),
         },
-        payment.screenshotUrl
+        payment.id
           ? {
               icon: <Check className="w-4 h-4" />,
               label: "Screenshot",
               value: (
-                <a
-                  href={payment.screenshotUrl}
+                <Link
+                  href={`/api/round-2-pay-screenshot/${payment.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
                 >
                   View Receipt
-                </a>
+                </Link>
               ),
             }
           : undefined,
@@ -617,9 +617,9 @@ const UserDetailPopup = memo(
                 label="Consent Letter"
                 extLink={"/round-2-payment?e=" + user.email}
                 value={
-                  user.consentLetter?.fileUrl ? (
+                  user.consentLetter?.id ? (
                     <Link
-                      href={user.consentLetter.fileUrl}
+                      href={`/api/round-2-consent-letter/${user.consentLetter.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

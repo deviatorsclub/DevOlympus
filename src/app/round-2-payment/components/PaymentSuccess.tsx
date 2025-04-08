@@ -16,7 +16,7 @@ interface PaymentSuccessProps {
     verified: boolean;
     senderName: string;
     mobileNumber: string;
-    screenshotUrl: string;
+    id: string;
   };
 }
 
@@ -68,14 +68,14 @@ export function PaymentSuccess({ paymentDetails }: PaymentSuccessProps) {
                 Mobile Number: {paymentDetails.mobileNumber}
               </p>
             </div>
-            {paymentDetails.screenshotUrl && (
+            {paymentDetails.id && (
               <Link
-                href={"/api/round-2-pay-screenshot"}
+                href={"/api/round-2-pay-screenshot/" + paymentDetails.id}
                 target="_blank"
                 className="block h-[300px] w-[300px] my-4 rounded-lg overflow-hidden"
               >
                 <img
-                  src={"/api/round-2-pay-screenshot"}
+                  src={"/api/round-2-pay-screenshot/" + paymentDetails.id}
                   alt="Payment Screenshot"
                   className="w-full h-full object-cover"
                 />

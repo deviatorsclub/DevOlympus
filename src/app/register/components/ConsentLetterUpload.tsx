@@ -9,11 +9,11 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { uploadConsentLetter } from "@/actions/uploadConsentLetter";
-import { User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import Link from "next/link";
 
 interface ConsentLetterUploadProps {
-  user: User & { consentLetter?: { fileUrl: string } | null };
+  user: Prisma.UserGetPayload<{ include: { consentLetter: true } }>;
   team?: { selectedForRound2: string };
 }
 
@@ -25,7 +25,6 @@ export function ConsentLetterUpload({ user, team }: ConsentLetterUploadProps) {
   }>({ isUploading: false, error: null, success: false });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const hasConsentLetter = !!user?.consentLetter?.fileUrl;
 
   const isTeamSelectedForRound2 = team?.selectedForRound2 === "SELECTED";
 
@@ -70,13 +69,13 @@ export function ConsentLetterUpload({ user, team }: ConsentLetterUploadProps) {
     return null;
   }
 
-  if (hasConsentLetter) {
+  if (user?.consentLetter?.id) {
     return (
       <div className="mt-4 bg-indigo-900/100 p-3 rounded text-sm text-indigo-200 flex items-center gap-2">
         <FileCheck size={18} className="mt-0.5 flex-shrink-0" />
         <p>Consent letter uploaded</p>
         <Link
-          href="/api/round-2-consent-letter"
+          href={`/api/round-2-consent-letter/${user?.consentLetter?.id}`}
           target="_blank"
           rel="noopener noreferrer"
           className="ml-auto text-indigo-300 hover:text-indigo-100 transition-colors underline flex items-center gap-1"

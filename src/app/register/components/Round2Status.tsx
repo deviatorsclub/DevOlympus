@@ -5,13 +5,13 @@ import { FLAGS } from "@/lib/flags";
 import Link from "next/link";
 import { ConsentLetterUpload } from "./ConsentLetterUpload";
 import { TeamWithMembers } from "@/types/registration";
-import { User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 interface Round2StatusProps {
   selectedForRound2: string | null;
   paymentStatus?: TeamWithMembers["payment"];
   team: TeamWithMembers;
-  user: User & { consentLetter?: { fileUrl: string } | null };
+  user: Prisma.UserGetPayload<{ include: { consentLetter: true } }>;
 }
 
 export function Round2Status({
