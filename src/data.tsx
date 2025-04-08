@@ -5,6 +5,7 @@ import { StaticImageData } from "next/image";
 import XYZ from "@/assets/sponsors/xyz.png";
 import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.png";
 import APPWRITE from "@/assets/sponsors/appwrite.png";
+import APIDOTMARKET from "@/assets/sponsors/api.market.png";
 
 export const ROUND_1_SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1eiHDhYHNzqHf59-VA_-eW65uL1WRYou41I7pKOy3RNs/edit?usp=sharing";
@@ -188,6 +189,11 @@ export interface Sponsor {
 }
 
 export const sponsors: Sponsor[] = [
+  {
+    name: "api.market",
+    link: "https://api.market",
+    image: APIDOTMARKET,
+  },
   {
     name: ".xyz",
     link: "https://gen.xyz",
