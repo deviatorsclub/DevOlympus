@@ -1,7 +1,8 @@
+"use client";
+
 import { memo, useState, useCallback, useMemo } from "react";
 import { Search, Filter, X, ChevronDown, ChevronUp } from "lucide-react";
 import { FilterState } from "@/types/user-data";
-import { Theme } from "@/lib/flags";
 
 interface UserFiltersProps {
   filters: FilterState;
@@ -29,7 +30,7 @@ const FilterSelect = memo(
       onChange={(e) => {
         onChange(e.target.value);
         const params = new URLSearchParams(window.location.search);
-        if(e.target.value === "all") {
+        if (e.target.value === "all") {
           params.delete(name);
         } else {
           params.set(name, e.target.value);
@@ -83,6 +84,7 @@ SearchInput.displayName = "SearchInput";
 const UserFilters = memo(
   ({ filters, onFilterChange, onClearFilters }: UserFiltersProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
     const activeFilterCount = useMemo(() => {
       return Object.values(filters).filter((value) => value && value !== "all")
@@ -94,218 +96,219 @@ const UserFilters = memo(
       []
     );
 
+    const toggleCategory = useCallback((category: string) => {
+      setActiveCategory((prev) => (prev === category ? null : category));
+    }, []);
+
     const handleClick = useCallback(
       (e: React.MouseEvent) => e.stopPropagation(),
       []
     );
 
-    const roleOptions = useMemo(
+    // Define all filter options
+    const filterCategories = useMemo(
       () => [
-        { value: "all", label: "All Roles" },
-        { value: "admin", label: "Admin" },
-        { value: "user", label: "User" },
-        { value: "lead", label: "Lead" },
-        { value: "member", label: "Member" },
+        {
+          name: "User Info",
+          filters: [
+            {
+              name: "role",
+              value: filters.role,
+              onChange: (value: string) => onFilterChange("role", value),
+              options: [
+                { value: "all", label: "All Roles" },
+                { value: "admin", label: "Admin" },
+                { value: "user", label: "User" },
+                { value: "lead", label: "Lead" },
+                { value: "member", label: "Member" },
+              ],
+              onClick: handleClick,
+            },
+            {
+              name: "status",
+              value: filters.status,
+              onChange: (value: string) => onFilterChange("status", value),
+              options: [
+                { value: "all", label: "Status" },
+                { value: "active", label: "Active" },
+                { value: "blocked", label: "Blocked" },
+              ],
+              onClick: handleClick,
+            },
+            {
+              name: "loginStatus",
+              value: filters.loginStatus,
+              onChange: (value: string) => onFilterChange("loginStatus", value),
+              options: [
+                { value: "all", label: "Login" },
+                { value: "today", label: "Today" },
+                { value: "yesterday", label: "Yesterday" },
+                { value: "week", label: "Week" },
+                { value: "month", label: "Month" },
+                { value: "never", label: "Never" },
+              ],
+              onClick: handleClick,
+            },
+          ],
+        },
+        {
+          name: "Team Info",
+          filters: [
+            {
+              name: "team",
+              value: filters.team,
+              onChange: (value: string) => onFilterChange("team", value),
+              options: [
+                { value: "all", label: "Team" },
+                { value: "yes", label: "Has Team" },
+                { value: "no", label: "No Team" },
+              ],
+              onClick: handleClick,
+            },
+            {
+              name: "teamTheme",
+              value: filters.teamTheme,
+              onChange: (value: string) => onFilterChange("teamTheme", value),
+              options: [
+                { value: "all", label: "Theme" },
+                { value: "AI & Machine Learning", label: "AI & ML" },
+                { value: "Blockchain & Web3", label: "Blockchain" },
+                { value: "Cybersecurity & Privacy", label: "Cybersecurity" },
+                { value: "Open Innovation", label: "Open Innovation" },
+                { value: "Robotics", label: "Robotics" },
+              ],
+              onClick: handleClick,
+            },
+            {
+              name: "round2",
+              value: filters.round2,
+              onChange: (value: string) => onFilterChange("round2", value),
+              options: [
+                { value: "all", label: "Round 2" },
+                { value: "SELECTED", label: "Selected" },
+                { value: "REJECTED", label: "Rejected" },
+                { value: "NOT_DECIDED", label: "Not Decided" },
+              ],
+              onClick: handleClick,
+            },
+          ],
+        },
+        {
+          name: "Documentation",
+          filters: [
+            {
+              name: "payment",
+              value: filters.payment,
+              onChange: (value: string) => onFilterChange("payment", value),
+              options: [
+                { value: "all", label: "Payment" },
+                { value: "VERIFIED", label: "Verified" },
+                { value: "NOT_VERIFIED", label: "Not Verified" },
+                { value: "UNPAID", label: "Unpaid" },
+              ],
+              onClick: handleClick,
+            },
+            {
+              name: "consentLetter",
+              value: filters.consentLetter,
+              onChange: (value: string) =>
+                onFilterChange("consentLetter", value),
+              options: [
+                { value: "all", label: "Consent Letter" },
+                { value: "UPLOADED", label: "Uploaded" },
+                { value: "NOT_UPLOADED", label: "Not Uploaded" },
+              ],
+              onClick: handleClick,
+            },
+          ],
+        },
       ],
-      []
-    );
-
-    const statusOptions = useMemo(
-      () => [
-        { value: "all", label: "Status" },
-        { value: "active", label: "Active" },
-        { value: "blocked", label: "Blocked" },
-      ],
-      []
-    );
-
-    const loginOptions = useMemo(
-      () => [
-        { value: "all", label: "Login" },
-        { value: "today", label: "Today" },
-        { value: "yesterday", label: "Yesterday" },
-        { value: "week", label: "Week" },
-        { value: "month", label: "Month" },
-        { value: "never", label: "Never" },
-      ],
-      []
-    );
-
-    const teamOptions = useMemo(
-      () => [
-        { value: "all", label: "Team" },
-        { value: "yes", label: "Has Team" },
-        { value: "no", label: "No Team" },
-      ],
-      []
-    );
-
-    const teamThemeOptions = useMemo<{ value: Theme | "all"; label: string }[]>(
-      () => [
-        { value: "all", label: "Theme" },
-        { value: "AI & Machine Learning", label: "AI & Machine Learning" },
-        { value: "Blockchain & Web3", label: "Blockchain" },
-        { value: "Cybersecurity & Privacy", label: "Cybersecurity" },
-        { value: "Open Innovation", label: "Open Innovation" },
-        { value: "Robotics", label: "Robotics" },
-      ],
-      []
-    );
-
-    const round2Options = useMemo(
-      () => [
-        { value: "all", label: "Round 2" },
-        { value: "SELECTED", label: "Selected" },
-        { value: "REJECTED", label: "Rejected" },
-        { value: "NOT_DECIDED", label: "Not Decided" },
-      ],
-      []
-    );
-
-    const paymentOptions = useMemo(
-      () => [
-        { value: "all", label: "Payment" },
-        { value: "VERIFIED", label: "Verified" },
-        { value: "NOT_VERIFIED", label: "Not Verified" },
-        { value: "UNPAID", label: "Unpaid" },
-      ],
-      []
-    );
-
-    const consentLetterOptions = useMemo(
-      () => [
-        { value: "all", label: "Consent Letter" },
-        { value: "UPLOADED", label: "Uploaded" },
-        { value: "NOT_UPLOADED", label: "Not Uploaded" },
-      ],
-      []
+      [filters, handleClick, onFilterChange]
     );
 
     return (
-      <div className="bg-gray-800 rounded-lg shadow">
+      <div className="bg-gray-800 rounded-lg shadow-md mb-4">
         <div
-          className="p-3 flex items-center justify-between cursor-pointer select-none"
+          className="p-3 flex items-center justify-between cursor-pointer"
           onClick={toggleExpanded}
         >
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <h2 className="text-base font-medium text-gray-200">Filters</h2>
-            {!!activeFilterCount && (
-              <span className="text-xs px-2 py-0.5 bg-blue-900 bg-opacity-40 rounded-full text-blue-300">
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4 w-4 text-gray-400" />
+            <span className="text-sm font-medium text-gray-200">Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-blue-600 text-white">
                 {activeFilterCount}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            {!!activeFilterCount && (
+          <div className="flex items-center space-x-2">
+            {activeFilterCount > 0 && (
               <button
+                className="text-xs text-gray-400 hover:text-gray-200 flex items-center"
                 onClick={(e) => {
                   e.stopPropagation();
                   onClearFilters();
                 }}
-                className="text-xs text-red-400 hover:text-red-300 transition-colors"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="h-3 w-3 mr-1" />
+                Clear
               </button>
             )}
             {isExpanded ? (
-              <ChevronUp className="w-4 h-4 text-gray-400" />
+              <ChevronUp className="h-4 w-4 text-gray-400" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <ChevronDown className="h-4 w-4 text-gray-400" />
             )}
           </div>
         </div>
 
-        <div
-          className="relative border-t border-gray-700 transition-all duration-200 overflow-hidden"
-          style={{
-            maxHeight: isExpanded ? "500px" : "0",
-            opacity: isExpanded ? 1 : 0,
-            borderTopWidth: isExpanded ? "1px" : "0",
-            padding: isExpanded ? "12px 12px 12px 12px" : "0 12px",
-          }}
-        >
-          <div className="flex flex-col gap-2">
-            <SearchInput
-              value={filters.search}
-              onChange={(value) => onFilterChange("search", value)}
-              onClick={handleClick}
-            />
+        {isExpanded && (
+          <div className="p-3 border-t border-gray-700">
+            <div className="grid grid-cols-1 gap-3">
+              <SearchInput
+                value={filters.search}
+                onChange={(value) => onFilterChange("search", value)}
+                onClick={handleClick}
+              />
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {[
-                {
-                  name: "role",
-                  value: filters.role,
-                  onChange: (value: string) => onFilterChange("role", value),
-                  options: roleOptions,
-                  onClick: handleClick,
-                },
-                {
-                  name: "status",
-                  value: filters.status,
-                  onChange: (value: string) => onFilterChange("status", value),
-                  options: statusOptions,
-                  onClick: handleClick,
-                },
-                {
-                  name: "loginStatus",
-                  value: filters.loginStatus,
-                  onChange: (value: string) =>
-                    onFilterChange("loginStatus", value),
-                  options: loginOptions,
-                  onClick: handleClick,
-                },
-                {
-                  name: "team",
-                  value: filters.team,
-                  onChange: (value: string) => onFilterChange("team", value),
-                  options: teamOptions,
-                  onClick: handleClick,
-                },
-                {
-                  name: "teamTheme",
-                  value: filters.teamTheme,
-                  onChange: (value: string) =>
-                    onFilterChange("teamTheme", value),
-                  options: teamThemeOptions,
-                  onClick: handleClick,
-                },
-                {
-                  name: "round2",
-                  value: filters.round2,
-                  onChange: (value: string) => onFilterChange("round2", value),
-                  options: round2Options,
-                  onClick: handleClick,
-                },
-                {
-                  name: "payment",
-                  value: filters.payment,
-                  onChange: (value: string) => onFilterChange("payment", value),
-                  options: paymentOptions,
-                  onClick: handleClick,
-                },
-                {
-                  name: "consentLetter",
-                  value: filters.consentLetter,
-                  onChange: (value: string) =>
-                    onFilterChange("consentLetter", value),
-                  options: consentLetterOptions,
-                  onClick: handleClick,
-                },
-              ].map((filter) => (
-                <FilterSelect
-                  key={filter.name}
-                  name={filter.name}
-                  value={filter.value}
-                  onChange={filter.onChange}
-                  options={filter.options}
-                  onClick={filter.onClick}
-                />
+              {filterCategories.map((category, index) => (
+                <div
+                  key={index}
+                  className="border border-gray-700 rounded-md overflow-hidden"
+                >
+                  <div
+                    className="bg-gray-750 p-2 flex justify-between items-center cursor-pointer"
+                    onClick={() => toggleCategory(category.name)}
+                  >
+                    <span className="text-sm font-medium text-gray-200">
+                      {category.name}
+                    </span>
+                    {activeCategory === category.name ? (
+                      <ChevronUp className="h-4 w-4 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    )}
+                  </div>
+
+                  {activeCategory === category.name && (
+                    <div className="p-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {category.filters.map((filter) => (
+                        <FilterSelect
+                          key={filter.name}
+                          name={filter.name}
+                          value={filter.value}
+                          onChange={filter.onChange}
+                          options={filter.options}
+                          onClick={filter.onClick}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
