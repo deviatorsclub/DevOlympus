@@ -73,13 +73,13 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
     window.addEventListener(
       "teamStatusUpdated",
-      handleTeamStatusUpdate as EventListener,
+      handleTeamStatusUpdate as EventListener
     );
 
     return () => {
       window.removeEventListener(
         "teamStatusUpdated",
-        handleTeamStatusUpdate as EventListener,
+        handleTeamStatusUpdate as EventListener
       );
     };
   }, []);
@@ -114,7 +114,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       if (
         loginStatus &&
         ["all", "today", "yesterday", "week", "month", "never"].includes(
-          loginStatus,
+          loginStatus
         )
       ) {
         urlFilters.loginStatus = loginStatus as FilterState["loginStatus"];
@@ -135,7 +135,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       if (
         teamTheme &&
         ["all", "ai", "blockchain", "security", "robotics", "open"].includes(
-          teamTheme,
+          teamTheme
         )
       ) {
         urlFilters.teamTheme = teamTheme as FilterState["teamTheme"];
@@ -164,8 +164,12 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
 
     if (searchParams.has("consentLetter")) {
       const consentLetter = searchParams.get("consentLetter");
-      if (consentLetter && ["all", "UPLOADED", "NOT_UPLOADED"].includes(consentLetter)) {
-        urlFilters.consentLetter = consentLetter as FilterState["consentLetter"];
+      if (
+        consentLetter &&
+        ["all", "UPLOADED", "NOT_UPLOADED"].includes(consentLetter)
+      ) {
+        urlFilters.consentLetter =
+          consentLetter as FilterState["consentLetter"];
         hasUrlFilters = true;
       }
     }
@@ -181,6 +185,21 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "r") {
+        event.preventDefault();
+        refreshData();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const handleSortChange = useCallback(
     (field: SortField) => {
       if (field === sortField) {
@@ -190,14 +209,14 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
         setSortDir("asc");
       }
     },
-    [sortField],
+    [sortField]
   );
 
   const handleFilterChange = useCallback(
     (key: keyof FilterState, value: string) => {
       setFilters((prev) => ({ ...prev, [key]: value }));
     },
-    [],
+    []
   );
 
   const clearFilters = useCallback(() => {
@@ -290,7 +309,7 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
           visible = false;
         } else {
           const currentMember = userTeam.members.find(
-            (member) => member.email === user.email,
+            (member) => member.email === user.email
           );
 
           if (!currentMember) {
@@ -442,9 +461,9 @@ export default function UserDashboard({ initialUsers }: UserDashboardProps) {
       users.filter(
         (user) =>
           new Date(user.lastLogin).toDateString() ===
-          dateCache.now.toDateString(),
+          dateCache.now.toDateString()
       ).length,
-    [users, dateCache],
+    [users, dateCache]
   );
 
   return (
