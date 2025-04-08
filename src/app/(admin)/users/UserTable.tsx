@@ -49,6 +49,7 @@ import { getTeam } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { FLAGS } from "@/lib/flags";
+import AssetsTab from "./components/AssetsTab";
 
 interface DetailItemProps {
   icon: React.ReactNode;
@@ -496,6 +497,23 @@ const UserDetailPopup = memo(
 
     const userIsLead = userIsMember && currentMember?.isLead === true;
 
+    const assets: {
+      name: string;
+      url: string;
+    }[] = [];
+    if (user.consentLetter?.fileUrl) {
+      assets.push({
+        name: "Consent Letter",
+        url: `/api/round-2-consent-letter/${user.consentLetter?.id}`,
+      });
+    }
+    if (team.payment?.id) {
+      assets.push({
+        name: "Payment Receipt",
+        url: `/api/round-2-pay-screenshot/${team.payment?.id}`,
+      });
+    }
+
     return (
       <div
         className="fixed inset-0 backdrop-blur-xl bg-opacity-60 flex items-center justify-center p-2 sm:p-4 z-50 transition-opacity"
@@ -534,7 +552,7 @@ const UserDetailPopup = memo(
                   {teamLead && (
                     <Link
                       target="_blank"
-                      href={"/register?e=" + teamLead.email}
+                      href={"/register?e=" + user.email}
                     >
                       <ExternalLink className="w-4 h-4 text-gray-400" />
                     </Link>
@@ -610,24 +628,6 @@ const UserDetailPopup = memo(
                       })}
                     </span>
                   </>
-                }
-              />
-              <DetailItem
-                icon={<FileText className="w-4 h-4" />}
-                label="Consent Letter"
-                extLink={"/round-2-payment?e=" + user.email}
-                value={
-                  user.consentLetter?.id ? (
-                    <Link
-                      href={`/api/round-2-consent-letter/${user.consentLetter.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View
-                    </Link>
-                  ) : (
-                    <span className="text-yellow-300">Not Uploaded</span>
-                  )
                 }
               />
             </div>
@@ -1009,6 +1009,8 @@ const UserDetailPopup = memo(
             {team && (
               <PaymentDetails team={team} user={user} isAdmin={isAdmin} />
             )}
+
+            <AssetsTab assets={assets} />
           </div>
 
           <div className="border-t border-gray-700 p-3 sm:p-4 flex justify-end">
