@@ -60,7 +60,7 @@ export function ConsentLetterUpload({ user, team }: ConsentLetterUploadProps) {
         });
       }
     },
-    []
+    [],
   );
 
   const { isUploading, error, success } = uploadState;

@@ -76,7 +76,7 @@ export default async function PaymentPage({
   const isTeamLead = user.team.members.some(
     (member) =>
       member.email.toLowerCase() === emailForVerification?.toLowerCase() &&
-      member.isLead
+      member.isLead,
   );
 
   if (!isTeamLead && !user.team.payment) {

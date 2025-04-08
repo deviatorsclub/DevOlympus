@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getTeam(
   users: UserWithTeam[],
-  userEmail: string
+  userEmail: string,
 ): UserTeam | null {
   if (!userEmail) return null;
 

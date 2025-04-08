@@ -45,7 +45,7 @@ const FilterSelect = memo(
         </option>
       ))}
     </select>
-  )
+  ),
 );
 FilterSelect.displayName = "FilterSelect";
 
@@ -77,7 +77,7 @@ const SearchInput = memo(
         onClick={onClick}
       />
     </div>
-  )
+  ),
 );
 SearchInput.displayName = "SearchInput";
 
@@ -93,7 +93,7 @@ const UserFilters = memo(
 
     const toggleExpanded = useCallback(
       () => setIsExpanded((prev) => !prev),
-      []
+      [],
     );
 
     const toggleCategory = useCallback((category: string) => {
@@ -102,7 +102,7 @@ const UserFilters = memo(
 
     const handleClick = useCallback(
       (e: React.MouseEvent) => e.stopPropagation(),
-      []
+      [],
     );
 
     // Define all filter options
@@ -223,7 +223,7 @@ const UserFilters = memo(
           ],
         },
       ],
-      [filters, handleClick, onFilterChange]
+      [filters, handleClick, onFilterChange],
     );
 
     return (
@@ -311,7 +311,7 @@ const UserFilters = memo(
         )}
       </div>
     );
-  }
+  },
 );
 UserFilters.displayName = "UserFilters";
 

@@ -115,7 +115,7 @@ export default function EnhancedFooter() {
                       {item}
                     </Link>
                   </motion.li>
-                )
+                ),
               )}
             </ul>
           </motion.div>

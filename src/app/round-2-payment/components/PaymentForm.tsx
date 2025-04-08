@@ -48,7 +48,7 @@ export function PaymentForm() {
 
     if (!mobileNumber || !senderName || !screenshot) {
       setError(
-        "Please provide sender name, mobile number, and payment screenshot"
+        "Please provide sender name, mobile number, and payment screenshot",
       );
       return;
     }

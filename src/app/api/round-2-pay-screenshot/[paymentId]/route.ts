@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ paymentId: string }> }
+  { params }: { params: Promise<{ paymentId: string }> },
 ) {
   if (request)
     try {
@@ -46,7 +46,7 @@ export async function GET(
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
       }
 
@@ -57,7 +57,7 @@ export async function GET(
 
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch image: ${response.status} ${response.statusText}`
+            `Failed to fetch image: ${response.status} ${response.statusText}`,
           );
         }
 
@@ -89,7 +89,7 @@ export async function GET(
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
       }
     } catch (error) {
@@ -104,7 +104,7 @@ export async function GET(
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
     }
 }

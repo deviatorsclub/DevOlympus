@@ -6,7 +6,7 @@ import axios from "axios";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ consentLetterId: string }> }
+  { params }: { params: Promise<{ consentLetterId: string }> },
 ) {
   if (request)
     try {
@@ -51,7 +51,7 @@ export async function GET(
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
       }
 
@@ -71,7 +71,7 @@ export async function GET(
           if (
             value &&
             !["content-disposition", "content-length"].includes(
-              key.toLowerCase()
+              key.toLowerCase(),
             )
           ) {
             headers.set(key, value.toString());
@@ -127,7 +127,7 @@ export async function GET(
             {
               status,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
 
@@ -139,7 +139,7 @@ export async function GET(
           {
             status: 502,
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
     } catch (error) {
@@ -153,7 +153,7 @@ export async function GET(
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 }
