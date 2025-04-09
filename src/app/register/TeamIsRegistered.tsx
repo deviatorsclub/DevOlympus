@@ -31,7 +31,11 @@ export default async function TeamIsRegistered({
       <div className="bg-[#0a0918] border border-indigo-600/80 rounded-xl shadow-lg p-6 md:p-8 text-gray-100 relative">
         <TeamHeader teamName={team.name} teamId={team.displayId} />
 
-        <img src={IMAGE.src} className="w-full max-w-lg mx-auto rounded-md" />
+        <img
+          src={IMAGE.src}
+          className="w-full max-w-lg mx-auto rounded-md"
+          alt=""
+        />
 
         <div className="my-6">
           {team.selectedForRound2 === "SELECTED" && (
