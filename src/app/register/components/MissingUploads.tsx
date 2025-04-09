@@ -22,11 +22,13 @@ export default async function MissingUploads({
   const session = await auth();
   const isPaymentDone = !!team.payment?.id;
   const isPaymentVerified = isPaymentDone && team.payment?.verified === false;
-  const memberNamesNotLoggedIn = team.members.filter(
-    (member) => !teamMembersWithLogin.some((m) => m.email === member.email),
-  );
+
   const consentLetterNotUploadedBy = teamMembersWithLogin.filter(
     (member) => !member.consentLetter,
+  );
+
+  const membersNotLoggedIn = team.members.filter(
+    (member) => !teamMembersWithLogin.some((m) => m.email === member.email),
   );
 
   const warnings: {
@@ -66,7 +68,7 @@ export default async function MissingUploads({
     });
   }
 
-  if (consentLetterNotUploadedBy.length > 0) {
+  if (consentLetterNotUploadedBy.length > 0 || membersNotLoggedIn.length > 0) {
     const isSelfMissing = consentLetterNotUploadedBy.some(
       (member) => member.email === session?.user?.email,
     );
@@ -81,7 +83,7 @@ export default async function MissingUploads({
             The following members need to upload their consent letters:
           </p>
           <ul className="grid gap-2">
-            {[...consentLetterNotUploadedBy, ...memberNamesNotLoggedIn].map(
+            {[...consentLetterNotUploadedBy, ...membersNotLoggedIn].map(
               (member) => (
                 <li
                   key={member.name}
@@ -124,7 +126,7 @@ export default async function MissingUploads({
       <div className="rounded-lg border border-gray-700 overflow-hidden">
         <WarningsAccordion warnings={warnings} />
 
-        <div className="p-4a">
+        <div className="p-4">
           {warnings.length === 0 && (
             <div className="bg-green-900/20 border border-green-800/50 rounded-md p-4 flex items-center gap-3">
               <CheckCircle2 className="h-6 w-6 text-green-400" />
