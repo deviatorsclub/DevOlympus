@@ -24,11 +24,11 @@ export default async function MissingUploads({
   const isPaymentVerified = isPaymentDone && team.payment?.verified === false;
 
   const consentLetterNotUploadedBy = teamMembersWithLogin.filter(
-    (member) => !member.consentLetter,
+    (member) => !member.consentLetter
   );
 
   const membersNotLoggedIn = team.members.filter(
-    (member) => !teamMembersWithLogin.some((m) => m.email === member.email),
+    (member) => !teamMembersWithLogin.some((m) => m.email === member.email)
   );
 
   const warnings: {
@@ -70,7 +70,7 @@ export default async function MissingUploads({
 
   if (consentLetterNotUploadedBy.length > 0 || membersNotLoggedIn.length > 0) {
     const isSelfMissing = consentLetterNotUploadedBy.some(
-      (member) => member.email === session?.user?.email,
+      (member) => member.email === session?.user?.email
     );
 
     warnings.push({
@@ -95,14 +95,14 @@ export default async function MissingUploads({
                       "capitalize",
                       member.email === session?.user?.email
                         ? "font-bold text-amber-300"
-                        : "text-gray-200",
+                        : "text-gray-200"
                     )}
                   >
                     {member.name}
                     <span className="lowercase opacity-70">{` (${member.email})`}</span>
                   </span>
                 </li>
-              ),
+              )
             )}
           </ul>
         </div>
@@ -116,30 +116,10 @@ export default async function MissingUploads({
     });
   }
 
+  if (warnings.length === 0) return null;
   return (
-    <>
-      <DeadlineBanner
-        deadline={FLAGS.paymentAndConsentDeadline}
-        text="Payment and consent submission deadline"
-      />
-
-      <div className="rounded-lg border border-gray-700 overflow-hidden">
-        <WarningsAccordion warnings={warnings} />
-
-        <div className="p-4">
-          {warnings.length === 0 && (
-            <div className="bg-green-900/20 border border-green-800/50 rounded-md p-4 flex items-center gap-3">
-              <CheckCircle2 className="h-6 w-6 text-green-400" />
-              <div>
-                <h4 className="font-medium text-green-300">All set!</h4>
-                <p className="text-sm text-green-200/70">
-                  Your team has completed all required actions.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+    <div className="rounded-lg border border-gray-700 overflow-hidden">
+      <WarningsAccordion warnings={warnings} />
+    </div>
   );
 }
