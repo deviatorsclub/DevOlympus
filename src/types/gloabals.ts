@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ENV_EDIT_ADMIN_EMAILS } from "@/lib/constants";
+import { StaticImageData } from "next/image";
 
 const parseAdminEmails = z
   .string()
@@ -12,3 +13,9 @@ if (result.success) {
   ADMIN_EMAILS = result.data;
 }
 export { ADMIN_EMAILS };
+
+export interface Sponsor {
+  name: string;
+  image: StaticImageData;
+  link: string;
+}

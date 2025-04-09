@@ -1,11 +1,17 @@
 import { JSX } from "react";
 import { CategoryData } from "./types";
-import { StaticImageData } from "next/image";
 
 import XYZ from "@/assets/sponsors/xyz.png";
 import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.png";
 import APPWRITE from "@/assets/sponsors/appwrite.png";
 import APIDOTMARKET from "@/assets/sponsors/api.market.png";
+import { Sponsor } from "./types/gloabals";
+
+import ANSHIKA from "@/assets/judges/anshika.png";
+import AKASH_CHAUHAN from "@/assets/judges/akash-chauhan.png";
+import JATIN_KAPOOR from "@/assets/judges/jatin-kapoor.png";
+import PIYUSH_GARG from "@/assets/judges/piyush-garg.png";
+import VRINDA_BHATEJA from "@/assets/judges/vrinda-bhateja.png";
 
 export const ROUND_1_SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1eiHDhYHNzqHf59-VA_-eW65uL1WRYou41I7pKOy3RNs/edit?usp=sharing";
@@ -182,12 +188,6 @@ function JudgingIcon(): JSX.Element {
   );
 }
 
-export interface Sponsor {
-  name: string;
-  image: StaticImageData;
-  link: string;
-}
-
 export const sponsors: Sponsor[] = [
   {
     name: "api.market",
@@ -208,5 +208,33 @@ export const sponsors: Sponsor[] = [
     name: "Appwrite",
     link: "https://appwrite.io",
     image: APPWRITE,
+  },
+];
+
+export const judges = [
+  {
+    name: "Anshika",
+    image: ANSHIKA,
+    oneLiner: "American Express - Engineer III",
+  },
+  {
+    name: "Akash Chauhan",
+    image: AKASH_CHAUHAN,
+    oneLiner: "Gate Qualified, AIR: 648",
+  },
+  {
+    name: "Jatin Kapoor",
+    image: JATIN_KAPOOR,
+    oneLiner: "Capegemini, Associate consultant(Oracle)",
+  },
+  {
+    name: "Piyush Garg",
+    image: PIYUSH_GARG,
+    oneLiner: "Juspay - Senior Software Engineer I",
+  },
+  {
+    name: "Vrinda Bhateja",
+    image: VRINDA_BHATEJA,
+    oneLiner: "Senior Data Engineer - United Airlines",
   },
 ];
