@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect, JSX } from "react";
-import { Trophy, Gift, Medal, Star, Award } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Award, Medal, Trophy, Star, LucideRocket } from "lucide-react";
 
-export default function PriceSection(): JSX.Element {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+export default function PriceSection() {
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -15,7 +15,9 @@ export default function PriceSection(): JSX.Element {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 },
+      {
+        threshold: 0.1,
+      }
     );
 
     if (sectionRef.current) {
@@ -77,91 +79,99 @@ export default function PriceSection(): JSX.Element {
                   <p className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2 sm:mb-3">
                     ₹5,000
                   </p>
+                  <p className="text-xs sm:text-sm text-slate-400 mb-2">
+                    For the second best project
+                  </p>
                   <div className="w-12 h-1 bg-blue-500/30 mx-auto rounded-full"></div>
                 </div>
               </div>
             </div>
 
             <div
-              className={`relative z-20 transition-all duration-700 mb-8 md:mb-0 md:-mt-16 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              className={`relative z-20 transition-all duration-700 mb-8 md:mb-0 ${isVisible ? "opacity-100 md:translate-y-0" : "opacity-0 md:translate-y-12"}`}
               style={{ transitionDelay: "100ms" }}
             >
-              <div className="w-full max-w-[260px] xs:max-w-[280px] sm:max-w-[300px] mx-auto bg-gradient-to-b from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700 shadow-lg shadow-purple-500/20">
-                <div className="h-2 w-full bg-gradient-to-r from-yellow-400 to-amber-500"></div>
-                <div className="p-5 sm:p-6 md:p-8 text-center">
+              <div className="w-full max-w-[260px] xs:max-w-[280px] sm:max-w-[300px] mx-auto bg-gradient-to-b from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700 md:scale-110">
+                <div className="h-2 w-full bg-gradient-to-r from-amber-500 to-pink-500"></div>
+                <div className="p-4 sm:p-6 text-center">
                   <div className="relative inline-block">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                      <Trophy className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <Trophy className="w-8 h-8 text-white" />
                     </div>
-                    <div className="absolute -top-2 -right-2 bg-slate-900 rounded-full w-10 h-10 flex items-center justify-center border-2 border-yellow-400">
-                      <span className="text-base font-bold">1</span>
+                    <div className="absolute -top-2 -right-2 bg-slate-900 rounded-full w-8 h-8 flex items-center justify-center border-2 border-amber-400">
+                      <span className="text-sm font-bold">1</span>
                     </div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
                     First Prize
                   </h3>
-                  <p className="text-3xl sm:text-4xl font-bold text-amber-400 mb-3 sm:mb-4">
+                  <p className="text-2xl sm:text-3xl font-bold text-amber-400 mb-2 sm:mb-3">
                     ₹10,000
                   </p>
-                  <div className="w-16 h-1 bg-amber-500/30 mx-auto rounded-full"></div>
+                  <p className="text-xs sm:text-sm text-slate-400 mb-2">
+                    For the best project overall
+                  </p>
+                  <div className="w-12 h-1 bg-amber-500/30 mx-auto rounded-full"></div>
                 </div>
               </div>
             </div>
 
             <div
-              className={`relative z-10 transition-all duration-700 ${isVisible ? "opacity-100 md:translate-y-0" : "opacity-0 md:translate-y-12"}`}
+              className={`relative z-10 transition-all duration-700 mb-8 md:mb-0 ${isVisible ? "opacity-100 md:translate-y-0" : "opacity-0 md:translate-y-12"}`}
               style={{ transitionDelay: "300ms" }}
             >
               <div className="w-full max-w-[220px] xs:max-w-[240px] sm:max-w-[260px] mx-auto bg-gradient-to-b from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700">
-                <div className="h-2 w-full bg-gradient-to-r from-rose-400 to-pink-500"></div>
+                <div className="h-2 w-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
                 <div className="p-4 sm:p-6 text-center">
                   <div className="relative inline-block">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                      <Medal className="w-8 h-8 text-white" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <Award className="w-8 h-8 text-white" />
                     </div>
-                    <div className="absolute -top-2 -right-2 bg-slate-900 rounded-full w-8 h-8 flex items-center justify-center border-2 border-pink-400">
+                    <div className="absolute -top-2 -right-2 bg-slate-900 rounded-full w-8 h-8 flex items-center justify-center border-2 border-purple-400">
                       <span className="text-sm font-bold">3</span>
                     </div>
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
                     Third Prize
                   </h3>
-                  <p className="text-2xl sm:text-3xl font-bold text-pink-400 mb-2 sm:mb-3">
+                  <p className="text-2xl sm:text-3xl font-bold text-purple-400 mb-2 sm:mb-3">
                     ₹3,000
                   </p>
-                  <div className="w-12 h-1 bg-pink-500/30 mx-auto rounded-full"></div>
+                  <p className="text-xs sm:text-sm text-slate-400 mb-2">
+                    For the third best project
+                  </p>
+                  <div className="w-12 h-1 bg-purple-500/30 mx-auto rounded-full"></div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className={`max-w-5xl mx-auto mt-16 sm:mt-20 md:mt-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-          style={{ transitionDelay: "400ms" }}
-        >
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="flex justify-center mt-12">
             <div
-              className={`relative transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-              style={{ transitionDelay: "500ms" }}
+              className={`relative z-10 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              style={{ transitionDelay: "400ms" }}
             >
-              <div className="bg-gradient-to-b from-slate-800/90 to-slate-900/90 backdrop-blur-md rounded-xl overflow-hidden border border-slate-700 p-5 sm:p-6 md:p-8 hover:border-purple-500/50 transition-colors">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="flex items-center gap-3">
-                    <Award className="w-6 h-6 text-purple-400" />
-                    <Gift className="w-6 h-6 text-blue-400" />
-                    <Star className="w-6 h-6 text-amber-400" />
+              <div className="w-full max-w-[260px] xs:max-w-[280px] sm:max-w-[300px] mx-auto bg-gradient-to-b from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700">
+                <div className="h-2 w-full bg-gradient-to-r from-green-400 to-teal-500"></div>
+                <div className="p-4 sm:p-6 text-center">
+                  <div className="relative inline-block">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <LucideRocket className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 bg-slate-900 rounded-full w-8 h-8 flex items-center justify-center border-2 border-green-400">
+                      <Star className="w-4 h-4 text-green-400" />
+                    </div>
                   </div>
-
-                  <h4 className="text-lg sm:text-xl font-bold text-white">
-                    Exclusive Gifts for Everyone
-                  </h4>
-
-                  <p className="text-sm sm:text-base text-slate-300 max-w-2xl">
-                    All participants will receive exclusive swag kits and
-                    digital certificates. Additional sponsor gifts will be
-                    distributed.
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
+                    API.market Track
+                  </h3>
+                  <p className="text-2xl sm:text-3xl font-bold text-green-400 mb-2 sm:mb-3">
+                    ₹10,000
                   </p>
+                  <p className="text-xs sm:text-sm text-slate-400 mb-2">
+                    Special prize for best use of API.market APIs
+                  </p>
+                  <div className="w-12 h-1 bg-green-500/30 mx-auto rounded-full"></div>
                 </div>
               </div>
             </div>
