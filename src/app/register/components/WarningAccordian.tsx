@@ -33,7 +33,7 @@ export default function WarningsAccordion({
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "w-full cursor-pointer flex items-center justify-between p-4 bg-amber-950/50 text-amber-100 font-medium",
-          isOpen ? "border-b border-gray-700" : ""
+          isOpen ? "border-b border-gray-700" : "",
         )}
       >
         <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export default function WarningsAccordion({
         <ChevronDown
           className={cn(
             "h-5 w-5 transition-transform duration-200",
-            isOpen ? "" : "-rotate-90"
+            isOpen ? "" : "-rotate-90",
           )}
         />
       </button>
@@ -65,7 +65,7 @@ export default function WarningsAccordion({
                     "p-4 flex gap-3",
                     warning.type === "error"
                       ? "bg-red-950/20"
-                      : "bg-amber-950/20"
+                      : "bg-amber-950/20",
                   )}
                 >
                   <div className="shrink-0 mt-0.5">
@@ -83,7 +83,7 @@ export default function WarningsAccordion({
                         "font-medium",
                         warning.type === "error"
                           ? "text-red-300"
-                          : "text-amber-300"
+                          : "text-amber-300",
                       )}
                     >
                       {warning.message}

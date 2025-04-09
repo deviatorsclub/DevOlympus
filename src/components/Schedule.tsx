@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ReactNode, JSX } from "react";
+import { useState, JSX } from "react";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";

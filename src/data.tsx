@@ -7,11 +7,9 @@ import APPWRITE from "@/assets/sponsors/appwrite.png";
 import APIDOTMARKET from "@/assets/sponsors/api.market.png";
 import { Sponsor } from "./types/gloabals";
 import {
-  MapPin,
   Utensils,
   Code,
   Code2,
-  Skull,
   Presentation,
   GraduationCap,
   Clipboard,

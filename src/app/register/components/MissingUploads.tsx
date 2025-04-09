@@ -23,10 +23,10 @@ export default async function MissingUploads({
   const isPaymentDone = !!team.payment?.id;
   const isPaymentVerified = isPaymentDone && team.payment?.verified === false;
   const memberNamesNotLoggedIn = team.members.filter(
-    (member) => !teamMembersWithLogin.some((m) => m.email === member.email)
+    (member) => !teamMembersWithLogin.some((m) => m.email === member.email),
   );
   const consentLetterNotUploadedBy = teamMembersWithLogin.filter(
-    (member) => !member.consentLetter
+    (member) => !member.consentLetter,
   );
 
   const warnings: {
@@ -68,7 +68,7 @@ export default async function MissingUploads({
 
   if (consentLetterNotUploadedBy.length > 0) {
     const isSelfMissing = consentLetterNotUploadedBy.some(
-      (member) => member.email === session?.user?.email
+      (member) => member.email === session?.user?.email,
     );
 
     warnings.push({
@@ -93,14 +93,14 @@ export default async function MissingUploads({
                       "capitalize",
                       member.email === session?.user?.email
                         ? "font-bold text-amber-300"
-                        : "text-gray-200"
+                        : "text-gray-200",
                     )}
                   >
                     {member.name}
                     <span className="lowercase opacity-70">{` (${member.email})`}</span>
                   </span>
                 </li>
-              )
+              ),
             )}
           </ul>
         </div>

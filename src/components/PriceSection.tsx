@@ -17,7 +17,7 @@ export default function PriceSection() {
       },
       {
         threshold: 0.1,
-      }
+      },
     );
 
     if (sectionRef.current) {

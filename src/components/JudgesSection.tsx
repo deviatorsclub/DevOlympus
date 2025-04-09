@@ -43,7 +43,9 @@ export default function JudgesSection() {
                 <h3 className="text-xl font-bold mb-2 text-white">
                   {judge.name}
                 </h3>
-                <p className="text-gray-400 text-sm text-balance">{judge.oneLiner}</p>
+                <p className="text-gray-400 text-sm text-balance">
+                  {judge.oneLiner}
+                </p>
               </div>
             </motion.div>
           ))}
