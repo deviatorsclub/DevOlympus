@@ -226,7 +226,7 @@ export default function ResponsiveScheduleSection(): JSX.Element {
                 <button
                   key={item.id}
                   onClick={() => setActiveDay(item.id)}
-                  className={`relative z-10 py-1.5 sm:py-2 px-2 sm:px-4 rounded-full text-xs sm:text-sm font-medium transition-all ${
+                  className={`relative cursor-pointer z-10 py-1.5 sm:py-2 px-2 sm:px-4 rounded-full text-xs sm:text-sm font-medium transition-all ${
                     activeDay === item.id
                       ? "text-white"
                       : "text-slate-400 hover:text-slate-300"

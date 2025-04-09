@@ -114,7 +114,7 @@ function CategoryAccordion({
     >
       <button
         onClick={() => onToggle(category.id)}
-        className="w-full px-5 py-4 flex items-center justify-between text-left"
+        className="w-full cursor-pointer px-5 py-4 flex items-center justify-between text-left"
       >
         <div className="flex items-center gap-3">
           <div

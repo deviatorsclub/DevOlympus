@@ -111,7 +111,7 @@ function FAQAccordion({
     >
       <button
         onClick={() => onToggle(index)}
-        className="w-full px-5 py-4 flex items-center justify-between text-left"
+        className="w-full cursor-pointer px-5 py-4 flex items-center justify-between text-left"
       >
         <span
           className={`font-medium transition-colors 
