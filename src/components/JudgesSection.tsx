@@ -20,17 +20,22 @@ export default function JudgesSection() {
           {judges.map((judge, index) => (
             <motion.div
               key={index}
-              className="relative overflow-hidden rounded-xl bg-gradient-to-b from-gray-900 to-black border border-gray-700 p-4 flex flex-col items-center shadow-lg"
+              className="relative overflow-hidden w-[250px] rounded-xl bg-gradient-to-b from-gray-900 to-black border border-gray-700 p-4 flex flex-col items-center shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <div className="relative aspect-[3/4] w-full max-w-[180px] overflow-hidden rounded-lg mb-4">
+              <div
+                className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4"
+                style={{
+                  width: "180px",
+                }}
+              >
                 <img
                   src={judge.image.src}
                   alt={judge.name}
-                  className="object-cover w-full h-full max-w-[180px]"
+                  className="object-cover w-full h-full"
                 />
               </div>
 
@@ -38,7 +43,7 @@ export default function JudgesSection() {
                 <h3 className="text-xl font-bold mb-2 text-white">
                   {judge.name}
                 </h3>
-                <p className="text-gray-400 text-sm">{judge.oneLiner}</p>
+                <p className="text-gray-400 text-sm text-balance">{judge.oneLiner}</p>
               </div>
             </motion.div>
           ))}

@@ -77,7 +77,7 @@ export default function PriceSection() {
                     Second Prize
                   </h3>
                   <p className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2 sm:mb-3">
-                    ₹5,000
+                    ₹10,000
                   </p>
                   <p className="text-xs sm:text-sm text-slate-400 mb-2">
                     For the second best project
@@ -106,7 +106,7 @@ export default function PriceSection() {
                     First Prize
                   </h3>
                   <p className="text-2xl sm:text-3xl font-bold text-amber-400 mb-2 sm:mb-3">
-                    ₹10,000
+                    ₹15,000
                   </p>
                   <p className="text-xs sm:text-sm text-slate-400 mb-2">
                     For the best project overall
@@ -135,7 +135,7 @@ export default function PriceSection() {
                     Third Prize
                   </h3>
                   <p className="text-2xl sm:text-3xl font-bold text-purple-400 mb-2 sm:mb-3">
-                    ₹3,000
+                    ₹5,000
                   </p>
                   <p className="text-xs sm:text-sm text-slate-400 mb-2">
                     For the third best project

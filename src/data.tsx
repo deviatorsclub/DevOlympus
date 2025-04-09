@@ -1,17 +1,34 @@
 import { JSX } from "react";
-import { CategoryData } from "./types";
+import { CategoryData, ScheduleDay } from "./types";
 
 import XYZ from "@/assets/sponsors/xyz.png";
 import INTERVIEW_BUDDY from "@/assets/sponsors/interview-buddy.png";
 import APPWRITE from "@/assets/sponsors/appwrite.png";
 import APIDOTMARKET from "@/assets/sponsors/api.market.png";
 import { Sponsor } from "./types/gloabals";
+import {
+  MapPin,
+  Utensils,
+  Code,
+  Code2,
+  Skull,
+  Presentation,
+  GraduationCap,
+  Clipboard,
+  Coffee,
+  Gamepad,
+  CheckSquare,
+} from "lucide-react";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 import ANSHIKA from "@/assets/judges/anshika.png";
 import AKASH_CHAUHAN from "@/assets/judges/akash-chauhan.png";
 import JATIN_KAPOOR from "@/assets/judges/jatin-kapoor.png";
 import PIYUSH_GARG from "@/assets/judges/piyush-garg.png";
 import VRINDA_BHATEJA from "@/assets/judges/vrinda-bhateja.png";
+import SALONI_ARORA from "@/assets/judges/saloni-arora.png";
+import JATIN_SHARMA from "@/assets/judges/jatin-sharma.png";
+import { formatDate } from "./lib/utils";
 
 export const ROUND_1_SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1eiHDhYHNzqHf59-VA_-eW65uL1WRYou41I7pKOy3RNs/edit?usp=sharing";
@@ -236,5 +253,153 @@ export const judges = [
     name: "Vrinda Bhateja",
     image: VRINDA_BHATEJA,
     oneLiner: "Senior Data Engineer - United Airlines",
+  },
+  {
+    name: "Saloni Arora",
+    image: SALONI_ARORA,
+    oneLiner: "Engineer at Merce and ex-Samsung",
+  },
+  {
+    name: "Jatin Sharma",
+    image: JATIN_SHARMA,
+    oneLiner: "Senior Database Administrator",
+  },
+];
+
+export const scheduleItems: ScheduleDay[] = [
+  {
+    id: "day1",
+    day: "Day 1",
+    title: "Kickoff",
+    date: formatDate(HACKATHON_DATE),
+    events: [
+      {
+        time: "08:15 AM - 09:00 AM",
+        title: "Registrations",
+        description: "Arrive at DCE campus and complete your registration",
+        icon: <Clipboard className="h-5 w-5" />,
+        location: "Main Entrance",
+      },
+      {
+        time: "09:00 AM onwards",
+        title: "Event Start",
+        description: "Welcome address, introduction to mentors and sponsors",
+        icon: <Presentation className="h-5 w-5" />,
+        location: "Main Auditorium",
+      },
+      {
+        time: "11:30 AM onwards",
+        title: "Round 1 Judgment Start",
+        description: "Present your ideas to judges",
+        icon: <GraduationCap className="h-5 w-5" />,
+        location: "Seminar Hall",
+      },
+      {
+        time: "02:15 PM",
+        title: "Round 1 Results",
+        description: "Announcement of teams advancing to Round 2",
+        icon: <CheckSquare className="h-5 w-5" />,
+        location: "Main Auditorium",
+      },
+      {
+        time: "03:00 PM",
+        title: "Selected Teams move to Round 2",
+        description: "Qualified teams begin the next phase of the hackathon",
+        icon: <Code2 className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+      {
+        time: "03:00 PM - 04:00 PM",
+        title: "Lunch Break",
+        description: "Refuel and network with fellow participants",
+        icon: <Utensils className="h-5 w-5" />,
+        location: "Cafeteria",
+      },
+      {
+        time: "04:00 PM - 06:00 PM",
+        title: "Mentorship Session",
+        description: "Get guidance from mentors on your projects",
+        icon: <FaChalkboardTeacher className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+      {
+        time: "06:00 PM - 08:00 PM",
+        title: "Hack Period",
+        description: "Work on your projects with your team",
+        icon: <Code className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+      {
+        time: "08:00 PM - 09:00 PM",
+        title: "Dinner Break",
+        description: "Refuel for the night ahead",
+        icon: <Utensils className="h-5 w-5" />,
+        location: "Cafeteria",
+      },
+      {
+        time: "09:00 PM - 12:00 AM",
+        title: "Hack Period",
+        description: "Continue working on your projects",
+        icon: <Code className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+    ],
+  },
+  {
+    id: "day2",
+    day: "Day 2",
+    title: "Finale",
+    date: formatDate(HACKATHON_END_DATE),
+    events: [
+      {
+        time: "12:00 AM - 02:00 AM",
+        title: "Night Mentorship Session",
+        description: "Get late-night guidance from mentors",
+        icon: <FaChalkboardTeacher className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+      {
+        time: "02:00 AM - 07:00 AM",
+        title: "Hack Period",
+        description: "For the night owls & early birds",
+        icon: <Code className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+      {
+        time: "07:00 AM - 08:30 AM",
+        title: "Breakfast Break",
+        description: "Morning fuel to keep you going",
+        icon: <Coffee className="h-5 w-5" />,
+        location: "Cafeteria",
+      },
+      {
+        time: "08:30 AM - 09:00 AM",
+        title: "Final Hacking & Submission",
+        description: "Last-minute touches and project submission",
+        icon: <Code2 className="h-5 w-5" />,
+        location: "Hack Space",
+      },
+      {
+        time: "09:00 AM - 12:00 PM",
+        title: "Round 2 Judgment",
+        description: "Present your final projects to the judges",
+        icon: <GraduationCap className="h-5 w-5" />,
+        location: "Seminar Hall",
+      },
+      {
+        time: "12:00 PM - 01:00 PM",
+        title: "Final Results",
+        description: "Winners announcement and prize distribution",
+        icon: <Presentation className="h-5 w-5" />,
+        location: "Main Auditorium",
+      },
+      {
+        time: "01:00 PM",
+        title: "Event done!",
+        description: "Congratulations on completing DevOlympus!",
+        icon: <Gamepad className="h-5 w-5" />,
+        location: "Main Auditorium",
+      },
+    ],
   },
 ];
