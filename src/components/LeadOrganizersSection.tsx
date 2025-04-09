@@ -85,9 +85,9 @@ export default function LeadOrganizersSection() {
         className="container mx-auto px-4"
       >
         <h2 className="text-center text-3xl mb-16 md:text-4xl lg:text-5xl font-bold">
-          Our{" "}
+          Lead{" "}
           <span className="text-purple-500 relative">
-            Sponsors
+            Organizers
             <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></span>
           </span>
         </h2>

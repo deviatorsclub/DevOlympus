@@ -53,6 +53,7 @@ export interface AlertProps {
 
 export interface DeadlineBannerProps {
   deadline: Date;
+  text?: string;
 }
 
 export interface TeamMemberCardProps {
@@ -90,6 +91,7 @@ export type TeamWithMembers = Prisma.TeamGetPayload<{
       select: {
         id: true;
         screenshotUrl: true;
+        verified: true;
       };
     };
   };
@@ -98,3 +100,15 @@ export type TeamWithMembers = Prisma.TeamGetPayload<{
 export interface ErrorDisplayProps {
   error: string;
 }
+
+export type TeamMemberWithConsent = Prisma.UserGetPayload<{
+  select: {
+    email: true;
+    name: true;
+    consentLetter: {
+      select: {
+        id: true;
+      };
+    };
+  };
+}>;

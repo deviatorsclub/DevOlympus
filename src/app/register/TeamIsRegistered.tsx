@@ -1,37 +1,38 @@
-"use client";
-
-import type { TeamWithMembers } from "@/types/registration";
+import type {
+  TeamMemberWithConsent,
+  TeamWithMembers,
+} from "@/types/registration";
 import Link from "next/link";
-import { useState } from "react";
-import { Accordion } from "@/components/ui/custom-accordian";
+
 import { Prisma } from "@prisma/client";
 
-import {
-  TeamHeader,
-  Round2Status,
-  ProjectDetails,
-  TeamMembers,
-  HackathonDetails,
-} from "./components";
+import { TeamHeader, Round2Status, HackathonDetails } from "./components";
 import Round2Results from "./components/Round2Results";
+import MissingUploads from "./components/MissingUploads";
+import TeamaAccordian from "./components/TeamaAccordian";
 
 interface TeamIsRegisteredProps {
   team: TeamWithMembers;
   user: Prisma.UserGetPayload<{ include: { consentLetter: true } }>;
+  teamMembersWithLogin: TeamMemberWithConsent[];
 }
 
-export default function TeamIsRegistered({
+export default async function TeamIsRegistered({
   team,
   user,
+  teamMembersWithLogin,
 }: TeamIsRegisteredProps) {
-  const teamLead = team.members.find((member) => member.isLead);
-  const teamMembers = team.members.filter((member) => !member.isLead);
-  const [open, setOpen] = useState<string | undefined>(undefined);
-
   return (
     <div className="w-full max-w-4xl mx-auto py-8 md:py-12 pt-16 md:pt-24 px-4 md:px-6">
       <div className="bg-[#0a0918] border border-indigo-600/80 rounded-xl shadow-lg p-6 md:p-8 text-gray-100 relative">
         <TeamHeader teamName={team.name} teamId={team.displayId} />
+
+        <div className="my-6">
+          <MissingUploads
+            team={team}
+            teamMembersWithLogin={teamMembersWithLogin}
+          />
+        </div>
 
         <Round2Status
           selectedForRound2={team.selectedForRound2}
@@ -41,22 +42,7 @@ export default function TeamIsRegistered({
         />
 
         <Round2Results />
-
-        <Accordion
-          collapsible
-          className="space-y-5"
-          value={open}
-          onValueChange={setOpen}
-        >
-          <ProjectDetails
-            theme={team.theme}
-            displayId={team.displayId}
-            presentationUrl={team.presentationUrl}
-          />
-
-          <TeamMembers teamLead={teamLead} teamMembers={teamMembers} />
-        </Accordion>
-
+        <TeamaAccordian team={team} />
         <HackathonDetails />
 
         <div className="mt-8 flex justify-center">

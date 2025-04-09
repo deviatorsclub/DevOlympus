@@ -3,7 +3,7 @@ import RegistrationForm from "@/components/RegistrationForm";
 import { auth } from "@/lib/authOptions";
 import { prisma } from "@/prisma";
 import TeamIsRegistered from "./TeamIsRegistered";
-import { TeamWithMembers } from "@/types/registration";
+import { TeamMemberWithConsent, TeamWithMembers } from "@/types/registration";
 import { FLAGS } from "@/lib/flags";
 import { Prisma } from "@prisma/client";
 
@@ -20,6 +20,7 @@ export default async function page({
   let currentUser: Prisma.UserGetPayload<{
     include: { consentLetter: true };
   }> | null = null;
+  let teamMembersWithLogin: TeamMemberWithConsent[] = [];
 
   if (session?.user?.email) {
     currentUser = await prisma.user.findUnique({
@@ -63,17 +64,42 @@ export default async function page({
           select: {
             id: true,
             screenshotUrl: true,
+            verified: true,
           },
         },
       },
     });
+
+    if (teams.length > 0)
+      teamMembersWithLogin = await prisma.user.findMany({
+        where: {
+          email: {
+            in: teams[0].members.map((member) => member.email),
+          },
+        },
+        select: {
+          email: true,
+          name: true,
+          consentLetter: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
   }
 
   return session?.user ? (
     teams.length === 0 ? (
       <RegistrationForm initialSession={session ?? undefined} />
     ) : (
-      currentUser && <TeamIsRegistered team={teams[0]} user={currentUser} />
+      currentUser && (
+        <TeamIsRegistered
+          team={teams[0]}
+          user={currentUser}
+          teamMembersWithLogin={teamMembersWithLogin}
+        />
+      )
     )
   ) : (
     <LoginFallback />

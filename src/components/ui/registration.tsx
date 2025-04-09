@@ -1,3 +1,5 @@
+"use client";
+
 import { memo, useEffect, useState } from "react";
 import {
   Calendar,
@@ -172,55 +174,62 @@ export const Alert = memo(({ type, message, onDismiss }: AlertProps) => {
 });
 Alert.displayName = "Alert";
 
-export const DeadlineBanner = memo(({ deadline }: DeadlineBannerProps) => {
-  const [timeLeft, setTimeLeft] = useState<string>("");
+export const DeadlineBanner = memo(
+  ({ deadline, text = "Registration deadline" }: DeadlineBannerProps) => {
+    const [timeLeft, setTimeLeft] = useState<string>("");
 
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const diff = deadline.getTime() - now.getTime();
+    useEffect(() => {
+      const calculateTimeLeft = () => {
+        const now = new Date();
+        const diff = deadline.getTime() - now.getTime();
 
-      if (diff <= 0) {
-        setTimeLeft("Registration closed");
-        return;
-      }
+        if (diff <= 0) {
+          setTimeLeft("Registration closed");
+          return;
+        }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-      );
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-      setTimeLeft(`${days}d ${hours}h ${minutes}m remaining`);
-    };
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 60000);
+        const timeLeftString = days > 0 ? `${days}d ` : "";
+        setTimeLeft(
+          `${timeLeftString}${hours}h ${minutes}m ${seconds}s remaining`,
+        );
+      };
 
-    return () => clearInterval(timer);
-  }, [deadline]);
+      calculateTimeLeft();
+      const timer = setInterval(calculateTimeLeft, 1000);
 
-  return (
-    <div className="bg-indigo-900/60 border border-indigo-500 rounded-lg p-3 mb-6 flex flex-col sm:flex-row items-start sm:items-center text-sm">
-      <div className="flex items-center mb-2 sm:mb-0">
-        <Calendar className="text-violet-300 mr-2 flex-shrink-0" size={18} />
-        <div className="flex-1">
-          <p className="text-violet-200">
-            Registration deadline: {deadline.toLocaleDateString()} at{" "}
-            {deadline.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
+      return () => clearInterval(timer);
+    }, [deadline]);
+
+    return (
+      <div className="bg-indigo-900/60 border border-indigo-500 rounded-lg p-3 mb-6 flex flex-col sm:flex-row items-start sm:items-center text-sm">
+        <div className="flex items-center mb-2 sm:mb-0">
+          <Calendar className="text-violet-300 mr-2 flex-shrink-0" size={18} />
+          <div className="flex-1">
+            <p className="text-violet-200">
+              {text}: {deadline.toLocaleDateString()} at{" "}
+              {deadline.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center bg-indigo-800 px-3 py-1 rounded-full ml-0 sm:ml-auto mt-2 sm:mt-0">
+          <Clock className="text-violet-300 mr-1 flex-shrink-0" size={14} />
+          <span className="text-violet-200 font-medium">{timeLeft}</span>
         </div>
       </div>
-      <div className="flex items-center bg-indigo-800 px-3 py-1 rounded-full ml-0 sm:ml-auto mt-2 sm:mt-0">
-        <Clock className="text-violet-300 mr-1 flex-shrink-0" size={14} />
-        <span className="text-violet-200 font-medium">{timeLeft}</span>
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
 DeadlineBanner.displayName = "DeadlineBanner";
 
 export const TeamMemberCard = memo(

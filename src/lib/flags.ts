@@ -23,6 +23,7 @@ export interface FeatureFlags {
   isRound2ResultFinalized: boolean;
   showPaymentFormAndConsent: boolean;
   canUpdatePayment: boolean;
+  paymentAndConsentDeadline: Date;
 }
 
 export const FLAGS: FeatureFlags = {
@@ -35,6 +36,7 @@ export const FLAGS: FeatureFlags = {
   isRound2ResultFinalized: true,
   showPaymentFormAndConsent: true,
   canUpdatePayment: true,
+  paymentAndConsentDeadline: new Date("2025-04-09T23:59:00+05:30"),
 };
 
 export const DEFAULT_VALUES = {
