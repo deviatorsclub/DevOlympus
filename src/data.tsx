@@ -26,6 +26,8 @@ import PIYUSH_GARG from "@/assets/judges/piyush-garg.png";
 import VRINDA_BHATEJA from "@/assets/judges/vrinda-bhateja.png";
 import SALONI_ARORA from "@/assets/judges/saloni-arora.png";
 import JATIN_SHARMA from "@/assets/judges/jatin-sharma.png";
+import SNIGDHA_KASHYAP from "@/assets/judges/snigdha-kashyap.jpg";
+import SAHIL_SANDHU from "@/assets/judges/sahil-sandhu.jpg";
 import { formatDate } from "./lib/utils";
 
 export const ROUND_1_SPREADSHEET_URL =
@@ -261,6 +263,16 @@ export const judges = [
     name: "Jatin Sharma",
     image: JATIN_SHARMA,
     oneLiner: "Senior Database Administrator",
+  },
+  {
+    name: "Snigdha Kashyap",
+    image: SNIGDHA_KASHYAP,
+    oneLiner: "Expedia Group - Software Development Engineer - 2",
+  },
+  {
+    name: "Sahil Sandhu",
+    image: SAHIL_SANDHU,
+    oneLiner: "Expedia Group - Software Development Engineer - 2",
   },
 ];
 
