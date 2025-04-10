@@ -43,6 +43,7 @@ interface HeaderClientProps {
 }
 
 const navItems: NavItem[] = [
+  { name: "API.market Guide", href: "/guide/api.market" },
   { name: "Rules", href: "/#rules" },
   { name: "Schedule", href: "/#schedule" },
   { name: "FAQs", href: "/#faqs" },
