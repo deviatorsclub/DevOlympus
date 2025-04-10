@@ -804,12 +804,12 @@ export default function ApiMarketGuide() {
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-white mb-1">
-                        Project Documentation
+                        Presentation Materials
                       </h3>
                       <p className="text-gray-300">
-                        Comprehensive documentation including project overview,
-                        technical architecture, API usage details, and setup
-                        instructions.
+                        A pitch deck presentation (3-5 minutes) explaining your
+                        project, the problem it solves, and how you utilized
+                        API.market&apos;s offerings.
                       </p>
                     </div>
                   </div>
@@ -818,24 +818,6 @@ export default function ApiMarketGuide() {
                     <div className="bg-purple-900/50 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0">
                       <span className="text-sm font-bold text-purple-300">
                         3
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-white mb-1">
-                        Presentation Materials
-                      </h3>
-                      <p className="text-gray-300">
-                        A pitch deck or video presentation (3-5 minutes)
-                        explaining your project, the problem it solves, and how
-                        you utilized API.market&apos;s offerings.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <div className="bg-purple-900/50 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0">
-                      <span className="text-sm font-bold text-purple-300">
-                        4
                       </span>
                     </div>
                     <div>
