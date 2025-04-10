@@ -35,7 +35,7 @@ export const FLAGS: FeatureFlags = {
   startShowingRound2Status: new Date("2025-04-06T16:00:00+05:30"),
   isRound2ResultFinalized: true,
   showPaymentFormAndConsent: true,
-  canUpdatePayment: true,
+  canUpdatePayment: false,
   paymentAndConsentDeadline: new Date("2025-04-09T23:59:00+05:30"),
 };
 
