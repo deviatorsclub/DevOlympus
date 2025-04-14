@@ -5,7 +5,8 @@ import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { HACKATHON_DATE, ROUND_1_SPREADSHEET_URL } from "@/data";
+import { HACKATHON_DATE } from "@/data";
+import CountUp from "react-countup";
 
 type TimeLeft = {
   days: number;
@@ -105,23 +106,6 @@ const buttonContainerVariants: Variants = {
   },
 };
 
-const registerButtonVariants: Variants = {
-  hover: { scale: 1.05 },
-  tap: { scale: 0.95 },
-  gradientMove: {
-    x: "0%",
-    transition: { duration: 0.4 },
-  },
-  glowPulse: {
-    scale: [0.9, 1.1, 0.9],
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      repeatType: "reverse",
-    },
-  },
-};
-
 const learnMoreButtonVariants: Variants = {
   hover: { scale: 1.05 },
   tap: { scale: 0.95 },
@@ -163,7 +147,7 @@ const CircuitLines = memo((): JSX.Element => {
       { x1: "80%", y1: "50%", x2: "60%", y2: "50%" },
       { x1: "60%", y1: "50%", x2: "60%", y2: "90%" },
     ],
-    [],
+    []
   );
 
   return (
@@ -243,7 +227,7 @@ const TitleCharacter = memo(
         </AnimatePresence>
       </motion.div>
     );
-  },
+  }
 );
 TitleCharacter.displayName = "TitleCharacter";
 
@@ -358,7 +342,7 @@ const CountdownDigit = memo(
         </span>
       </div>
     );
-  },
+  }
 );
 CountdownDigit.displayName = "CountdownDigit";
 
@@ -384,7 +368,7 @@ export const CountdownTimer = memo(
           setTimeLeft({
             days: Math.floor(distance / (1000 * 60 * 60 * 24)),
             hours: Math.floor(
-              (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+              (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
             ),
             minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
             seconds: Math.floor((distance % (1000 * 60)) / 1000),
@@ -415,7 +399,7 @@ export const CountdownTimer = memo(
         </div>
       </motion.div>
     );
-  },
+  }
 );
 CountdownTimer.displayName = "CountdownTimer";
 
@@ -427,33 +411,6 @@ const ActionButtons = memo((): JSX.Element => {
       animate="visible"
       className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
     >
-      <Link
-        href={ROUND_1_SPREADSHEET_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <motion.div
-          variants={registerButtonVariants}
-          whileHover="hover"
-          whileTap="tap"
-        >
-          <Button className="relative overflow-hidden group bg-gradient-to-r from-blue-600 to-purple-600 border-0 text-white hover:from-blue-700 hover:to-purple-700 cursor-pointer">
-            <span className="relative z-10">Round 1 Results</span>
-            <motion.span
-              className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700"
-              initial={{ x: "-100%" }}
-              variants={registerButtonVariants}
-              whileHover="gradientMove"
-            />
-            <motion.div
-              className="absolute -inset-1 rounded-lg opacity-0 group-hover:opacity-100 blur-lg bg-gradient-to-r from-blue-400 to-purple-400"
-              variants={registerButtonVariants}
-              animate="glowPulse"
-            />
-          </Button>
-        </motion.div>
-      </Link>
-
       <Link href="/code-of-conduct">
         <motion.div
           variants={learnMoreButtonVariants}
@@ -495,7 +452,77 @@ const ScrollIndicator = memo((): JSX.Element => {
 });
 ScrollIndicator.displayName = "ScrollIndicator";
 
-export default function HeroSection(): JSX.Element {
+const StatsBanner = memo(
+  ({
+    totalUsers,
+    teams,
+  }: {
+    totalUsers: number;
+    teams: number;
+  }): JSX.Element => {
+    return (
+      <motion.div
+        className="flex flex-col sm:flex-row justify-center gap-6 sm:gap-10 mt-8 mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
+      >
+        <motion.div
+          className="relative overflow-hidden bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-sm px-8 py-4 rounded-xl border border-purple-500/40 shadow-lg shadow-purple-500/10"
+          whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+        >
+          <div className="absolute -top-10 -left-10 w-20 h-20 bg-purple-500/20 rounded-full blur-xl" />
+          <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl" />
+          <div className="relative z-10">
+            <p className="text-lg font-medium text-gray-300 mb-1">
+              Users Signed Up
+            </p>
+            <div className="flex items-baseline">
+              <CountUp
+                end={totalUsers}
+                duration={2.5}
+                separator=","
+                className="text-4xl font-bold text-white"
+              />
+              <span className="ml-2 text-purple-400 text-sm">users</span>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="relative overflow-hidden bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm px-8 py-4 rounded-xl border border-blue-500/40 shadow-lg shadow-blue-500/10"
+          whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+        >
+          <div className="absolute -top-10 -left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl" />
+          <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-purple-500/20 rounded-full blur-xl" />
+          <div className="relative z-10">
+            <p className="text-lg font-medium text-gray-300 mb-1">
+              Teams Registered
+            </p>
+            <div className="flex items-baseline">
+              <CountUp
+                end={teams}
+                duration={2.5}
+                separator=","
+                className="text-4xl font-bold text-white"
+              />
+              <span className="ml-2 text-blue-400 text-sm">teams</span>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
+);
+StatsBanner.displayName = "StatsBanner";
+
+export default function HeroSection({
+  totalUsers,
+  teams,
+}: {
+  totalUsers: number;
+  teams: number;
+}): JSX.Element {
   const heroRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -518,7 +545,8 @@ export default function HeroSection(): JSX.Element {
         >
           <AnimatedTitle />
           <AnimatedDescription />
-          <CountdownTimer />
+          {/* <CountdownTimer /> */}
+          <StatsBanner totalUsers={totalUsers} teams={teams} />
           <ActionButtons />
           <ScrollIndicator />
         </motion.div>

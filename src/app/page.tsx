@@ -8,11 +8,16 @@ import SponsorsSection from "@/components/SponsorsSection";
 import PriceSection from "@/components/PriceSection";
 import LeadOrganizersSection from "@/components/LeadOrganizersSection";
 import JudgesSection from "@/components/JudgesSection";
+import { prisma } from "@/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const [totalUsers, teams] = await Promise.all([
+    prisma.user.count(),
+    prisma.team.count(),
+  ]);
   return (
     <main className="flex-1">
-      <HeroSection />
+      <HeroSection totalUsers={totalUsers} teams={teams} />
       <ThemesSection />
       <ScheduleSection />
       <RulesSection />
