@@ -2,59 +2,9 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { StaticImageData } from "next/image";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
-
-import ayushImage from "@/assets/lead-organizers/ayush.webp";
-import kanakImage from "@/assets/lead-organizers/kanak.webp";
-import kkImage from "@/assets/lead-organizers/kk.webp";
-import pulkitImage from "@/assets/lead-organizers/pulkit.webp";
-import yashImage from "@/assets/lead-organizers/yash.webp";
-
-const leadOrganizers: {
-  name: string;
-  image: StaticImageData;
-  github: string;
-  linkedin: string;
-  twitter?: string;
-  portfolio?: string;
-}[] = [
-  {
-    name: "Ayush Goyal",
-    image: ayushImage,
-    github: "https://github.com/agayushh",
-    linkedin: "https://www.linkedin.com/in/ayush-goyal-b4491324b",
-    twitter: "http://x.com/agayushh",
-  },
-  {
-    name: "Kanak Tanwar",
-    image: kanakImage,
-    github: "https://github.com/kanakOS01",
-    linkedin: "https://www.linkedin.com/in/kanak-tanwar",
-    twitter: "https://x.com/kanaktwts",
-  },
-  {
-    name: "Krishna Kartikay Bhatt",
-    image: kkImage,
-    github: "https://github.com/kkbhatt07",
-    linkedin: "https://www.linkedin.com/in/krishna-kartikay-bhatt/",
-  },
-  {
-    name: "Pulkit",
-    image: pulkitImage,
-    github: "https://github.com/pulkitxm",
-    linkedin: "https://www.linkedin.com/in/pulkit-dce",
-    twitter: "https://x.com/devpulkitt",
-    portfolio: "https://pulkitxm.com",
-  },
-  {
-    name: "Yash Kumar",
-    image: yashImage,
-    github: "https://github.com/Hero-Alpha",
-    linkedin: "https://www.linkedin.com/in/yash-kumar-4a936426b/",
-  },
-];
+import { leadOrganizers } from "@/data";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },

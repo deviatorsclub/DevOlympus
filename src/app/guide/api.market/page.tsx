@@ -578,7 +578,7 @@ export default function ApiMarketGuide() {
                           onClick={() =>
                             window.open(
                               "https://api-market.pulkitxm.com/",
-                              "_blank"
+                              "_blank",
                             )
                           }
                         >
@@ -590,7 +590,7 @@ export default function ApiMarketGuide() {
                           onClick={() =>
                             window.open(
                               "https://github.com/Pulkitxm/api-market",
-                              "_blank"
+                              "_blank",
                             )
                           }
                         >

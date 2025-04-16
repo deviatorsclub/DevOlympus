@@ -18,6 +18,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { FaChalkboardTeacher } from "react-icons/fa";
+import { StaticImageData } from "next/image";
 
 import ANSHIKA from "@/assets/judges/anshika.png";
 import AKASH_CHAUHAN from "@/assets/judges/akash-chauhan.png";
@@ -28,6 +29,12 @@ import SALONI_ARORA from "@/assets/judges/saloni-arora.png";
 import JATIN_SHARMA from "@/assets/judges/jatin-sharma.png";
 import SNIGDHA_KASHYAP from "@/assets/judges/snigdha-kashyap.jpg";
 import SAHIL_SANDHU from "@/assets/judges/sahil-sandhu.jpg";
+import ayushImage from "@/assets/lead-organizers/ayush.webp";
+import kanakImage from "@/assets/lead-organizers/kanak.webp";
+import kkImage from "@/assets/lead-organizers/kk.webp";
+import pulkitImage from "@/assets/lead-organizers/pulkit.webp";
+import yashImage from "@/assets/lead-organizers/yash.webp";
+import DIVYANSH from "@/assets/lead-organizers/divyansh.webp";
 import { formatDate } from "./lib/utils";
 
 export const ROUND_1_SPREADSHEET_URL =
@@ -411,5 +418,55 @@ export const scheduleItems: ScheduleDay[] = [
         location: "Main Auditorium",
       },
     ],
+  },
+];
+
+export const leadOrganizers: {
+  name: string;
+  image: StaticImageData;
+  github: string;
+  linkedin: string;
+  twitter?: string;
+  portfolio?: string;
+}[] = [
+  {
+    name: "Ayush Goyal",
+    image: ayushImage,
+    github: "https://github.com/agayushh",
+    linkedin: "https://www.linkedin.com/in/ayush-goyal-b4491324b",
+    twitter: "http://x.com/agayushh",
+  },
+  {
+    name: "Kanak Tanwar",
+    image: kanakImage,
+    github: "https://github.com/kanakOS01",
+    linkedin: "https://www.linkedin.com/in/kanak-tanwar",
+    twitter: "https://x.com/kanaktwts",
+  },
+  {
+    name: "Krishna Kartikay Bhatt",
+    image: kkImage,
+    github: "https://github.com/kkbhatt07",
+    linkedin: "https://www.linkedin.com/in/krishna-kartikay-bhatt/",
+  },
+  {
+    name: "Pulkit",
+    image: pulkitImage,
+    github: "https://github.com/pulkitxm",
+    linkedin: "https://www.linkedin.com/in/pulkit-dce",
+    twitter: "https://x.com/devpulkitt",
+    portfolio: "https://pulkitxm.com",
+  },
+  {
+    name: "Yash Kumar",
+    image: yashImage,
+    github: "https://github.com/Hero-Alpha",
+    linkedin: "https://www.linkedin.com/in/yash-kumar-4a936426b/",
+  },
+  {
+    name: "Divyansh",
+    image: DIVYANSH,
+    github: "https://github.com/coderizzz",
+    linkedin: "https://www.linkedin.com/in/divyansh-sethi-035b7b25b",
   },
 ];
