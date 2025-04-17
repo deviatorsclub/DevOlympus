@@ -435,6 +435,7 @@ export const leadOrganizers: {
     github: "https://github.com/agayushh",
     linkedin: "https://www.linkedin.com/in/ayush-goyal-b4491324b",
     twitter: "http://x.com/agayushh",
+    portfolio: "http://agayush.me",
   },
   {
     name: "Kanak Tanwar",
